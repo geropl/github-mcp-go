@@ -10,23 +10,25 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 4. Implemented repository operations tools
 5. Implemented pull request operations tools (including the new tools requested)
 6. Implemented file operations tools
+7. Added table-driven tests with go-vcr and golden files for repository, pull request, and file operations
 
 The current focus is on:
 
 1. Implementing the remaining tools (issue operations, branch operations, search operations, commit operations)
-2. Adding tests for all tools
+2. Adding tests for the remaining tools
 
 ## Recent Changes
 
 - Created project structure
 - Initialized Go module
-- Added dependencies (mcp-go, go-github, logrus)
+- Added dependencies (mcp-go, go-github, logrus, go-vcr)
 - Implemented core server functionality
 - Created GitHub client wrapper
 - Implemented error handling utilities
 - Implemented repository operations tools
 - Implemented pull request operations tools (including the new tools requested)
 - Implemented file operations tools
+- Added table-driven tests with go-vcr and golden files
 - Created README
 
 ## Next Steps
@@ -35,7 +37,8 @@ The current focus is on:
 2. Implement branch operations tools
 3. Implement search operations tools
 4. Implement commit operations tools
-5. Add tests for all tools
+5. Add tests for the remaining tools (issue, branch, search, commit operations)
+6. Add end-to-end tests
 
 ## Active Decisions
 
@@ -50,9 +53,11 @@ The current focus is on:
    - Added validation for token presence
 
 3. **Testing Approach**
-   - Will use go-vcr for recording HTTP interactions
-   - Will implement table-driven tests
-   - Will create fixtures for each API interaction
+   - Using go-vcr for recording HTTP interactions
+   - Implemented table-driven tests with golden files
+   - Created test fixtures for repository, pull request, and file operations
+   - Using dummy tokens for playback mode
+   - Sanitizing sensitive information in cassettes
 
 4. **Tool Implementation Priority**
    - Repository operations (completed)

@@ -1,4 +1,4 @@
-package server
+package tools
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 	"github.com/sirupsen/logrus"
 
-	ghclient "github.com/modelcontextprotocol/github-mcp-go/internal/github"
+	ghclient "github.com/geropl/github-mcp-go/pkg/github"
 )
 
 // Server wraps the MCP server and provides additional functionality
@@ -31,11 +31,6 @@ func NewServer(name, version string, client *ghclient.Client, logger *logrus.Log
 	}
 }
 
-// GetServer returns the underlying MCP server
-func (s *Server) GetServer() *server.MCPServer {
-	return s.server
-}
-
 // GetClient returns the GitHub client
 func (s *Server) GetClient() *ghclient.Client {
 	return s.client
@@ -56,18 +51,8 @@ func (s *Server) Serve() error {
 	return server.ServeStdio(s.server)
 }
 
-// ToolHandler is a function that handles a tool request
-type ToolHandler func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error)
-
-// ToolRegistration represents a tool registration
-type ToolRegistration struct {
-	Tool    mcp.Tool
-	Handler ToolHandler
-}
-
-// RegisterTools registers multiple tools with the server
-func (s *Server) RegisterTools(registrations []ToolRegistration) {
-	for _, reg := range registrations {
-		s.RegisterTool(reg.Tool, reg.Handler)
-	}
+func RegisterTools(s *Server) {
+	RegisterRepositoryTools(s)
+	RegisterPullRequestTools(s)
+	RegisterFileTools(s)
 }

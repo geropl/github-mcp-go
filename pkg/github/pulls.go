@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-github/v69/github"
 	"github.com/sirupsen/logrus"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
+	"github.com/geropl/github-mcp-go/pkg/errors"
 )
 
 // PullRequestOperations handles pull request-related operations
@@ -104,7 +104,7 @@ func (p *PullRequestOperations) GetPullRequestDiff(ctx context.Context, owner, r
 	}
 
 	req.Header.Set("Accept", "application/vnd.github.v3.diff")
-	
+
 	var buf bytes.Buffer
 	_, err = p.client.GetClient().Do(ctx, req, &buf)
 	if err != nil {

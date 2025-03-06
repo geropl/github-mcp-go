@@ -13,7 +13,7 @@
 | Branch Operations | Not Started | 0% |
 | Search Operations | Not Started | 0% |
 | Commit Operations | Not Started | 0% |
-| Testing | Not Started | 0% |
+| Testing | In Progress | 50% |
 | Documentation | Completed | 100% |
 
 ## What Works
@@ -28,6 +28,10 @@
 - Repository operations tools are implemented
 - Pull request operations tools are implemented (including the new tools requested)
 - File operations tools are implemented
+- Table-driven tests with go-vcr and golden files for:
+  - Repository operations
+  - Pull request operations
+  - File operations
 - README is created
 
 ## What's Left to Build
@@ -39,8 +43,7 @@
    - Commit operations
 
 2. **Testing**
-   - Unit tests
-   - Integration tests with go-vcr
+   - Tests for remaining tools (issue, branch, search, commit operations)
    - End-to-end tests
 
 ## Known Issues

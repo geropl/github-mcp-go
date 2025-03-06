@@ -7,7 +7,7 @@ import (
 	"github.com/google/go-github/v69/github"
 	"github.com/sirupsen/logrus"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
+	"github.com/geropl/github-mcp-go/pkg/errors"
 )
 
 // RepositoryOperations handles repository-related operations
@@ -60,10 +60,10 @@ func (r *RepositoryOperations) CreateRepository(ctx context.Context, name, descr
 
 	// Create repository
 	repo := &github.Repository{
-		Name:        github.String(name),
-		Description: github.String(description),
-		Private:     github.Bool(private),
-		AutoInit:    github.Bool(autoInit),
+		Name:        github.Ptr(name),
+		Description: github.Ptr(description),
+		Private:     github.Ptr(private),
+		AutoInit:    github.Ptr(autoInit),
 	}
 
 	result, _, err := r.client.GetClient().Repositories.Create(ctx, "", repo)

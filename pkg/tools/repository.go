@@ -7,13 +7,12 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/github"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/server"
+	"github.com/geropl/github-mcp-go/pkg/errors"
+	"github.com/geropl/github-mcp-go/pkg/github"
 )
 
 // RegisterRepositoryTools registers repository-related tools
-func RegisterRepositoryTools(s *server.Server) {
+func RegisterRepositoryTools(s *Server) {
 	client := s.GetClient()
 	logger := s.GetLogger()
 	repoOps := github.NewRepositoryOperations(client, logger)

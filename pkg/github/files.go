@@ -7,7 +7,7 @@ import (
 	"github.com/google/go-github/v69/github"
 	"github.com/sirupsen/logrus"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
+	"github.com/geropl/github-mcp-go/pkg/errors"
 )
 
 // FileOperations handles file-related operations
@@ -79,14 +79,14 @@ func (f *FileOperations) CreateOrUpdateFile(ctx context.Context, owner, repo, pa
 
 	// Set up options
 	opts := &github.RepositoryContentFileOptions{
-		Message: github.String(message),
+		Message: github.Ptr(message),
 		Content: []byte(content),
 	}
 	if branch != "" {
-		opts.Branch = github.String(branch)
+		opts.Branch = github.Ptr(branch)
 	}
 	if sha != "" {
-		opts.SHA = github.String(sha)
+		opts.SHA = github.Ptr(sha)
 	}
 
 	// Create or update file
@@ -139,10 +139,10 @@ func (f *FileOperations) PushFiles(ctx context.Context, owner, repo, branch stri
 	entries := []*github.TreeEntry{}
 	for _, file := range files {
 		entries = append(entries, &github.TreeEntry{
-			Path:    github.String(file.Path),
-			Mode:    github.String("100644"),
-			Type:    github.String("blob"),
-			Content: github.String(file.Content),
+			Path:    github.Ptr(file.Path),
+			Mode:    github.Ptr("100644"),
+			Type:    github.Ptr("blob"),
+			Content: github.Ptr(file.Content),
 		})
 	}
 

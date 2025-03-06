@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
+	"github.com/geropl/github-mcp-go/pkg/errors"
 )
 
 // Client wraps the GitHub client and provides additional functionality
@@ -26,6 +26,19 @@ func NewClient(token string, logger *logrus.Logger) *Client {
 	)
 	tc := oauth2.NewClient(ctx, ts)
 	client := github.NewClient(tc)
+
+	return &Client{
+		client: client,
+		logger: logger,
+	}
+}
+
+// NewClientWithHTTPClient creates a new GitHub client with a custom HTTP client
+func NewClientWithHTTPClient(token string, httpClient *http.Client, logger *logrus.Logger) *Client {
+	client := github.NewClient(httpClient)
+	if token != "" {
+		client = client.WithAuthToken(token)
+	}
 
 	return &Client{
 		client: client,

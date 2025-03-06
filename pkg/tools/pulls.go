@@ -7,13 +7,12 @@ import (
 
 	"github.com/mark3labs/mcp-go/mcp"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/github"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/server"
+	"github.com/geropl/github-mcp-go/pkg/errors"
+	"github.com/geropl/github-mcp-go/pkg/github"
 )
 
 // RegisterPullRequestTools registers pull request-related tools
-func RegisterPullRequestTools(s *server.Server) {
+func RegisterPullRequestTools(s *Server) {
 	client := s.GetClient()
 	logger := s.GetLogger()
 	prOps := github.NewPullRequestOperations(client, logger)

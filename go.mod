@@ -1,4 +1,4 @@
-module github.com/modelcontextprotocol/github-mcp-go
+module github.com/geropl/github-mcp-go
 
 go 1.23.6
 
@@ -7,10 +7,12 @@ require (
 	github.com/mark3labs/mcp-go v0.11.2
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/oauth2 v0.28.0
+	gopkg.in/dnaeon/go-vcr.v4 v4.0.2
 )
 
 require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

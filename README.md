@@ -25,7 +25,7 @@ A Model Context Protocol (MCP) server for GitHub, implemented in Go. This server
 
 ```bash
 # Clone the repository
-git clone https://github.com/modelcontextprotocol/github-mcp-go.git
+git clone https://github.com/geropl/github-mcp-go.git
 cd github-mcp-go
 
 # Build the server
