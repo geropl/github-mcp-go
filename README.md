@@ -79,6 +79,12 @@ To use the server with Claude for Desktop, add the following to your Claude for 
 - `get_pull_request`: Get detailed information about a pull request
 - `get_pull_request_diff`: Get the diff of a pull request
 
+### File Tools
+
+- `get_file_contents`: Get the contents of a file or directory
+- `create_or_update_file`: Create or update a file
+- `push_files`: Push multiple files in a single commit
+
 ## Development
 
 ### Project Structure
