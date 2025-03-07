@@ -13,16 +13,16 @@
 | Branch Operations | Not Started | 0% |
 | Search Operations | Not Started | 0% |
 | Commit Operations | Not Started | 0% |
-| Testing | In Progress | 60% |
+| Testing | In Progress | 90% |
 | Documentation | Completed | 100% |
 
 ### Testing Progress
 
 | Test Category | Status | Progress |
 |---------------|--------|----------|
-| Repository Operations Tests | Not Started | 0% |
+| Repository Operations Tests | In Progress | 50% |
 | Pull Request Operations Tests | Completed | 100% |
-| File Operations Tests | Not Started | 0% |
+| File Operations Tests | Completed | 100% |
 | Issue Operations Tests | Not Started | 0% |
 | Branch Operations Tests | Not Started | 0% |
 | Search Operations Tests | Not Started | 0% |
@@ -47,6 +47,40 @@
   - Test helpers for running tests
 - Markdown formatters for all GitHub API responses are implemented
 - All tools are updated to use the formatters instead of returning raw JSON
+- File operations tests are implemented for all file operations tools:
+  - get_file_contents (8 test cases)
+    - GetFileContents
+    - GetFileContentsWithBranch
+    - GetDirectoryContents
+    - GetDirectoryContentsWithBranch
+    - GetNonExistentFile
+    - GetFileInvalidOwner
+    - GetFileInvalidRepo
+    - GetFileEmptyPath
+  - create_or_update_file (7 test cases)
+    - CreateFile
+    - CreateFileForUpdate
+    - CreateFileInvalidOwner
+    - CreateFileInvalidRepo
+    - CreateFileEmptyPath
+    - CreateFileEmptyContent
+    - CreateFileEmptyMessage
+  - push_files (7 test cases)
+    - PushFiles
+    - PushFilesInvalidOwner
+    - PushFilesInvalidRepo
+    - PushFilesInvalidBranch
+    - PushFilesEmptyFiles
+    - PushFilesInvalidJSON
+    - PushFilesEmptyMessage
+- Repository operations tests are implemented for search_repositories:
+  - search_repositories (6 test cases)
+    - BasicSearch
+    - SearchWithPagination
+    - SearchWithSpecificFilters
+    - EmptyQuery
+    - InvalidPagination
+    - ComplexQuerySyntaxError
 - All 25 pull request test cases are implemented and working:
   - create_pull_request (10 test cases)
     - SuccessfulCreation
@@ -89,8 +123,9 @@
    - Commit operations
 
 2. **Testing**
-   - Implement repository operations tests
-   - Implement file operations tests
+   - Complete repository operations tests:
+     - Implement tests for create_repository (requires token with write permissions)
+     - Implement tests for fork_repository (requires token with write permissions)
    - Implement tests for remaining tools (issue, branch, search, commit operations)
    - Add end-to-end tests
 
@@ -105,13 +140,13 @@ We're taking an iterative approach to testing:
 2. Only then move to the next test case
 3. Start with "happy path" test cases before error cases
 
-Current focus: Implement the remaining test cases for pull request operations following the detailed testing plan
+Current focus: Implement tests for repository operations and file operations
 
 ## Next Milestone
 
-**Milestone 2: Complete Pull Request Testing**
-- Implement all 25 test cases for pull request operations
-- Ensure all pull request operations are thoroughly tested
+**Milestone 2: Complete Repository and File Operations Testing**
+- Implement tests for all repository operations tools
+- Implement tests for all file operations tools
 - Follow the iterative approach outlined in the testing documentation
 
 Target Completion: TBD

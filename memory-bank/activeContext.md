@@ -14,14 +14,14 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 
 The current focus is on:
 
-1. **Implementing comprehensive tests for pull request operations**:
-   - Defined a complete set of test cases for all pull request tools
-   - Created a structured testing plan with 25 test cases across three tools
-   - Following an iterative approach of making one test case work before moving to the next
-   - Organized test cases by tool and type (happy path vs. error cases)
-   - Created detailed documentation for the testing process
+1. **Implementing comprehensive tests for repository and file operations**:
+   - Defined test cases for repository operations tools
+   - Following the same iterative approach used for pull request tests
+   - Organizing test cases by tool and type (happy path vs. error cases)
+   - Implementing tests for search_repositories tool
+   - Documenting limitations with create_repository and fork_repository tests
 
-2. Once testing is complete for pull request operations:
+2. Once testing is complete for repository and file operations:
    - Implementing the remaining tools (issue operations, branch operations, search operations, commit operations)
    - Adding tests for the remaining tools
 
@@ -43,6 +43,40 @@ The current focus is on:
 - Implemented formatters for all GitHub API responses to return markdown instead of raw JSON
 - Updated all tools to use the formatters
 - Updated tests to work with the new markdown output format
+- Implemented file operations tests for all file operations tools:
+  - get_file_contents (8 test cases)
+    - GetFileContents
+    - GetFileContentsWithBranch
+    - GetDirectoryContents
+    - GetDirectoryContentsWithBranch
+    - GetNonExistentFile
+    - GetFileInvalidOwner
+    - GetFileInvalidRepo
+    - GetFileEmptyPath
+  - create_or_update_file (7 test cases)
+    - CreateFile
+    - CreateFileForUpdate
+    - CreateFileInvalidOwner
+    - CreateFileInvalidRepo
+    - CreateFileEmptyPath
+    - CreateFileEmptyContent
+    - CreateFileEmptyMessage
+  - push_files (7 test cases)
+    - PushFiles
+    - PushFilesInvalidOwner
+    - PushFilesInvalidRepo
+    - PushFilesInvalidBranch
+    - PushFilesEmptyFiles
+    - PushFilesInvalidJSON
+    - PushFilesEmptyMessage
+- Implemented repository operations tests for search_repositories:
+  - search_repositories (6 test cases)
+    - BasicSearch
+    - SearchWithPagination
+    - SearchWithSpecificFilters
+    - EmptyQuery
+    - InvalidPagination
+    - ComplexQuerySyntaxError
 - Implemented all 25 pull request test cases:
   - create_pull_request (10 test cases)
     - SuccessfulCreation
@@ -75,7 +109,7 @@ The current focus is on:
 
 ## Next Steps
 
-1. Implement repository operations tests
+1. Implement tests for remaining tools (issue, branch, search, commit operations)
 2. Implement issue operations tools
 3. Implement branch operations tools
 4. Implement search operations tools
@@ -128,3 +162,4 @@ The current focus is on:
 4. Managing test fixtures and cassettes for deterministic testing
 5. Balancing the iterative testing approach with comprehensive coverage
 6. Maintaining consistent test case organization across different tools
+7. Handling limitations with GitHub API permissions for tests that require write access
