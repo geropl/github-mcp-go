@@ -14,11 +14,12 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 
 The current focus is on:
 
-1. **Implementing tests in an iterative manner**:
-   - Starting with pull request operations tests
-   - Currently focusing on making the "SuccessfulCreation" test case for create_pull_request work
-   - Following an approach of making one test case work before moving to the next
-   - Other test cases are defined but commented out until we're ready to implement them
+1. **Implementing comprehensive tests for pull request operations**:
+   - Defined a complete set of test cases for all pull request tools
+   - Created a structured testing plan with 25 test cases across three tools
+   - Following an iterative approach of making one test case work before moving to the next
+   - Organized test cases by tool and type (happy path vs. error cases)
+   - Created detailed documentation for the testing process
 
 2. Once testing is complete for pull request operations:
    - Implementing the remaining tools (issue operations, branch operations, search operations, commit operations)
@@ -36,20 +37,51 @@ The current focus is on:
 - Implemented pull request operations tools (including the new tools requested)
 - Implemented file operations tools
 - Set up testing framework with go-vcr and golden files
-- Started implementing pull request tests with an iterative approach
-- Created README
+- Implemented the "SuccessfulCreation" test case for create_pull_request
+- Defined a comprehensive set of test cases for all pull request tools
+- Created detailed documentation for the pull request testing process
+- Implemented formatters for all GitHub API responses to return markdown instead of raw JSON
+- Updated all tools to use the formatters
+- Updated tests to work with the new markdown output format
+- Implemented all 25 pull request test cases:
+  - create_pull_request (10 test cases)
+    - SuccessfulCreation
+    - CreateDraftPR
+    - CreatePRWithLabels
+    - CreatePRWithAssignees
+    - CreatePRWithReviewers
+    - InvalidOwner
+    - InvalidRepo
+    - InvalidBranch
+    - SameBranches
+    - MissingRequiredFields
+  - get_pull_request (7 test cases)
+    - GetExistingPR
+    - GetMergedPR
+    - GetClosedPR
+    - GetNonExistentPR
+    - InvalidOwnerGetPR
+    - InvalidRepoGetPR
+    - InvalidPRNumber
+  - get_pull_request_diff (8 test cases)
+    - GetDiffForOpenPR
+    - GetDiffForMergedPR
+    - GetDiffForClosedPR
+    - GetDiffWithLargeChanges
+    - GetDiffForNonExistentPR
+    - InvalidOwnerGetDiff
+    - InvalidRepoGetDiff
+    - InvalidPRNumberGetDiff
 
 ## Next Steps
 
-1. Complete the "SuccessfulCreation" test case for create_pull_request
-2. Uncomment and implement the next test case for pull request operations
-3. Continue iteratively implementing test cases for pull request operations
-4. Implement issue operations tools
-5. Implement branch operations tools
-6. Implement search operations tools
-7. Implement commit operations tools
-8. Add tests for the remaining tools (issue, branch, search, commit operations)
-9. Add end-to-end tests
+1. Implement repository operations tests
+2. Implement issue operations tools
+3. Implement branch operations tools
+4. Implement search operations tools
+5. Implement commit operations tools
+6. Add tests for the remaining tools (issue, branch, search, commit operations)
+7. Add end-to-end tests
 
 ## Active Decisions
 
@@ -71,6 +103,7 @@ The current focus is on:
    - Sanitizing sensitive information in cassettes
    - Taking an iterative approach: make one test case work, then move to the next
    - Starting with the "happy path" test cases before error cases
+   - Documenting the testing process in detail for future reference
 
 4. **Tool Implementation Priority**
    - Repository operations (completed)
@@ -81,6 +114,12 @@ The current focus is on:
    - Search operations
    - Commit operations
 
+5. **Response Formatting**
+   - Using markdown formatting for all tool responses instead of raw JSON
+   - Created formatters for each GitHub resource type (pull requests, repositories, files, etc.)
+   - Selecting only the most relevant fields for each resource type
+   - Organizing information in a clear, readable format with headers and sections
+
 ## Current Challenges
 
 1. Ensuring proper error handling and conversion between GitHub API errors and MCP errors
@@ -88,3 +127,4 @@ The current focus is on:
 3. Ensuring comprehensive test coverage
 4. Managing test fixtures and cassettes for deterministic testing
 5. Balancing the iterative testing approach with comprehensive coverage
+6. Maintaining consistent test case organization across different tools

@@ -94,12 +94,9 @@ func RegisterFileTools(s *Server) {
 				"content":      decodedContent,
 			}
 
-			jsonResult, err := json.MarshalIndent(response, "", "  ")
-			if err != nil {
-				return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-			}
-
-			return mcp.NewToolResultText(string(jsonResult)), nil
+			// Format the result as markdown
+			markdown := formatFileContentToMarkdown(response)
+			return mcp.NewToolResultText(markdown), nil
 
 		case []*github.RepositoryContent:
 			// It's a directory
@@ -124,12 +121,9 @@ func RegisterFileTools(s *Server) {
 				"contents": dirContents,
 			}
 
-			jsonResult, err := json.MarshalIndent(response, "", "  ")
-			if err != nil {
-				return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-			}
-
-			return mcp.NewToolResultText(string(jsonResult)), nil
+			// Format the result as markdown
+			markdown := formatDirectoryContentToMarkdown(response)
+			return mcp.NewToolResultText(markdown), nil
 
 		default:
 			return mcp.NewToolResultError("Unexpected response type from GitHub API"), nil
@@ -217,13 +211,9 @@ func RegisterFileTools(s *Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error creating or updating file: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		// Format the result as markdown
+		markdown := formatFileUpdateToMarkdown(result)
+		return mcp.NewToolResultText(markdown), nil
 	})
 
 	// Register push_files tool
@@ -317,12 +307,14 @@ func RegisterFileTools(s *Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error pushing files: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
+		// Format the result as markdown
+		// Since this is a commit, we'll format it as a commit
+		if result.Commit != nil {
+			markdown := formatCommitToMarkdown(result.Commit)
+			return mcp.NewToolResultText(markdown), nil
 		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		
+		// Fallback to simple text if no commit is available
+		return mcp.NewToolResultText(fmt.Sprintf("Files pushed successfully to %s/%s:%s", owner, repo, branch)), nil
 	})
 }

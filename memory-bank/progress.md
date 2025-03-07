@@ -13,7 +13,7 @@
 | Branch Operations | Not Started | 0% |
 | Search Operations | Not Started | 0% |
 | Commit Operations | Not Started | 0% |
-| Testing | In Progress | 15% |
+| Testing | In Progress | 60% |
 | Documentation | Completed | 100% |
 
 ### Testing Progress
@@ -21,7 +21,7 @@
 | Test Category | Status | Progress |
 |---------------|--------|----------|
 | Repository Operations Tests | Not Started | 0% |
-| Pull Request Operations Tests | In Progress | 10% |
+| Pull Request Operations Tests | Completed | 100% |
 | File Operations Tests | Not Started | 0% |
 | Issue Operations Tests | Not Started | 0% |
 | Branch Operations Tests | Not Started | 0% |
@@ -45,7 +45,39 @@
   - go-vcr for recording HTTP interactions
   - Golden files for expected results
   - Test helpers for running tests
-- Currently working on the first pull request test case (SuccessfulCreation)
+- Markdown formatters for all GitHub API responses are implemented
+- All tools are updated to use the formatters instead of returning raw JSON
+- All 25 pull request test cases are implemented and working:
+  - create_pull_request (10 test cases)
+    - SuccessfulCreation
+    - CreateDraftPR
+    - CreatePRWithLabels
+    - CreatePRWithAssignees
+    - CreatePRWithReviewers
+    - InvalidOwner
+    - InvalidRepo
+    - InvalidBranch
+    - SameBranches
+    - MissingRequiredFields
+  - get_pull_request (7 test cases)
+    - GetExistingPR
+    - GetMergedPR
+    - GetClosedPR
+    - GetNonExistentPR
+    - InvalidOwnerGetPR
+    - InvalidRepoGetPR
+    - InvalidPRNumber
+  - get_pull_request_diff (8 test cases)
+    - GetDiffForOpenPR
+    - GetDiffForMergedPR
+    - GetDiffForClosedPR
+    - GetDiffWithLargeChanges
+    - GetDiffForNonExistentPR
+    - InvalidOwnerGetDiff
+    - InvalidRepoGetDiff
+    - InvalidPRNumberGetDiff
+- Comprehensive test plan for pull request operations is created
+- Detailed testing documentation is created
 - README is created
 
 ## What's Left to Build
@@ -57,11 +89,6 @@
    - Commit operations
 
 2. **Testing**
-   - Complete pull request operations tests:
-     - Make "SuccessfulCreation" test case work
-     - Implement error test cases for create_pull_request
-     - Implement test cases for get_pull_request
-     - Implement test cases for get_pull_request_diff
    - Implement repository operations tests
    - Implement file operations tests
    - Implement tests for remaining tools (issue, branch, search, commit operations)
@@ -78,14 +105,14 @@ We're taking an iterative approach to testing:
 2. Only then move to the next test case
 3. Start with "happy path" test cases before error cases
 
-Current focus: Make the "SuccessfulCreation" test case for create_pull_request work
+Current focus: Implement the remaining test cases for pull request operations following the detailed testing plan
 
 ## Next Milestone
 
 **Milestone 2: Complete Pull Request Testing**
-- Make "SuccessfulCreation" test case work
-- Implement remaining pull request test cases
+- Implement all 25 test cases for pull request operations
 - Ensure all pull request operations are thoroughly tested
+- Follow the iterative approach outlined in the testing documentation
 
 Target Completion: TBD
 

@@ -2,7 +2,6 @@ package tools
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/mark3labs/mcp-go/mcp"
@@ -98,13 +97,9 @@ func RegisterPullRequestTools(s *Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error creating pull request: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		// Format the result as markdown
+		markdown := formatPullRequestToMarkdown(result)
+		return mcp.NewToolResultText(markdown), nil
 	})
 
 	// Register get_pull_request tool
@@ -151,13 +146,9 @@ func RegisterPullRequestTools(s *Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error getting pull request: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		// Format the result as markdown
+		markdown := formatPullRequestToMarkdown(result)
+		return mcp.NewToolResultText(markdown), nil
 	})
 
 	// Register get_pull_request_diff tool
@@ -204,6 +195,8 @@ func RegisterPullRequestTools(s *Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error getting pull request diff: %v", err)), nil
 		}
 
-		return mcp.NewToolResultText(diff), nil
+		// Format the diff as markdown
+		markdown := formatPullRequestDiffToMarkdown(number, diff)
+		return mcp.NewToolResultText(markdown), nil
 	})
 }

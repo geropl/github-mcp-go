@@ -9,7 +9,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 	"testing"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/sirupsen/logrus"
@@ -17,6 +19,7 @@ import (
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/recorder"
 
 	"github.com/geropl/github-mcp-go/pkg/github"
+	gh "github.com/google/go-github/v69/github"
 )
 
 var (
@@ -27,9 +30,15 @@ var (
 )
 
 type TestCase struct {
-	Name  string
-	Tool  string
-	Input map[string]interface{}
+	Name   string
+	Tool   string
+	Input  map[string]interface{}
+	Before func(ctx context.Context, client *github.Client) error
+	After  func(ctx context.Context, client *github.Client) error
+}
+
+func (tc *TestCase) FullName() string {
+	return fmt.Sprintf("%s-%s", tc.Tool, tc.Name)
 }
 
 // TestResult represents the expected result of a test
@@ -38,8 +47,29 @@ type TestResult struct {
 	Err    string `json:"err"`
 }
 
-func RunTest(t *testing.T, tc TestCase) {
-	s := createTestServer(t, *record)
+func RunTest(t *testing.T, tc *TestCase) {
+	// Create a non-recording client for Before/After hooks
+	ctx := context.Background()
+	nonRecordingClient := createNonRecordingClient()
+
+	// Run Before hook if it exists
+	if tc.Before != nil {
+		if err := tc.Before(ctx, nonRecordingClient); err != nil {
+			t.Fatalf("Failed to run Before hook: %v", err)
+		}
+	}
+
+	// Ensure After hook runs even if test fails
+	defer func() {
+		if tc.After != nil {
+			if err := tc.After(ctx, nonRecordingClient); err != nil {
+				t.Fatalf("Failed to run After hook: %v", err)
+			}
+		}
+	}()
+
+	s, r := createTestServer(t, tc, *record)
+	defer r.Stop() // Ensure recorder is stopped
 
 	testCtx := context.Background()
 	actual, testErr := executeTestTool(testCtx, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -81,11 +111,10 @@ func RunTest(t *testing.T, tc TestCase) {
 	}
 
 	// Create directory structure for golden file
-	goldenPath := filepath.Join("testdata", "golden", t.Name())
+	goldenPath := filepath.Join(getProjectRoot(), "testdata", t.Name(), tc.FullName())
 	if err := os.MkdirAll(filepath.Dir(goldenPath), 0755); err != nil {
 		t.Fatalf("Failed to create golden directory: %v", err)
 	}
-
 	goldenFile := goldenPath + ".golden"
 
 	// If -golden flag is set, update the golden file
@@ -112,7 +141,7 @@ func RunTest(t *testing.T, tc TestCase) {
 }
 
 // createTestServer creates a test server with a VCR recorder
-func createTestServer(t *testing.T, doRecord bool) *Server {
+func createTestServer(t *testing.T, tc *TestCase, doRecord bool) (*Server, *recorder.Recorder) {
 	logger := logrus.New()
 
 	options := []recorder.Option{
@@ -130,7 +159,7 @@ func createTestServer(t *testing.T, doRecord bool) *Server {
 	}
 
 	// Create directory structure for cassette
-	cassettePath := path.Join("testdata", "cassette", t.Name())
+	cassettePath := path.Join(getProjectRoot(), "testdata", t.Name(), tc.FullName())
 	if err := os.MkdirAll(filepath.Dir(cassettePath), 0755); err != nil {
 		t.Fatalf("Failed to create cassette directory: %v", err)
 	}
@@ -150,7 +179,7 @@ func createTestServer(t *testing.T, doRecord bool) *Server {
 	// Create a server
 	s := NewServer("test-server", "0.1.0", githubClient, logger)
 	RegisterTools(s)
-	return s
+	return s, r
 }
 
 // executeTestTool executes a test tool with the given input and returns the result
@@ -241,4 +270,74 @@ func readGoldenFile(goldenFile string) (*TestResult, error) {
 		return nil, fmt.Errorf("failed to unmarshal expected result: %v", err)
 	}
 	return &expected, nil
+}
+
+func getProjectRoot() string {
+	_, filename, _, _ := runtime.Caller(0)
+	return path.Join(path.Dir(filename), "..", "..")
+}
+
+// createNonRecordingClient creates a GitHub client that is authenticated but doesn't record interactions
+func createNonRecordingClient() *github.Client {
+	logger := logrus.New()
+	token := os.Getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
+
+	// Create a regular HTTP client (not using VCR)
+	httpClient := &http.Client{}
+
+	// Create a GitHub client with the HTTP client
+	githubClient := github.NewClientWithHTTPClient(token, httpClient, logger)
+
+	return githubClient
+}
+
+// useful test helper
+
+// createBranch creates a new branch in the repository and adds a test file
+func createBranch(ctx context.Context, client *github.Client, owner, repo, branch, baseBranch string) error {
+	// Get the SHA of the base branch
+	baseRef, _, err := client.GetClient().Git.GetRef(ctx, owner, repo, "refs/heads/"+baseBranch)
+	if err != nil {
+		return fmt.Errorf("failed to get base branch ref: %v", err)
+	}
+
+	// Create a new reference (branch)
+	newRef := &gh.Reference{
+		Ref: gh.Ptr("refs/heads/" + branch),
+		Object: &gh.GitObject{
+			SHA: baseRef.Object.SHA,
+		},
+	}
+
+	_, _, err = client.GetClient().Git.CreateRef(ctx, owner, repo, newRef)
+	if err != nil {
+		return fmt.Errorf("failed to create branch: %v", err)
+	}
+
+	// Create a test file on the new branch using the Contents API
+	content := fmt.Sprintf("# Test file\n\nCreated for testing at %s", time.Now().Format(time.RFC3339))
+
+	// Create the file
+	opts := &gh.RepositoryContentFileOptions{
+		Message: gh.Ptr("Add test file for PR testing"),
+		Content: []byte(content),
+		Branch:  gh.Ptr(branch),
+	}
+
+	_, _, err = client.GetClient().Repositories.CreateFile(ctx, owner, repo, "test-file.md", opts)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %v", err)
+	}
+
+	return nil
+}
+
+// deleteBranch deletes a branch from the repository
+func deleteBranch(ctx context.Context, client *github.Client, owner, repo, branch string) error {
+	_, err := client.GetClient().Git.DeleteRef(ctx, owner, repo, "refs/heads/"+branch)
+	if err != nil {
+		return fmt.Errorf("failed to delete branch: %v", err)
+	}
+
+	return nil
 }
