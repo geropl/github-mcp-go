@@ -10,19 +10,21 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 4. Implemented repository operations tools
 5. Implemented pull request operations tools (including the new tools requested)
 6. Implemented file operations tools
-7. Set up the testing framework with go-vcr and golden files
+7. Implemented issue operations tools
+8. Set up the testing framework with go-vcr and golden files
 
 The current focus is on:
 
-1. **Implementing comprehensive tests for repository and file operations**:
+1. **Implementing comprehensive tests for repository, file, and issue operations**:
    - Defined test cases for repository operations tools
    - Following the same iterative approach used for pull request tests
    - Organizing test cases by tool and type (happy path vs. error cases)
    - Implementing tests for search_repositories tool
    - Documenting limitations with create_repository and fork_repository tests
+   - Defined test cases for issue operations tools
 
-2. Once testing is complete for repository and file operations:
-   - Implementing the remaining tools (issue operations, branch operations, search operations, commit operations)
+2. Once testing is complete for repository, file, and issue operations:
+   - Implementing the remaining tools (branch operations, search operations, commit operations)
    - Adding tests for the remaining tools
 
 ## Recent Changes
@@ -36,6 +38,13 @@ The current focus is on:
 - Implemented repository operations tools
 - Implemented pull request operations tools (including the new tools requested)
 - Implemented file operations tools
+- Implemented issue operations tools:
+  - get_issue: Get details of a specific issue
+  - list_issues: List issues in a repository with filtering options
+  - create_issue: Create a new issue
+  - update_issue: Update an existing issue
+  - add_issue_comment: Add a comment to an issue
+  - list_issue_comments: List comments on an issue
 - Set up testing framework with go-vcr and golden files
 - Implemented the "SuccessfulCreation" test case for create_pull_request
 - Defined a comprehensive set of test cases for all pull request tools
@@ -106,16 +115,54 @@ The current focus is on:
     - InvalidOwnerGetDiff
     - InvalidRepoGetDiff
     - InvalidPRNumberGetDiff
+- Implemented and tested 34 issue operations test cases:
+  - get_issue (5 test cases)
+    - GetExistingIssue
+    - GetClosedIssue
+    - GetNonExistentIssue
+    - InvalidOwnerGetIssue
+    - InvalidRepoGetIssue
+  - list_issues (7 test cases)
+    - ListAllIssues
+    - ListOpenIssues
+    - ListClosedIssues
+    - ListIssuesWithLabels
+    - ListIssuesInvalidOwner
+    - ListIssuesInvalidRepo
+    - ListIssuesInvalidState
+  - create_issue (6 test cases)
+    - BasicIssueCreation
+    - IssueCreationWithLabels
+    - CreateIssueInvalidOwner
+    - CreateIssueInvalidRepo
+    - CreateIssueEmptyTitle
+  - update_issue (6 test cases)
+    - UpdateIssueTitle
+    - UpdateIssueBody
+    - CloseIssue
+    - UpdateIssueInvalidOwner
+    - UpdateIssueInvalidRepo
+    - UpdateNonExistentIssue
+  - add_issue_comment (5 test cases)
+    - AddCommentToIssue
+    - AddCommentInvalidOwner
+    - AddCommentInvalidRepo
+    - AddCommentNonExistentIssue
+    - AddEmptyComment
+  - list_issue_comments (5 test cases)
+    - ListCommentsOnIssue
+    - ListCommentsSortedByUpdated
+    - ListCommentsInvalidOwner
+    - ListCommentsInvalidRepo
+    - ListCommentsNonExistentIssue
 
 ## Next Steps
 
-1. Implement tests for remaining tools (issue, branch, search, commit operations)
-2. Implement issue operations tools
-3. Implement branch operations tools
-4. Implement search operations tools
-5. Implement commit operations tools
-6. Add tests for the remaining tools (issue, branch, search, commit operations)
-7. Add end-to-end tests
+1. Implement tests for remaining tools (branch, search, commit operations)
+2. Implement branch operations tools
+3. Implement search operations tools
+4. Implement commit operations tools
+5. Add end-to-end tests
 
 ## Active Decisions
 
@@ -132,7 +179,7 @@ The current focus is on:
 3. **Testing Approach**
    - Using go-vcr for recording HTTP interactions
    - Implemented table-driven tests with golden files
-   - Created test fixtures for repository, pull request, and file operations
+   - Created test fixtures for repository, pull request, file, and issue operations
    - Using dummy tokens for playback mode
    - Sanitizing sensitive information in cassettes
    - Taking an iterative approach: make one test case work, then move to the next
@@ -143,14 +190,14 @@ The current focus is on:
    - Repository operations (completed)
    - Pull request operations (completed)
    - File operations (completed)
-   - Issue operations (next)
-   - Branch operations
+   - Issue operations (completed)
+   - Branch operations (next)
    - Search operations
    - Commit operations
 
 5. **Response Formatting**
    - Using markdown formatting for all tool responses instead of raw JSON
-   - Created formatters for each GitHub resource type (pull requests, repositories, files, etc.)
+   - Created formatters for each GitHub resource type (pull requests, repositories, files, issues, etc.)
    - Selecting only the most relevant fields for each resource type
    - Organizing information in a clear, readable format with headers and sections
 

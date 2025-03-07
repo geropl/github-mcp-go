@@ -186,3 +186,159 @@ func formatPullRequestDiffToMarkdown(number int, diff string) string {
 	
 	return md
 }
+
+// formatIssueToMarkdown converts a GitHub Issue to markdown
+func formatIssueToMarkdown(issue *github.Issue) string {
+	md := fmt.Sprintf("# Issue: %s\n\n", issue.GetTitle())
+	md += fmt.Sprintf("**Number:** #%d  \n", issue.GetNumber())
+	md += fmt.Sprintf("**State:** %s  \n", issue.GetState())
+	md += fmt.Sprintf("**Created:** %s  \n", issue.GetCreatedAt().Format(time.RFC1123))
+	
+	// Check if the issue is closed by checking if ClosedAt is not the zero value
+	closedAt := issue.GetClosedAt()
+	if !closedAt.IsZero() {
+		md += fmt.Sprintf("**Closed:** %s  \n", closedAt.Format(time.RFC1123))
+	}
+	
+	md += fmt.Sprintf("**URL:** %s  \n\n", issue.GetHTMLURL())
+	
+	if issue.GetBody() != "" {
+		md += fmt.Sprintf("## Description\n\n%s\n\n", issue.GetBody())
+	}
+	
+	md += fmt.Sprintf("## Details\n\n")
+	
+	// Add labels if present
+	if len(issue.Labels) > 0 {
+		md += "**Labels:**  \n"
+		for _, label := range issue.Labels {
+			md += fmt.Sprintf("- %s  \n", label.GetName())
+		}
+		md += "\n"
+	}
+	
+	// Add assignees if present
+	if len(issue.Assignees) > 0 {
+		md += "**Assignees:**  \n"
+		for _, assignee := range issue.Assignees {
+			md += fmt.Sprintf("- %s  \n", assignee.GetLogin())
+		}
+		md += "\n"
+	}
+	
+	// Add milestone if present
+	if issue.Milestone != nil {
+		md += fmt.Sprintf("**Milestone:** %s  \n\n", issue.GetMilestone().GetTitle())
+	}
+	
+	// Add comments count
+	md += fmt.Sprintf("**Comments:** %d  \n", issue.GetComments())
+	
+	return md
+}
+
+// formatIssueListToMarkdown converts a list of GitHub Issues to markdown
+func formatIssueListToMarkdown(issues []*github.Issue) string {
+	md := fmt.Sprintf("# Issues\n\n")
+	
+	if len(issues) == 0 {
+		md += "No issues found.\n"
+		return md
+	}
+	
+	md += fmt.Sprintf("Found %d issues.\n\n", len(issues))
+	
+	for i, issue := range issues {
+		md += fmt.Sprintf("## %d. %s\n\n", i+1, issue.GetTitle())
+		md += fmt.Sprintf("**Number:** #%d  \n", issue.GetNumber())
+		md += fmt.Sprintf("**State:** %s  \n", issue.GetState())
+		md += fmt.Sprintf("**Created:** %s  \n", issue.GetCreatedAt().Format(time.RFC1123))
+		md += fmt.Sprintf("**URL:** %s  \n\n", issue.GetHTMLURL())
+		
+		// Add a short preview of the body if present
+		if issue.GetBody() != "" {
+			body := issue.GetBody()
+			if len(body) > 100 {
+				body = body[:100] + "..."
+			}
+			md += fmt.Sprintf("%s\n\n", body)
+		}
+		
+		// Add labels if present
+		if len(issue.Labels) > 0 {
+			md += "**Labels:** "
+			for j, label := range issue.Labels {
+				if j > 0 {
+					md += ", "
+				}
+				md += label.GetName()
+			}
+			md += "  \n"
+		}
+		
+		// Add comments count
+		md += fmt.Sprintf("**Comments:** %d  \n\n", issue.GetComments())
+	}
+	
+	return md
+}
+
+// formatIssueCommentToMarkdown converts a GitHub IssueComment to markdown
+func formatIssueCommentToMarkdown(comment *github.IssueComment) string {
+	md := fmt.Sprintf("# Comment on Issue\n\n")
+	
+	md += fmt.Sprintf("**ID:** %d  \n", comment.GetID())
+	md += fmt.Sprintf("**Author:** %s  \n", comment.GetUser().GetLogin())
+	md += fmt.Sprintf("**Created:** %s  \n", comment.GetCreatedAt().Format(time.RFC1123))
+	
+	// Check if the comment has been updated
+	createdAt := comment.GetCreatedAt()
+	updatedAt := comment.GetUpdatedAt()
+	if !createdAt.Equal(updatedAt) {
+		md += fmt.Sprintf("**Updated:** %s  \n", updatedAt.Format(time.RFC1123))
+	}
+	
+	md += fmt.Sprintf("**URL:** %s  \n\n", comment.GetHTMLURL())
+	
+	if comment.GetBody() != "" {
+		md += fmt.Sprintf("## Content\n\n%s\n\n", comment.GetBody())
+	}
+	
+	return md
+}
+
+// formatIssueCommentListToMarkdown converts a list of GitHub IssueComments to markdown
+func formatIssueCommentListToMarkdown(comments []*github.IssueComment) string {
+	md := fmt.Sprintf("# Issue Comments\n\n")
+	
+	if len(comments) == 0 {
+		md += "No comments found.\n"
+		return md
+	}
+	
+	md += fmt.Sprintf("Found %d comments.\n\n", len(comments))
+	
+	for i, comment := range comments {
+		md += fmt.Sprintf("## %d. Comment by %s\n\n", i+1, comment.GetUser().GetLogin())
+		md += fmt.Sprintf("**Created:** %s  \n", comment.GetCreatedAt().Format(time.RFC1123))
+		
+		// Check if the comment has been updated
+		createdAt := comment.GetCreatedAt()
+		updatedAt := comment.GetUpdatedAt()
+		if !createdAt.Equal(updatedAt) {
+			md += fmt.Sprintf("**Updated:** %s  \n", updatedAt.Format(time.RFC1123))
+		}
+		
+		md += fmt.Sprintf("**URL:** %s  \n\n", comment.GetHTMLURL())
+		
+		if comment.GetBody() != "" {
+			body := comment.GetBody()
+			if len(body) > 200 {
+				body = body[:200] + "..."
+			}
+			md += fmt.Sprintf("%s\n\n", body)
+		}
+	}
+	
+	return md
+}
