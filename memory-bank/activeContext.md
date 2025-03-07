@@ -10,12 +10,19 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 4. Implemented repository operations tools
 5. Implemented pull request operations tools (including the new tools requested)
 6. Implemented file operations tools
-7. Added table-driven tests with go-vcr and golden files for repository, pull request, and file operations
+7. Set up the testing framework with go-vcr and golden files
 
 The current focus is on:
 
-1. Implementing the remaining tools (issue operations, branch operations, search operations, commit operations)
-2. Adding tests for the remaining tools
+1. **Implementing tests in an iterative manner**:
+   - Starting with pull request operations tests
+   - Currently focusing on making the "SuccessfulCreation" test case for create_pull_request work
+   - Following an approach of making one test case work before moving to the next
+   - Other test cases are defined but commented out until we're ready to implement them
+
+2. Once testing is complete for pull request operations:
+   - Implementing the remaining tools (issue operations, branch operations, search operations, commit operations)
+   - Adding tests for the remaining tools
 
 ## Recent Changes
 
@@ -28,17 +35,21 @@ The current focus is on:
 - Implemented repository operations tools
 - Implemented pull request operations tools (including the new tools requested)
 - Implemented file operations tools
-- Added table-driven tests with go-vcr and golden files
+- Set up testing framework with go-vcr and golden files
+- Started implementing pull request tests with an iterative approach
 - Created README
 
 ## Next Steps
 
-1. Implement issue operations tools
-2. Implement branch operations tools
-3. Implement search operations tools
-4. Implement commit operations tools
-5. Add tests for the remaining tools (issue, branch, search, commit operations)
-6. Add end-to-end tests
+1. Complete the "SuccessfulCreation" test case for create_pull_request
+2. Uncomment and implement the next test case for pull request operations
+3. Continue iteratively implementing test cases for pull request operations
+4. Implement issue operations tools
+5. Implement branch operations tools
+6. Implement search operations tools
+7. Implement commit operations tools
+8. Add tests for the remaining tools (issue, branch, search, commit operations)
+9. Add end-to-end tests
 
 ## Active Decisions
 
@@ -58,6 +69,8 @@ The current focus is on:
    - Created test fixtures for repository, pull request, and file operations
    - Using dummy tokens for playback mode
    - Sanitizing sensitive information in cassettes
+   - Taking an iterative approach: make one test case work, then move to the next
+   - Starting with the "happy path" test cases before error cases
 
 4. **Tool Implementation Priority**
    - Repository operations (completed)
@@ -73,3 +86,5 @@ The current focus is on:
 1. Ensuring proper error handling and conversion between GitHub API errors and MCP errors
 2. Implementing proper validation for tool inputs
 3. Ensuring comprehensive test coverage
+4. Managing test fixtures and cassettes for deterministic testing
+5. Balancing the iterative testing approach with comprehensive coverage

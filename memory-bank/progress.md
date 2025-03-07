@@ -13,8 +13,20 @@
 | Branch Operations | Not Started | 0% |
 | Search Operations | Not Started | 0% |
 | Commit Operations | Not Started | 0% |
-| Testing | In Progress | 50% |
+| Testing | In Progress | 15% |
 | Documentation | Completed | 100% |
+
+### Testing Progress
+
+| Test Category | Status | Progress |
+|---------------|--------|----------|
+| Repository Operations Tests | Not Started | 0% |
+| Pull Request Operations Tests | In Progress | 10% |
+| File Operations Tests | Not Started | 0% |
+| Issue Operations Tests | Not Started | 0% |
+| Branch Operations Tests | Not Started | 0% |
+| Search Operations Tests | Not Started | 0% |
+| Commit Operations Tests | Not Started | 0% |
 
 ## What Works
 
@@ -28,10 +40,12 @@
 - Repository operations tools are implemented
 - Pull request operations tools are implemented (including the new tools requested)
 - File operations tools are implemented
-- Table-driven tests with go-vcr and golden files for:
-  - Repository operations
-  - Pull request operations
-  - File operations
+- Testing framework is set up with:
+  - Table-driven test structure
+  - go-vcr for recording HTTP interactions
+  - Golden files for expected results
+  - Test helpers for running tests
+- Currently working on the first pull request test case (SuccessfulCreation)
 - README is created
 
 ## What's Left to Build
@@ -43,16 +57,39 @@
    - Commit operations
 
 2. **Testing**
-   - Tests for remaining tools (issue, branch, search, commit operations)
-   - End-to-end tests
+   - Complete pull request operations tests:
+     - Make "SuccessfulCreation" test case work
+     - Implement error test cases for create_pull_request
+     - Implement test cases for get_pull_request
+     - Implement test cases for get_pull_request_diff
+   - Implement repository operations tests
+   - Implement file operations tests
+   - Implement tests for remaining tools (issue, branch, search, commit operations)
+   - Add end-to-end tests
 
 ## Known Issues
 
 - None yet
 
+## Current Testing Focus
+
+We're taking an iterative approach to testing:
+1. Make one test case work completely
+2. Only then move to the next test case
+3. Start with "happy path" test cases before error cases
+
+Current focus: Make the "SuccessfulCreation" test case for create_pull_request work
+
 ## Next Milestone
 
-**Milestone 2: Remaining Tool Implementations**
+**Milestone 2: Complete Pull Request Testing**
+- Make "SuccessfulCreation" test case work
+- Implement remaining pull request test cases
+- Ensure all pull request operations are thoroughly tested
+
+Target Completion: TBD
+
+**Milestone 3: Remaining Tool Implementations**
 - Implement issue operations tools
 - Implement branch operations tools
 - Implement search operations tools

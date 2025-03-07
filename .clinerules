@@ -1,0 +1,79 @@
+# GitHub MCP Go Project Rules
+
+## Project Patterns
+
+### Code Organization
+- Go package structure follows standard Go conventions
+- Tools are organized by GitHub resource type (repository, pulls, files, etc.)
+- Each tool type has its own file in pkg/tools/
+- Implementation details are in pkg/github/
+
+### Naming Conventions
+- Tool names use snake_case (e.g., create_pull_request)
+- Go functions and methods use CamelCase
+- Constants use UPPERCASE
+- Test cases use descriptive names that indicate what's being tested
+
+### Error Handling
+- Custom error types in pkg/errors/
+- GitHub API errors are converted to MCP-compatible errors
+- Detailed error messages for troubleshooting
+- Logging with logrus for context
+
+## Testing Patterns
+
+### Iterative Approach
+- Focus on one test case at a time
+- Make each test case work completely before moving to the next
+- Start with "happy path" test cases before error cases
+- Comment out test cases that aren't ready to be implemented yet
+
+### Test Structure
+- Table-driven tests with TestCase structs
+- Each test case has a Name, Tool, and Input
+- Test cases are run in a loop with t.Run()
+- RunTest function handles test execution and comparison
+
+### VCR Usage
+- Use -record flag to record new HTTP interactions
+- Default to replay mode for deterministic testing
+- Sanitize sensitive information in cassettes
+- Cassettes are stored in testdata/cassette/
+
+### Golden Files
+- Use -golden flag to update golden files
+- Golden files store expected test results in JSON format
+- Golden files are stored in testdata/golden/
+- Compare actual results against golden files during testing
+
+## Development Workflow
+
+### Implementation Order
+1. Define tool schema and register with MCP server
+2. Implement GitHub operations in pkg/github/
+3. Implement tool handler in pkg/tools/
+4. Add test cases in pkg/tools/*_test.go
+5. Run tests with -record flag to create cassettes
+6. Run tests with -golden flag to create golden files
+7. Run tests without flags to verify functionality
+
+### Testing Workflow
+1. Uncomment one test case at a time
+2. Run test with -record flag to create cassette
+3. Run test with -golden flag to create golden file
+4. Run test without flags to verify it passes
+5. Move to the next test case
+
+## User Preferences
+
+### Testing Focus
+- Prefer thorough testing over quick implementation
+- Take an iterative approach to testing
+- Ensure each test case works completely before moving on
+- Document test cases clearly
+
+### Documentation
+- Keep memory bank files up to date
+- Document testing approach and progress
+- Update progress.md with current status
+- Update activeContext.md with current focus

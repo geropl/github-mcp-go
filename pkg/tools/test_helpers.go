@@ -43,26 +43,50 @@ func RunTest(t *testing.T, tc TestCase) {
 
 	testCtx := context.Background()
 	actual, testErr := executeTestTool(testCtx, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		rawMessage, err := json.Marshal(request)
+		// Create a proper JSON-RPC request
+		jsonRpcRequest := mcp.JSONRPCRequest{
+			JSONRPC: "2.0",
+			ID:      "1",
+			Params:  request.Params,
+		}
+		jsonRpcRequest.Method = "tools/call"
+
+		rawMessage, err := json.Marshal(jsonRpcRequest)
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal request: %v", err)
 		}
+
 		rawResponse := s.server.HandleMessage(ctx, rawMessage)
-		jsonRpcResponse, ok := rawResponse.(mcp.JSONRPCResponse);
+
+		// Check if the response is an error
+		if jsonRpcError, ok := rawResponse.(mcp.JSONRPCError); ok {
+			return nil, fmt.Errorf("JSON-RPC error: %s", jsonRpcError.Error.Message)
+		}
+
+		// Check if the response is a success
+		jsonRpcResponse, ok := rawResponse.(mcp.JSONRPCResponse)
 		if !ok {
 			return nil, fmt.Errorf("unexpected response type: %T", rawResponse)
 		}
-		callToolResult, ok := jsonRpcResponse.Result.(mcp.CallToolResult)
+
+		// Process the result based on its type
+		result, ok := jsonRpcResponse.Result.(*mcp.CallToolResult)
 		if !ok {
 			return nil, fmt.Errorf("unexpected result type: %T", jsonRpcResponse.Result)
 		}
-		return &callToolResult, nil
+		return result, nil
 	}, tc.Tool, tc.Input)
 	if testErr != nil {
 		t.Fatalf("Failed to execute test tool: %v", testErr)
 	}
 
-	goldenFile := filepath.Join("testdata", "golden", t.Name()+".golden")
+	// Create directory structure for golden file
+	goldenPath := filepath.Join("testdata", "golden", t.Name())
+	if err := os.MkdirAll(filepath.Dir(goldenPath), 0755); err != nil {
+		t.Fatalf("Failed to create golden directory: %v", err)
+	}
+
+	goldenFile := goldenPath + ".golden"
 
 	// If -golden flag is set, update the golden file
 	if *golden {
@@ -105,8 +129,13 @@ func createTestServer(t *testing.T, doRecord bool) *Server {
 		options = append(options, recorder.WithMode(recorder.ModeReplayOnly))
 	}
 
-	cassetteName := path.Join("testdata", "cassette", t.Name()+".yaml")
-	r, err := recorder.New(cassetteName, options...)
+	// Create directory structure for cassette
+	cassettePath := path.Join("testdata", "cassette", t.Name())
+	if err := os.MkdirAll(filepath.Dir(cassettePath), 0755); err != nil {
+		t.Fatalf("Failed to create cassette directory: %v", err)
+	}
+
+	r, err := recorder.New(cassettePath, options...)
 	if err != nil {
 		t.Fatalf("Failed to create recorder: %v", err)
 	}

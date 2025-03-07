@@ -89,22 +89,75 @@ type GitHubError struct {
 
 ## Testing Strategy
 
-- Table-driven tests for each tool
-- HTTP interaction recording with go-vcr
-- Mocking of GitHub client for unit tests
-- Integration tests with recorded API responses
+### Approach
+
+- **Iterative Testing**: Implement one test case at a time, ensuring it works completely before moving to the next
+- **Table-Driven Tests**: Define test cases in a structured way for each tool
+- **HTTP Interaction Recording**: Use go-vcr to record and replay HTTP interactions
+- **Golden Files**: Store expected results in golden files for comparison
+- **Test Fixtures**: Create reusable test fixtures for common scenarios
+- **Mocking**: Mock GitHub client for unit tests when appropriate
+- **Integration Tests**: Use recorded API responses for integration testing
+
+### Test Structure
 
 ```go
-func TestSearchRepositories(t *testing.T) {
-    // Test cases
-    testCases := []struct {
-        name     string
-        query    string
-        wantErr  bool
-        expected *github.RepositoriesSearchResult
-    }{
-        // Test cases
+func TestPullRequest(t *testing.T) {
+    testCases := []TestCase{
+        {
+            Name: "SuccessfulCreation",
+            Tool: "create_pull_request",
+            Input: map[string]interface{}{
+                "owner": OWNER,
+                "repo":  REPO,
+                "title": "Test PR",
+                "body":  "Test PR body",
+                "head":  BRANCH,
+                "base":  "main",
+                "draft": false,
+            },
+        },
+        // Additional test cases (commented out until ready to implement)
     }
-    
-    // Test implementation
+
+    for _, tc := range testCases {
+        t.Run(tc.Name, func(t *testing.T) {
+            RunTest(t, tc)
+        })
+    }
 }
+```
+
+### Test Execution
+
+```go
+func RunTest(t *testing.T, tc TestCase) {
+    // Create test server with VCR recorder
+    s := createTestServer(t, *record)
+
+    // Execute the test tool
+    actual, testErr := executeTestTool(testCtx, handler, tc.Tool, tc.Input)
+    
+    // Compare with golden file
+    if *golden {
+        // Update golden file
+        writeGoldenFile(goldenFile, actual)
+    } else {
+        // Read golden file and compare
+        expected, _ := readGoldenFile(goldenFile)
+        // Compare actual and expected results
+    }
+}
+```
+
+### VCR Recording
+
+- Record mode: Captures real HTTP interactions with GitHub API
+- Replay mode: Uses recorded interactions for deterministic testing
+- Sanitization: Removes sensitive information like auth tokens from cassettes
+
+### Golden Files
+
+- Store expected test results in JSON format
+- Update with `-golden` flag when test behavior changes
+- Compare actual results against golden files during testing
