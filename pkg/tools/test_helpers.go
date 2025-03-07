@@ -52,21 +52,23 @@ func RunTest(t *testing.T, tc *TestCase) {
 	ctx := context.Background()
 	nonRecordingClient := createNonRecordingClient()
 
-	// Run Before hook if it exists
-	if tc.Before != nil {
-		if err := tc.Before(ctx, nonRecordingClient); err != nil {
-			t.Fatalf("Failed to run Before hook: %v", err)
-		}
-	}
-
-	// Ensure After hook runs even if test fails
-	defer func() {
-		if tc.After != nil {
-			if err := tc.After(ctx, nonRecordingClient); err != nil {
-				t.Fatalf("Failed to run After hook: %v", err)
+	// Run hooks if we are recording
+	if *record {
+		// Ensure After hook runs even if test or Before hook fails
+		defer func() {
+			if tc.After != nil {
+				if err := tc.After(ctx, nonRecordingClient); err != nil {
+					t.Fatalf("Failed to run After hook: %v", err)
+				}
+			}
+		}()
+		// Run Before hook if it exists
+		if tc.Before != nil {
+			if err := tc.Before(ctx, nonRecordingClient); err != nil {
+				t.Fatalf("Failed to run Before hook: %v", err)
 			}
 		}
-	}()
+	}
 
 	s, r := createTestServer(t, tc, *record)
 	defer r.Stop() // Ensure recorder is stopped
@@ -293,8 +295,8 @@ func createNonRecordingClient() *github.Client {
 
 // useful test helper
 
-// createBranch creates a new branch in the repository and adds a test file
-func createBranch(ctx context.Context, client *github.Client, owner, repo, branch, baseBranch string) error {
+// createBranchWithFile creates a new branch in the repository and adds a test file
+func createBranchWithFile(ctx context.Context, client *github.Client, owner, repo, branch, baseBranch string) error {
 	// Get the SHA of the base branch
 	baseRef, _, err := client.GetClient().Git.GetRef(ctx, owner, repo, "refs/heads/"+baseBranch)
 	if err != nil {
@@ -332,6 +334,30 @@ func createBranch(ctx context.Context, client *github.Client, owner, repo, branc
 	return nil
 }
 
+// createBranch creates a new branch in the repository and adds a test file
+func createBranch(ctx context.Context, client *github.Client, owner, repo, branch, baseBranch string) error {
+	// Get the SHA of the base branch
+	baseRef, _, err := client.GetClient().Git.GetRef(ctx, owner, repo, "refs/heads/"+baseBranch)
+	if err != nil {
+		return fmt.Errorf("failed to get base branch ref: %v", err)
+	}
+
+	// Create a new reference (branch)
+	newRef := &gh.Reference{
+		Ref: gh.Ptr("refs/heads/" + branch),
+		Object: &gh.GitObject{
+			SHA: baseRef.Object.SHA,
+		},
+	}
+
+	_, _, err = client.GetClient().Git.CreateRef(ctx, owner, repo, newRef)
+	if err != nil {
+		return fmt.Errorf("failed to create branch: %v", err)
+	}
+
+	return nil
+}
+
 // deleteBranch deletes a branch from the repository
 func deleteBranch(ctx context.Context, client *github.Client, owner, repo, branch string) error {
 	_, err := client.GetClient().Git.DeleteRef(ctx, owner, repo, "refs/heads/"+branch)
@@ -339,5 +365,20 @@ func deleteBranch(ctx context.Context, client *github.Client, owner, repo, branc
 		return fmt.Errorf("failed to delete branch: %v", err)
 	}
 
+	return nil
+}
+
+func createCommit(ctx context.Context, client *github.Client, owner, repo, branch, fileName, content string) error {
+	// Create the file
+	opts := &gh.RepositoryContentFileOptions{
+		Message: gh.Ptr("Push a file to this branch"),
+		Content: []byte(content),
+		Branch:  gh.Ptr(branch),
+	}
+
+	_, _, err := client.GetClient().Repositories.CreateFile(ctx, owner, repo, fileName, opts)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %v", err)
+	}
 	return nil
 }

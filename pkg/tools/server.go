@@ -57,4 +57,5 @@ func RegisterTools(s *Server) {
 	RegisterFileTools(s)
 	RegisterIssueTools(s)
 	RegisterCommitTools(s)
+	RegisterBranchTools(s)
 }

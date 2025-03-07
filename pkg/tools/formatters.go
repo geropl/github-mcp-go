@@ -587,3 +587,109 @@ func formatIssueCommentListToMarkdown(comments []*github.IssueComment) string {
 	
 	return md
 }
+
+// formatBranchToMarkdown converts a GitHub Branch to markdown
+func formatBranchToMarkdown(branch *github.Branch) string {
+	md := fmt.Sprintf("# Branch: %s\n\n", branch.GetName())
+	
+	md += fmt.Sprintf("**Name:** %s  \n", branch.GetName())
+	md += fmt.Sprintf("**SHA:** %s  \n", branch.GetCommit().GetSHA())
+	
+	// Add protection status
+	if branch.GetProtected() {
+		md += fmt.Sprintf("**Protected:** Yes  \n")
+	} else {
+		md += fmt.Sprintf("**Protected:** No  \n")
+	}
+	
+	return md
+}
+
+// formatBranchListToMarkdown converts a list of GitHub Branches to markdown
+func formatBranchListToMarkdown(branches []*github.Branch) string {
+	md := fmt.Sprintf("# Branches\n\n")
+	
+	if len(branches) == 0 {
+		md += "No branches found.\n"
+		return md
+	}
+	
+	md += fmt.Sprintf("Found %d branches.\n\n", len(branches))
+	
+	for i, branch := range branches {
+		md += fmt.Sprintf("## %d. %s\n\n", i+1, branch.GetName())
+		md += fmt.Sprintf("**SHA:** %s  \n", branch.GetCommit().GetSHA())
+		
+		// Add protection status
+		if branch.GetProtected() {
+			md += fmt.Sprintf("**Protected:** Yes  \n")
+		} else {
+			md += fmt.Sprintf("**Protected:** No  \n")
+		}
+		
+		md += "\n"
+	}
+	
+	return md
+}
+
+// formatReferenceToMarkdown converts a GitHub Reference (used for branch creation) to markdown
+func formatReferenceToMarkdown(ref *github.Reference) string {
+	md := fmt.Sprintf("# Reference: %s\n\n", ref.GetRef())
+	
+	// Extract branch name from ref (refs/heads/branch-name)
+	branchName := strings.TrimPrefix(ref.GetRef(), "refs/heads/")
+	
+	md += fmt.Sprintf("**Branch Name:** %s  \n", branchName)
+	md += fmt.Sprintf("**Full Reference:** %s  \n", ref.GetRef())
+	md += fmt.Sprintf("**SHA:** %s  \n", ref.GetObject().GetSHA())
+	md += fmt.Sprintf("**Type:** %s  \n", ref.GetObject().GetType())
+	md += fmt.Sprintf("**URL:** %s  \n", ref.GetURL())
+	
+	return md
+}
+
+// formatMergeResultToMarkdown converts a GitHub merge result to markdown
+func formatMergeResultToMarkdown(commit *github.RepositoryCommit) string {
+	md := fmt.Sprintf("# Merge Result\n\n")
+	
+	md += fmt.Sprintf("**SHA:** %s  \n", commit.GetSHA())
+	md += fmt.Sprintf("**Message:** %s  \n", commit.GetCommit().GetMessage())
+	md += fmt.Sprintf("**URL:** %s  \n", commit.GetHTMLURL())
+	
+	// Get author information if available
+	if author := commit.GetAuthor(); author != nil {
+		md += fmt.Sprintf("**Author:** %s  \n", author.GetLogin())
+	} else if commitAuthor := commit.GetCommit().GetAuthor(); commitAuthor != nil {
+		md += fmt.Sprintf("**Author:** %s <%s>  \n", commitAuthor.GetName(), commitAuthor.GetEmail())
+	}
+	
+	// Get committer information if available
+	if committer := commit.GetCommitter(); committer != nil {
+		md += fmt.Sprintf("**Committer:** %s  \n", committer.GetLogin())
+	} else if commitCommitter := commit.GetCommit().GetCommitter(); commitCommitter != nil {
+		md += fmt.Sprintf("**Committer:** %s <%s>  \n", commitCommitter.GetName(), commitCommitter.GetEmail())
+	}
+	
+	md += fmt.Sprintf("**Date:** %s  \n\n", commit.GetCommit().GetCommitter().GetDate().Format(time.RFC1123))
+	
+	// Add stats if available
+	if stats := commit.GetStats(); stats != nil {
+		md += fmt.Sprintf("## Stats\n\n")
+		md += fmt.Sprintf("**Additions:** %d  \n", stats.GetAdditions())
+		md += fmt.Sprintf("**Deletions:** %d  \n", stats.GetDeletions())
+		md += fmt.Sprintf("**Total Changes:** %d  \n\n", stats.GetTotal())
+	}
+	
+	// Add files if available
+	if len(commit.Files) > 0 {
+		md += fmt.Sprintf("## Files Changed\n\n")
+		for _, file := range commit.Files {
+			md += fmt.Sprintf("- **%s** (%d changes: +%d/-%d)  \n", 
+				file.GetFilename(), file.GetChanges(), file.GetAdditions(), file.GetDeletions())
+		}
+		md += "\n"
+	}
+	
+	return md
+}

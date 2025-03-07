@@ -33,7 +33,7 @@ func TestPullRequest(t *testing.T) {
 				"draft": false,
 			},
 			Before: func(ctx context.Context, client *ghclient.Client) error {
-				return createBranch(ctx, client, OWNER, REPO, fixedBranch, "main")
+				return createBranchWithFile(ctx, client, OWNER, REPO, fixedBranch, "main")
 			},
 			After: func(ctx context.Context, client *ghclient.Client) error {
 				// will close the PR as a side-effect
@@ -55,7 +55,7 @@ func TestPullRequest(t *testing.T) {
 				"draft": true,
 			},
 			Before: func(ctx context.Context, client *ghclient.Client) error {
-				return createBranch(ctx, client, OWNER, REPO, "test/draft-pr-branch", "main")
+				return createBranchWithFile(ctx, client, OWNER, REPO, "test/draft-pr-branch", "main")
 			},
 			After: func(ctx context.Context, client *ghclient.Client) error {
 				return deleteBranch(ctx, client, OWNER, REPO, "test/draft-pr-branch")
@@ -75,7 +75,7 @@ func TestPullRequest(t *testing.T) {
 				"labels": []string{"bug", "enhancement"},
 			},
 			Before: func(ctx context.Context, client *ghclient.Client) error {
-				return createBranch(ctx, client, OWNER, REPO, "test/labels-pr-branch", "main")
+				return createBranchWithFile(ctx, client, OWNER, REPO, "test/labels-pr-branch", "main")
 			},
 			After: func(ctx context.Context, client *ghclient.Client) error {
 				return deleteBranch(ctx, client, OWNER, REPO, "test/labels-pr-branch")
@@ -95,7 +95,7 @@ func TestPullRequest(t *testing.T) {
 				"assignees": []string{OWNER},
 			},
 			Before: func(ctx context.Context, client *ghclient.Client) error {
-				return createBranch(ctx, client, OWNER, REPO, "test/assignees-pr-branch", "main")
+				return createBranchWithFile(ctx, client, OWNER, REPO, "test/assignees-pr-branch", "main")
 			},
 			After: func(ctx context.Context, client *ghclient.Client) error {
 				return deleteBranch(ctx, client, OWNER, REPO, "test/assignees-pr-branch")
@@ -115,7 +115,7 @@ func TestPullRequest(t *testing.T) {
 				"reviewers": []string{OWNER},
 			},
 			Before: func(ctx context.Context, client *ghclient.Client) error {
-				return createBranch(ctx, client, OWNER, REPO, "test/reviewers-pr-branch", "main")
+				return createBranchWithFile(ctx, client, OWNER, REPO, "test/reviewers-pr-branch", "main")
 			},
 			After: func(ctx context.Context, client *ghclient.Client) error {
 				return deleteBranch(ctx, client, OWNER, REPO, "test/reviewers-pr-branch")
