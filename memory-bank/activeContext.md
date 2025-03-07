@@ -11,7 +11,8 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 5. Implemented pull request operations tools (including the new tools requested)
 6. Implemented file operations tools
 7. Implemented issue operations tools
-8. Set up the testing framework with go-vcr and golden files
+8. Implemented commit operations tools
+9. Set up the testing framework with go-vcr and golden files
 
 The current focus is on:
 
@@ -24,7 +25,7 @@ The current focus is on:
    - Defined test cases for issue operations tools
 
 2. Once testing is complete for repository, file, and issue operations:
-   - Implementing the remaining tools (branch operations, search operations, commit operations)
+   - Implementing the remaining tools (branch operations, search operations)
    - Adding tests for the remaining tools
 
 ## Recent Changes
@@ -45,6 +46,14 @@ The current focus is on:
   - update_issue: Update an existing issue
   - add_issue_comment: Add a comment to an issue
   - list_issue_comments: List comments on an issue
+- Implemented commit operations tools:
+  - get_commit: Get details of a specific commit
+  - list_commits: List commits in a repository with filtering options
+  - compare_commits: Compare two commits or branches
+  - get_commit_status: Get the combined status for a specific commit
+  - create_commit_comment: Add a comment to a specific commit
+  - list_commit_comments: List comments for a specific commit
+  - create_commit: Create a new commit directly (without push)
 - Set up testing framework with go-vcr and golden files
 - Implemented the "SuccessfulCreation" test case for create_pull_request
 - Defined a comprehensive set of test cases for all pull request tools
@@ -155,14 +164,53 @@ The current focus is on:
     - ListCommentsInvalidOwner
     - ListCommentsInvalidRepo
     - ListCommentsNonExistentIssue
+- Implemented and tested 32 commit operations test cases:
+  - get_commit (4 test cases)
+    - GetExistingCommit
+    - GetNonExistentCommit
+    - InvalidOwnerGetCommit
+    - InvalidRepoGetCommit
+  - list_commits (5 test cases)
+    - ListAllCommits
+    - ListCommitsWithPath
+    - ListCommitsWithAuthor
+    - ListCommitsInvalidOwner
+    - ListCommitsInvalidRepo
+  - compare_commits (5 test cases)
+    - CompareCommits
+    - CompareInvalidBase
+    - CompareInvalidHead
+    - CompareInvalidOwner
+    - CompareInvalidRepo
+  - get_commit_status (4 test cases)
+    - GetCommitStatus
+    - GetNonExistentCommitStatus
+    - InvalidOwnerGetStatus
+    - InvalidRepoGetStatus
+  - list_commit_comments (4 test cases)
+    - ListCommentsOnCommit
+    - ListCommentsNonExistentCommit
+    - InvalidOwnerListComments
+    - InvalidRepoListComments
+  - create_commit_comment (6 test cases)
+    - AddCommentToCommit
+    - AddCommentWithPath
+    - InvalidOwnerAddComment
+    - InvalidRepoAddComment
+    - InvalidSHAAddComment
+    - EmptyBodyAddComment
+  - create_commit (4 test cases)
+    - InvalidOwnerCreateCommit
+    - InvalidRepoCreateCommit
+    - InvalidTreeCreateCommit
+    - InvalidParentCreateCommit
 
 ## Next Steps
 
-1. Implement tests for remaining tools (branch, search, commit operations)
+1. Implement tests for remaining tools (branch, search operations)
 2. Implement branch operations tools
 3. Implement search operations tools
-4. Implement commit operations tools
-5. Add end-to-end tests
+4. Add end-to-end tests
 
 ## Active Decisions
 
@@ -191,9 +239,9 @@ The current focus is on:
    - Pull request operations (completed)
    - File operations (completed)
    - Issue operations (completed)
+   - Commit operations (completed)
    - Branch operations (next)
    - Search operations
-   - Commit operations
 
 5. **Response Formatting**
    - Using markdown formatting for all tool responses instead of raw JSON

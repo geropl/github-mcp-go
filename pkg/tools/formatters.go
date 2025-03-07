@@ -150,24 +150,269 @@ func formatFileUpdateToMarkdown(result *github.RepositoryContentResponse) string
 	return md
 }
 
+// formatRepositoryCommitToMarkdown converts GitHub repository commit result to markdown
+func formatRepositoryCommitToMarkdown(commit *github.RepositoryCommit) string {
+	md := fmt.Sprintf("# Commit: %.7s\n\n", commit.GetSHA())
+	
+	md += fmt.Sprintf("**SHA:** %s  \n", commit.GetSHA())
+	md += fmt.Sprintf("**Message:** %s  \n", commit.GetCommit().GetMessage())
+	md += fmt.Sprintf("**URL:** %s  \n", commit.GetHTMLURL())
+	
+	// Get author information if available
+	if author := commit.GetAuthor(); author != nil {
+		md += fmt.Sprintf("**Author:** %s  \n", author.GetLogin())
+	} else if commitAuthor := commit.GetCommit().GetAuthor(); commitAuthor != nil {
+		md += fmt.Sprintf("**Author:** %s <%s>  \n", commitAuthor.GetName(), commitAuthor.GetEmail())
+	}
+	
+	// Get committer information if available
+	if committer := commit.GetCommitter(); committer != nil {
+		md += fmt.Sprintf("**Committer:** %s  \n", committer.GetLogin())
+	} else if commitCommitter := commit.GetCommit().GetCommitter(); commitCommitter != nil {
+		md += fmt.Sprintf("**Committer:** %s <%s>  \n", commitCommitter.GetName(), commitCommitter.GetEmail())
+	}
+	
+	md += fmt.Sprintf("**Date:** %s  \n\n", commit.GetCommit().GetCommitter().GetDate().Format(time.RFC1123))
+	
+	// Add stats if available
+	if stats := commit.GetStats(); stats != nil {
+		md += fmt.Sprintf("## Stats\n\n")
+		md += fmt.Sprintf("**Additions:** %d  \n", stats.GetAdditions())
+		md += fmt.Sprintf("**Deletions:** %d  \n", stats.GetDeletions())
+		md += fmt.Sprintf("**Total Changes:** %d  \n\n", stats.GetTotal())
+	}
+	
+	// Add files if available
+	if len(commit.Files) > 0 {
+		md += fmt.Sprintf("## Files Changed\n\n")
+		for _, file := range commit.Files {
+			md += fmt.Sprintf("- **%s** (%d changes: +%d/-%d)  \n", 
+				file.GetFilename(), file.GetChanges(), file.GetAdditions(), file.GetDeletions())
+		}
+		md += "\n"
+	}
+	
+	return md
+}
+
 // formatCommitToMarkdown converts GitHub commit result to markdown
 func formatCommitToMarkdown(result *github.Commit) string {
-	md := fmt.Sprintf("# Commit\n\n")
+	md := fmt.Sprintf("# Commit: %.7s\n\n", result.GetSHA())
 	
 	md += fmt.Sprintf("**SHA:** %s  \n", result.GetSHA())
 	md += fmt.Sprintf("**Message:** %s  \n", result.GetMessage())
 	
 	// Get author information if available
 	if author := result.GetAuthor(); author != nil {
-		md += fmt.Sprintf("**Author:** %s  \n", author.GetLogin())
+		md += fmt.Sprintf("**Author:** %s <%s>  \n", author.GetName(), author.GetEmail())
+		if !author.GetDate().IsZero() {
+			md += fmt.Sprintf("**Author Date:** %s  \n", author.GetDate().Format(time.RFC1123))
+		}
 	}
 	
 	// Get committer information if available
 	if committer := result.GetCommitter(); committer != nil {
-		md += fmt.Sprintf("**Committer:** %s  \n", committer.GetLogin())
+		md += fmt.Sprintf("**Committer:** %s <%s>  \n", committer.GetName(), committer.GetEmail())
+		if !committer.GetDate().IsZero() {
+			md += fmt.Sprintf("**Commit Date:** %s  \n", committer.GetDate().Format(time.RFC1123))
+		}
 	}
 	
-	md += fmt.Sprintf("**URL:** %s  \n\n", result.GetHTMLURL())
+	if result.GetHTMLURL() != "" {
+		md += fmt.Sprintf("**URL:** %s  \n\n", result.GetHTMLURL())
+	}
+	
+	return md
+}
+
+// formatCommitListToMarkdown converts a list of GitHub commits to markdown
+func formatCommitListToMarkdown(commits []*github.RepositoryCommit) string {
+	md := fmt.Sprintf("# Commits\n\n")
+	
+	if len(commits) == 0 {
+		md += "No commits found.\n"
+		return md
+	}
+	
+	md += fmt.Sprintf("Found %d commits.\n\n", len(commits))
+	
+	for i, commit := range commits {
+		md += fmt.Sprintf("## %d. %.7s: %s\n\n", i+1, commit.GetSHA(), 
+			strings.Split(commit.GetCommit().GetMessage(), "\n")[0])
+		
+		md += fmt.Sprintf("**SHA:** %s  \n", commit.GetSHA())
+		md += fmt.Sprintf("**URL:** %s  \n", commit.GetHTMLURL())
+		
+		// Get author information if available
+		if author := commit.GetAuthor(); author != nil {
+			md += fmt.Sprintf("**Author:** %s  \n", author.GetLogin())
+		} else if commitAuthor := commit.GetCommit().GetAuthor(); commitAuthor != nil {
+			md += fmt.Sprintf("**Author:** %s  \n", commitAuthor.GetName())
+		}
+		
+		// Get date information
+		if commitDate := commit.GetCommit().GetCommitter().GetDate(); !commitDate.IsZero() {
+			md += fmt.Sprintf("**Date:** %s  \n", commitDate.Format(time.RFC1123))
+		}
+		
+		// Add stats if available
+		if stats := commit.GetStats(); stats != nil {
+			md += fmt.Sprintf("**Changes:** +%d/-%d  \n", stats.GetAdditions(), stats.GetDeletions())
+		}
+		
+		md += "\n"
+	}
+	
+	return md
+}
+
+// formatCommitComparisonToMarkdown converts GitHub commit comparison to markdown
+func formatCommitComparisonToMarkdown(comparison *github.CommitsComparison) string {
+	md := fmt.Sprintf("# Commit Comparison\n\n")
+	
+	md += fmt.Sprintf("**Base Commit:** %s  \n", comparison.GetMergeBaseCommit().GetSHA())
+	md += fmt.Sprintf("**Ahead By:** %d commits  \n", comparison.GetAheadBy())
+	md += fmt.Sprintf("**Behind By:** %d commits  \n", comparison.GetBehindBy())
+	md += fmt.Sprintf("**Status:** %s  \n", comparison.GetStatus())
+	md += fmt.Sprintf("**URL:** %s  \n\n", comparison.GetHTMLURL())
+	
+	// Add stats
+	md += fmt.Sprintf("## Stats\n\n")
+	md += fmt.Sprintf("**Total Commits:** %d  \n", comparison.GetTotalCommits())
+	md += fmt.Sprintf("**Files Changed:** %d  \n", len(comparison.Files))
+	
+	// Calculate total additions and deletions
+	totalAdditions := 0
+	totalDeletions := 0
+	for _, file := range comparison.Files {
+		totalAdditions += file.GetAdditions()
+		totalDeletions += file.GetDeletions()
+	}
+	md += fmt.Sprintf("**Additions:** %d  \n", totalAdditions)
+	md += fmt.Sprintf("**Deletions:** %d  \n\n", totalDeletions)
+	
+	// Add commits
+	if len(comparison.Commits) > 0 {
+		md += fmt.Sprintf("## Commits\n\n")
+		for i, commit := range comparison.Commits {
+			md += fmt.Sprintf("%d. %.7s: %s  \n", i+1, commit.GetSHA(), 
+				strings.Split(commit.GetCommit().GetMessage(), "\n")[0])
+		}
+		md += "\n"
+	}
+	
+	// Add files
+	if len(comparison.Files) > 0 {
+		md += fmt.Sprintf("## Files Changed\n\n")
+		for _, file := range comparison.Files {
+			md += fmt.Sprintf("- **%s** (%d changes: +%d/-%d)  \n", 
+				file.GetFilename(), file.GetChanges(), file.GetAdditions(), file.GetDeletions())
+		}
+		md += "\n"
+	}
+	
+	return md
+}
+
+// formatCommitStatusToMarkdown converts GitHub commit status to markdown
+func formatCommitStatusToMarkdown(status *github.CombinedStatus) string {
+	md := fmt.Sprintf("# Commit Status\n\n")
+	
+	md += fmt.Sprintf("**SHA:** %s  \n", status.GetSHA())
+	md += fmt.Sprintf("**State:** %s  \n", status.GetState())
+	md += fmt.Sprintf("**Total Count:** %d  \n\n", status.GetTotalCount())
+	
+	// Add statuses
+	if len(status.Statuses) > 0 {
+		md += fmt.Sprintf("## Status Details\n\n")
+		for i, s := range status.Statuses {
+			md += fmt.Sprintf("### %d. %s\n\n", i+1, s.GetContext())
+			md += fmt.Sprintf("**State:** %s  \n", s.GetState())
+			md += fmt.Sprintf("**Description:** %s  \n", s.GetDescription())
+			if s.GetTargetURL() != "" {
+				md += fmt.Sprintf("**Target URL:** %s  \n", s.GetTargetURL())
+			}
+			md += fmt.Sprintf("**Updated:** %s  \n\n", s.GetUpdatedAt().Format(time.RFC1123))
+		}
+	}
+	
+	return md
+}
+
+// formatCommitCommentToMarkdown converts GitHub commit comment to markdown
+func formatCommitCommentToMarkdown(comment *github.RepositoryComment) string {
+	md := fmt.Sprintf("# Commit Comment\n\n")
+	
+	md += fmt.Sprintf("**ID:** %d  \n", comment.GetID())
+	md += fmt.Sprintf("**Author:** %s  \n", comment.GetUser().GetLogin())
+	md += fmt.Sprintf("**Created:** %s  \n", comment.GetCreatedAt().Format(time.RFC1123))
+	
+	// Check if the comment has been updated
+	createdAt := comment.GetCreatedAt()
+	updatedAt := comment.GetUpdatedAt()
+	if !createdAt.Equal(updatedAt) {
+		md += fmt.Sprintf("**Updated:** %s  \n", updatedAt.Format(time.RFC1123))
+	}
+	
+	md += fmt.Sprintf("**URL:** %s  \n\n", comment.GetHTMLURL())
+	
+	// Add path and position if available
+	if comment.GetPath() != "" {
+		md += fmt.Sprintf("**Path:** %s  \n", comment.GetPath())
+	}
+	if comment.GetPosition() != 0 {
+		md += fmt.Sprintf("**Position:** %d  \n\n", comment.GetPosition())
+	}
+	
+	if comment.GetBody() != "" {
+		md += fmt.Sprintf("## Content\n\n%s\n\n", comment.GetBody())
+	}
+	
+	return md
+}
+
+// formatCommitCommentListToMarkdown converts a list of GitHub commit comments to markdown
+func formatCommitCommentListToMarkdown(comments []*github.RepositoryComment) string {
+	md := fmt.Sprintf("# Commit Comments\n\n")
+	
+	if len(comments) == 0 {
+		md += "No comments found.\n"
+		return md
+	}
+	
+	md += fmt.Sprintf("Found %d comments.\n\n", len(comments))
+	
+	for i, comment := range comments {
+		md += fmt.Sprintf("## %d. Comment by %s\n\n", i+1, comment.GetUser().GetLogin())
+		md += fmt.Sprintf("**Created:** %s  \n", comment.GetCreatedAt().Format(time.RFC1123))
+		
+		// Check if the comment has been updated
+		createdAt := comment.GetCreatedAt()
+		updatedAt := comment.GetUpdatedAt()
+		if !createdAt.Equal(updatedAt) {
+			md += fmt.Sprintf("**Updated:** %s  \n", updatedAt.Format(time.RFC1123))
+		}
+		
+		md += fmt.Sprintf("**URL:** %s  \n", comment.GetHTMLURL())
+		
+		// Add path and position if available
+		if comment.GetPath() != "" {
+			md += fmt.Sprintf("**Path:** %s  \n", comment.GetPath())
+		}
+		if comment.GetPosition() != 0 {
+			md += fmt.Sprintf("**Position:** %d  \n", comment.GetPosition())
+		}
+		
+		md += "\n"
+		
+		if comment.GetBody() != "" {
+			body := comment.GetBody()
+			if len(body) > 200 {
+				body = body[:200] + "..."
+			}
+			md += fmt.Sprintf("%s\n\n", body)
+		}
+	}
 	
 	return md
 }

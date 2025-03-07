@@ -12,7 +12,7 @@
 | Pull Request Operations | Completed | 100% |
 | Branch Operations | Not Started | 0% |
 | Search Operations | Not Started | 0% |
-| Commit Operations | Not Started | 0% |
+| Commit Operations | Completed | 100% |
 | Testing | In Progress | 90% |
 | Documentation | Completed | 100% |
 
@@ -26,7 +26,7 @@
 | Issue Operations Tests | Completed | 100% |
 | Branch Operations Tests | Not Started | 0% |
 | Search Operations Tests | Not Started | 0% |
-| Commit Operations Tests | Not Started | 0% |
+| Commit Operations Tests | Completed | 100% |
 
 ## What Works
 
@@ -41,6 +41,14 @@
 - Pull request operations tools are implemented (including the new tools requested)
 - File operations tools are implemented
 - Issue operations tools are implemented
+- Commit operations tools are implemented:
+  - get_commit: Get details of a specific commit
+  - list_commits: List commits in a repository with filtering options
+  - compare_commits: Compare two commits or branches
+  - get_commit_status: Get the combined status for a specific commit
+  - create_commit_comment: Add a comment to a specific commit
+  - list_commit_comments: List comments for a specific commit
+  - create_commit: Create a new commit directly (without push)
 - Testing framework is set up with:
   - Table-driven test structure
   - go-vcr for recording HTTP interactions
@@ -151,6 +159,46 @@
     - ListCommentsInvalidOwner
     - ListCommentsInvalidRepo
     - ListCommentsNonExistentIssue
+- Commit operations tests are implemented and working (32 test cases):
+  - get_commit (4 test cases)
+    - GetExistingCommit
+    - GetNonExistentCommit
+    - InvalidOwnerGetCommit
+    - InvalidRepoGetCommit
+  - list_commits (5 test cases)
+    - ListAllCommits
+    - ListCommitsWithPath
+    - ListCommitsWithAuthor
+    - ListCommitsInvalidOwner
+    - ListCommitsInvalidRepo
+  - compare_commits (5 test cases)
+    - CompareCommits
+    - CompareInvalidBase
+    - CompareInvalidHead
+    - CompareInvalidOwner
+    - CompareInvalidRepo
+  - get_commit_status (4 test cases)
+    - GetCommitStatus
+    - GetNonExistentCommitStatus
+    - InvalidOwnerGetStatus
+    - InvalidRepoGetStatus
+  - list_commit_comments (4 test cases)
+    - ListCommentsOnCommit
+    - ListCommentsNonExistentCommit
+    - InvalidOwnerListComments
+    - InvalidRepoListComments
+  - create_commit_comment (6 test cases)
+    - AddCommentToCommit
+    - AddCommentWithPath
+    - InvalidOwnerAddComment
+    - InvalidRepoAddComment
+    - InvalidSHAAddComment
+    - EmptyBodyAddComment
+  - create_commit (4 test cases)
+    - InvalidOwnerCreateCommit
+    - InvalidRepoCreateCommit
+    - InvalidTreeCreateCommit
+    - InvalidParentCreateCommit
 - Comprehensive test plan for pull request operations is created
 - Detailed testing documentation is created
 - README is created
@@ -160,7 +208,6 @@
 1. **Tool Implementations**
    - Branch operations
    - Search operations
-   - Commit operations
 
 2. **Testing**
    - Complete repository operations tests:
@@ -169,7 +216,7 @@
    - Complete issue operations tests:
      - Run tests for all issue operations tools
      - Create golden files for issue operations
-   - Implement tests for remaining tools (branch, search, commit operations)
+   - Implement tests for remaining tools (branch, search operations)
    - Add end-to-end tests
 
 ## Known Issues
@@ -183,7 +230,7 @@ We're taking an iterative approach to testing:
 2. Only then move to the next test case
 3. Start with "happy path" test cases before error cases
 
-Current focus: Implement tests for repository operations and branch operations
+Current focus: Implement tests for repository operations and branch operations. Commit operations tests have been completed.
 
 ## Next Milestone
 
@@ -196,6 +243,5 @@ Target Completion: TBD
 **Milestone 3: Remaining Tool Implementations**
 - Implement branch operations tools
 - Implement search operations tools
-- Implement commit operations tools
 
 Target Completion: TBD
