@@ -493,4 +493,7 @@ func RegisterIssueTools(s *Server) {
 		markdown := formatIssueCommentListToMarkdown(result)
 		return mcp.NewToolResultText(markdown), nil
 	})
+
+
+
 }

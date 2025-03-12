@@ -16,54 +16,6 @@ func RegisterRepositoryTools(s *Server) {
 	logger := s.GetLogger()
 	repoOps := github.NewRepositoryOperations(client, logger)
 
-	// Register search_repositories tool
-	searchReposTool := mcp.NewTool("search_repositories",
-		mcp.WithDescription("Search for GitHub repositories"),
-		mcp.WithString("query",
-			mcp.Required(),
-			mcp.Description("Search query (see GitHub search syntax)"),
-		),
-		mcp.WithNumber("page",
-			mcp.Description("Page number for pagination (default: 1)"),
-		),
-		mcp.WithNumber("perPage",
-			mcp.Description("Number of results per page (default: 30, max: 100)"),
-		),
-	)
-
-	s.RegisterTool(searchReposTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		// Extract parameters
-		query, ok := request.Params.Arguments["query"].(string)
-		if !ok {
-			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("query must be a string"))), nil
-		}
-
-		var page, perPage int
-		if pageVal, ok := request.Params.Arguments["page"]; ok {
-			if pageFloat, ok := pageVal.(float64); ok {
-				page = int(pageFloat)
-			}
-		}
-
-		if perPageVal, ok := request.Params.Arguments["perPage"]; ok {
-			if perPageFloat, ok := perPageVal.(float64); ok {
-				perPage = int(perPageFloat)
-			}
-		}
-
-		// Call the operation
-		result, err := repoOps.SearchRepositories(ctx, query, page, perPage)
-		if err != nil {
-			if ghErr, ok := err.(*errors.GitHubError); ok {
-				return mcp.NewToolResultError(errors.FormatGitHubError(ghErr)), nil
-			}
-			return mcp.NewToolResultError(fmt.Sprintf("Error searching repositories: %v", err)), nil
-		}
-
-		// Format the result as markdown
-		markdown := formatRepositorySearchToMarkdown(result)
-		return mcp.NewToolResultText(markdown), nil
-	})
 
 	// Register create_repository tool
 	createRepoTool := mcp.NewTool("create_repository",

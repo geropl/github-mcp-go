@@ -19,6 +19,7 @@ func RegisterCommitTools(s *Server) {
 	logger := s.GetLogger()
 	commitOps := github.NewCommitOperations(client, logger)
 
+
 	// Register get_commit tool
 	getCommitTool := mcp.NewTool("get_commit",
 		mcp.WithDescription("Get details of a specific commit in a GitHub repository"),

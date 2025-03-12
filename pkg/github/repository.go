@@ -24,32 +24,6 @@ func NewRepositoryOperations(client *Client, logger *logrus.Logger) *RepositoryO
 	}
 }
 
-// SearchRepositories searches for repositories
-func (r *RepositoryOperations) SearchRepositories(ctx context.Context, query string, page, perPage int) (*github.RepositoriesSearchResult, error) {
-	if page <= 0 {
-		page = 1
-	}
-	if perPage <= 0 {
-		perPage = 30
-	}
-	if perPage > 100 {
-		perPage = 100
-	}
-
-	opts := &github.SearchOptions{
-		ListOptions: github.ListOptions{
-			Page:    page,
-			PerPage: perPage,
-		},
-	}
-
-	result, _, err := r.client.GetClient().Search.Repositories(ctx, query, opts)
-	if err != nil {
-		return nil, r.client.HandleError(err)
-	}
-
-	return result, nil
-}
 
 // CreateRepository creates a new repository
 func (r *RepositoryOperations) CreateRepository(ctx context.Context, name, description string, private bool, autoInit bool) (*github.Repository, error) {
