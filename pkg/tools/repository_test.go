@@ -12,56 +12,6 @@ const (
 
 func TestRepository(t *testing.T) {
 	testCases := []*TestCase{
-		// search_repositories - Happy Path
-		{
-			Name: "BasicSearch",
-			Tool: "search_repositories",
-			Input: map[string]interface{}{
-				"query": "language:go",
-			},
-		},
-		{
-			Name: "SearchWithPagination",
-			Tool: "search_repositories",
-			Input: map[string]interface{}{
-				"query":   "language:go",
-				"page":    1,
-				"perPage": 5,
-			},
-		},
-		{
-			Name: "SearchWithSpecificFilters",
-			Tool: "search_repositories",
-			Input: map[string]interface{}{
-				"query": "language:go stars:>1000",
-			},
-		},
-
-		// search_repositories - Error Cases
-		{
-			Name: "EmptyQuery",
-			Tool: "search_repositories",
-			Input: map[string]interface{}{
-				"query": "",
-			},
-		},
-		{
-			Name: "InvalidPagination",
-			Tool: "search_repositories",
-			Input: map[string]interface{}{
-				"query":   "language:go",
-				"page":    -1,
-				"perPage": 1000, // Exceeds maximum
-			},
-		},
-		{
-			Name: "ComplexQuerySyntaxError",
-			Tool: "search_repositories",
-			Input: map[string]interface{}{
-				"query": "language:go AND stars:>1000", // Invalid syntax (should be language:go stars:>1000)
-			},
-		},
-
 		// Note: The following test cases require write permissions to repositories
 		// and are commented out for now. They can be enabled if the token has the
 		// necessary permissions.

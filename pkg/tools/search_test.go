@@ -4,6 +4,9 @@ import (
 	"testing"
 )
 
+// TestCase and RunTest are defined in test_helpers.go
+// This file is part of the same package, so we don't need to import it
+
 const (
 	// Reuse constants from pulls_test.go
 	SEARCH_OWNER = "geropl"
@@ -12,6 +15,56 @@ const (
 
 func TestSearch(t *testing.T) {
 	testCases := []*TestCase{
+		// search_repositories test cases - Happy Path
+		{
+			Name: "BasicSearch",
+			Tool: "search_repositories",
+			Input: map[string]interface{}{
+				"query": "language:go",
+			},
+		},
+		{
+			Name: "SearchWithPagination",
+			Tool: "search_repositories",
+			Input: map[string]interface{}{
+				"query":   "language:go",
+				"page":    1,
+				"perPage": 5,
+			},
+		},
+		{
+			Name: "SearchWithSpecificFilters",
+			Tool: "search_repositories",
+			Input: map[string]interface{}{
+				"query": "language:go stars:>1000",
+			},
+		},
+
+		// search_repositories test cases - Error Cases
+		{
+			Name: "EmptyQuery",
+			Tool: "search_repositories",
+			Input: map[string]interface{}{
+				"query": "",
+			},
+		},
+		{
+			Name: "InvalidPagination",
+			Tool: "search_repositories",
+			Input: map[string]interface{}{
+				"query":   "language:go",
+				"page":    -1,
+				"perPage": 1000, // Exceeds maximum
+			},
+		},
+		{
+			Name: "ComplexQuerySyntaxError",
+			Tool: "search_repositories",
+			Input: map[string]interface{}{
+				"query": "language:go AND stars:>1000", // Invalid syntax (should be language:go stars:>1000)
+			},
+		},
+
 		// search_code test cases - Happy Path
 		{
 			Name: "BasicCodeSearch",
