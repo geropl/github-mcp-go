@@ -4,15 +4,12 @@ A Model Context Protocol (MCP) server for GitHub, implemented in Go. This server
 
 ## Features
 
-- **Repository Operations**
-  - Search repositories
-  - Create repositories
-  - Fork repositories
+- see [Tools](#available-tools) below
+- `setup` subcommand for easy automatic setup (in a Gitpod workspace, for instance)
+  - `--auto-approve` allows to pre-fill the auto-approval checkbox
+  - copies the binary into a stable location
+  - updates the tool MCP server config (cline and claude-desktop are supported for now)
 
-- **Pull Request Operations**
-  - Create pull requests
-  - Get pull request details
-  - Get pull request diffs
 
 ## Installation
 
@@ -59,25 +56,32 @@ export GITHUB_PERSONAL_ACCESS_TOKEN=your_token_here
 ### Running the Server
 
 ```bash
-./github-mcp-go
+# Run the server directly
+./github-mcp-go serve
+
+# Show help
+./github-mcp-go --help
 ```
 
-### Connecting to Claude for Desktop
+### Setup Command
 
-To use the server with Claude for Desktop, add the following to your Claude for Desktop configuration file:
+The server includes a convenient setup command to install and configure the MCP server for use with AI assistants:
 
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "/path/to/github-mcp-go",
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "your_token_here"
-      }
-    }
-  }
-}
+```bash
+# Set up for Cline with auto-approval for read-only tools
+./github-mcp-go setup --auto-approve allow-read-only --tool cline
+
+# Set up for Claude Desktop with auto-approval for specific tools
+./github-mcp-go setup --auto-approve search_repositories,get_file_contents --tool claude-desktop
+
+# Show setup help
+./github-mcp-go setup --help
 ```
+
+#### Auto-Approval Options
+
+The `--auto-approve` flag can be used to specify which tools should be auto-approved as a comma-separated list. `allow-read-only` is a special value to add all read-only tools to the auto-approve list (safe, no state changes).
+
 
 ## Available Tools
 
@@ -98,6 +102,39 @@ To use the server with Claude for Desktop, add the following to your Claude for 
 - `get_file_contents`: Get the contents of a file or directory
 - `create_or_update_file`: Create or update a file
 - `push_files`: Push multiple files in a single commit
+
+### Issue Tools
+
+- `create_issue`: Create a new issue
+- `list_issues`: List issues with filtering options
+- `update_issue`: Update an existing issue
+- `add_issue_comment`: Add a comment to an issue
+- `get_issue`: Get details of a specific issue
+- `list_issue_comments`: List comments on an issue
+
+### Branch Tools
+
+- `list_branches`: List branches in a repository
+- `get_branch`: Get details about a specific branch
+- `create_branch`: Create a new branch
+- `merge_branches`: Merge one branch into another
+- `delete_branch`: Delete a branch
+
+### Commit Tools
+
+- `get_commit`: Get details of a specific commit
+- `list_commits`: List commits in a repository
+- `compare_commits`: Compare two commits or branches
+- `get_commit_status`: Get the combined status for a specific commit
+- `create_commit_comment`: Add a comment to a specific commit
+- `list_commit_comments`: List comments for a specific commit
+- `create_commit`: Create a new commit directly
+
+### Search Tools
+
+- `search_code`: Search for code across repositories
+- `search_issues`: Search for issues and pull requests
+- `search_commits`: Search for commits across repositories
 
 ## Releases
 
@@ -121,32 +158,6 @@ Pre-built binaries are available for:
 - Windows (amd64)
 
 ## Development
-
-### Project Structure
-
-```
-github-mcp-go/
-├── cmd/
-│   └── github-mcp-go/
-│       └── main.go
-├── internal/
-│   ├── server/
-│   │   └── server.go
-│   ├── github/
-│   │   ├── client.go
-│   │   ├── repository.go
-│   │   ├── pulls.go
-│   │   └── ...
-│   └── errors/
-│       └── errors.go
-├── pkg/
-│   └── tools/
-│       ├── repository.go
-│       ├── pulls.go
-│       └── ...
-└── test/
-    └── ...
-```
 
 ### Testing
 

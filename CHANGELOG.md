@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - GitHub release workflow for automated binary builds and releases
+- Command-line interface using Cobra
+- Setup command for easy installation and configuration
+  - Support for Cline and Claude Desktop
+  - Auto-approval options for tools
+  - Token management
+- Tool classification system for auto-approval
+  - Read-only tools classification
 
 ## [0.1.0] - Initial Release
 

@@ -60,3 +60,27 @@ func RegisterTools(s *Server) {
 	RegisterBranchTools(s)
 	RegisterSearchTools(s)
 }
+
+// GetReadOnlyToolNames returns a map of tool names that are read-only
+// These tools do not modify any state and are safe to auto-approve
+func GetReadOnlyToolNames() map[string]bool {
+	return map[string]bool{
+		"search_repositories":   true,
+		"search_code":           true,
+		"search_issues":         true,
+		"search_commits":        true,
+		"get_file_contents":     true,
+		"get_issue":             true,
+		"list_issues":           true,
+		"list_issue_comments":   true,
+		"get_pull_request":      true,
+		"get_pull_request_diff": true,
+		"get_commit":            true,
+		"list_commits":          true,
+		"compare_commits":       true,
+		"get_commit_status":     true,
+		"list_commit_comments":  true,
+		"list_branches":         true,
+		"get_branch":            true,
+	}
+}
