@@ -42,7 +42,7 @@ This command starts the GitHub MCP server, which provides tools for interacting 
 
 		// Create MCP server
 		serverName := "github-mcp-server"
-		serverVersion := "0.1.0"
+		serverVersion := "0.2.0"
 		s := tools.NewServer(serverName, serverVersion, githubClient, logger, writeAccess)
 
 		if writeAccess {

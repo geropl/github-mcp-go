@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- No unreleased changes yet
+
+## [0.2.0] - 2025-03-12
+
+### Added
 - GitHub release workflow for automated binary builds and releases
 - Command-line interface using Cobra
 - Setup command for easy installation and configuration
