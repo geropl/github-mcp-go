@@ -7,6 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Common flags
+var (
+	writeAccess bool
+)
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "github-mcp-go",

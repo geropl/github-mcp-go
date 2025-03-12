@@ -43,7 +43,13 @@ This command starts the GitHub MCP server, which provides tools for interacting 
 		// Create MCP server
 		serverName := "github-mcp-server"
 		serverVersion := "0.1.0"
-		s := tools.NewServer(serverName, serverVersion, githubClient, logger)
+		s := tools.NewServer(serverName, serverVersion, githubClient, logger, writeAccess)
+
+		if writeAccess {
+			logger.Info("Write access is enabled for remote operations")
+		} else {
+			logger.Info("Write access is disabled for remote operations")
+		}
 
 		// Register tools
 		logger.Info("Registering tools...")
@@ -63,4 +69,5 @@ func init() {
 
 	// Add flags to the serve command
 	serveCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
+	serveCmd.Flags().BoolVar(&writeAccess, "write-access", false, "Enable write access for remote operations")
 }

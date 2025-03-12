@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Token management
 - Tool classification system for auto-approval
   - Read-only tools classification
+- Write access control for remote operations
+  - `--write-access` flag for serve command
+  - `--write-access` flag for setup command
+  - Security controls to prevent accidental remote modifications
 
 ## [0.1.0] - Initial Release
 

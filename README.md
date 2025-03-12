@@ -4,11 +4,15 @@ A Model Context Protocol (MCP) server for GitHub, implemented in Go. This server
 
 ## Features
 
-- see [Tools](#available-tools) below
-- `setup` subcommand for easy automatic setup (in a Gitpod workspace, for instance)
+- **Comprehensive GitHub API Access**: See [Tools](#available-tools) below
+- **Setup Command**: Easy automatic setup for AI assistants
   - `--auto-approve` allows to pre-fill the auto-approval checkbox
-  - copies the binary into a stable location
-  - updates the tool MCP server config (cline and claude-desktop are supported for now)
+  - `--write-access` enables write access for remote operations
+  - Copies the binary into a stable location
+  - Updates the tool MCP server config (cline and claude-desktop are supported)
+- **Security Controls**:
+  - Write access is disabled by default for safety
+  - Fine-grained auto-approval options
 
 
 ## Installation
@@ -56,8 +60,11 @@ export GITHUB_PERSONAL_ACCESS_TOKEN=your_token_here
 ### Running the Server
 
 ```bash
-# Run the server directly
+# Run the server directly (read-only mode)
 ./github-mcp-go serve
+
+# Run the server with write access enabled
+./github-mcp-go serve --write-access
 
 # Show help
 ./github-mcp-go --help
@@ -74,6 +81,9 @@ The server includes a convenient setup command to install and configure the MCP 
 # Set up for Claude Desktop with auto-approval for specific tools
 ./github-mcp-go setup --auto-approve search_repositories,get_file_contents --tool claude-desktop
 
+# Set up with write access enabled
+./github-mcp-go setup --write-access --tool cline
+
 # Show setup help
 ./github-mcp-go setup --help
 ```
@@ -81,6 +91,8 @@ The server includes a convenient setup command to install and configure the MCP 
 #### Auto-Approval Options
 
 The `--auto-approve` flag can be used to specify which tools should be auto-approved as a comma-separated list. `allow-read-only` is a special value to add all read-only tools to the auto-approve list (safe, no state changes).
+
+The `--write-access` flag enables write access for remote operations. This allows tools that modify remote repositories to be used. By default, write access is disabled for safety.
 
 
 ## Available Tools

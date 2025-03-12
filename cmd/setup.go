@@ -22,7 +22,8 @@ var setupCmd = &cobra.Command{
 
 This command sets up the GitHub MCP server for use with an AI assistant by installing the binary and configuring the AI assistant to use it.
 
-The --auto-approve flag can be used to specify which tools should be auto-approved. It takes a comma-separated list of tool names. "allow-read-only" is a special value to auto-approve all read-only tools`,
+The --auto-approve flag can be used to specify which tools should be auto-approved. It takes a comma-separated list of tool names. "allow-read-only" is a special value to auto-approve all read-only tools.
+The --write-access flag enables write access for remote operations. This allows tools that modify remote repositories to be used.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Install the binary
 		binaryPath, err := setup.InstallBinary()
@@ -43,6 +44,7 @@ The --auto-approve flag can be used to specify which tools should be auto-approv
 			Token:       token,
 			AutoApprove: autoApprove,
 			Tool:        tool,
+			WriteAccess: writeAccess,
 		}
 
 		if err := setup.Setup(options, tools.GetReadOnlyToolNames()); err != nil {
@@ -58,6 +60,7 @@ func init() {
 	rootCmd.AddCommand(setupCmd)
 
 	// Add flags to the setup command
-	setupCmd.Flags().StringVar(&autoApprove, "auto-approve", "", "Comma-separated list of tools to auto-approve. 'allow-read-only' is a special value to auto-approve all read-only tools")
+	setupCmd.Flags().StringVar(&autoApprove, "auto-approve", "", "Comma-separated list of tools to auto-approve, or 'allow-read-only' to auto-approve all read-only tools. 'allow-read-only' is a special value to auto-approve all read-only tools")
 	setupCmd.Flags().StringVar(&tool, "tool", "cline", "The AI assistant tool to set up for (cline or claude-desktop)")
+	setupCmd.Flags().BoolVar(&writeAccess, "write-access", false, "Enable write access for remote operations")
 }

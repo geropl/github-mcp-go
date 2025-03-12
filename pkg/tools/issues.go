@@ -35,7 +35,7 @@ func RegisterIssueTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(getIssueTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(getIssueTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -95,7 +95,7 @@ func RegisterIssueTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(listIssuesTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(listIssuesTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -186,7 +186,7 @@ func RegisterIssueTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createIssueTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createIssueTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -283,7 +283,7 @@ func RegisterIssueTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(updateIssueTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(updateIssueTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -378,7 +378,7 @@ func RegisterIssueTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(addIssueCommentTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(addIssueCommentTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -441,7 +441,7 @@ func RegisterIssueTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(listIssueCommentsTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(listIssueCommentsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -493,7 +493,5 @@ func RegisterIssueTools(s *Server) {
 		markdown := formatIssueCommentListToMarkdown(result)
 		return mcp.NewToolResultText(markdown), nil
 	})
-
-
 
 }

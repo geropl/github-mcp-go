@@ -12,6 +12,7 @@ type SetupOptions struct {
 	Token       string
 	AutoApprove string
 	Tool        string
+	WriteAccess bool
 }
 
 // Setup sets up the GitHub MCP server for use with an AI assistant
@@ -27,6 +28,10 @@ func Setup(options SetupOptions, readOnlyTools map[string]bool) error {
 
 	// Create the server configuration
 	serverArgs := []string{"serve"}
+
+	// Add write-access flag
+	serverArgs = append(serverArgs, fmt.Sprintf("--write-access=%t", options.WriteAccess))
+	fmt.Printf("Write access for remote operations: %t\n", options.WriteAccess)
 
 	// Create the server configuration
 	serverConfig := map[string]interface{}{
@@ -53,7 +58,7 @@ func Setup(options SetupOptions, readOnlyTools map[string]bool) error {
 	default:
 		return fmt.Errorf("unsupported tool: %s", options.Tool)
 	}
-	
+
 	err = UpdateSettingsFile(settingsPath, serverConfig)
 	if err != nil {
 		return fmt.Errorf("failed to update settings file at '%s': %w", settingsPath, err)

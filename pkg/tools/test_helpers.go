@@ -147,8 +147,8 @@ func createTestServer(t *testing.T, tc *TestCase, doRecord bool) (*Server, *reco
 	token := os.Getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
 	githubClient := github.NewClientWithHTTPClient(token, httpClient, logger)
 
-	// Create a server
-	s := NewServer("test-server", "0.1.0", githubClient, logger)
+	// Create a server (with write access enabled for tests)
+	s := NewServer("test-server", "0.1.0", githubClient, logger, true)
 	RegisterTools(s)
 	return s, r
 }

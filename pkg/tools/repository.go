@@ -16,7 +16,6 @@ func RegisterRepositoryTools(s *Server) {
 	logger := s.GetLogger()
 	repoOps := github.NewRepositoryOperations(client, logger)
 
-
 	// Register create_repository tool
 	createRepoTool := mcp.NewTool("create_repository",
 		mcp.WithDescription("Create a new GitHub repository in your account"),
@@ -35,7 +34,7 @@ func RegisterRepositoryTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createRepoTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createRepoTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		name, ok := request.Params.Arguments["name"].(string)
 		if !ok {
@@ -93,7 +92,7 @@ func RegisterRepositoryTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(forkRepoTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(forkRepoTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {

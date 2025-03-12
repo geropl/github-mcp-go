@@ -19,7 +19,6 @@ func RegisterCommitTools(s *Server) {
 	logger := s.GetLogger()
 	commitOps := github.NewCommitOperations(client, logger)
 
-
 	// Register get_commit tool
 	getCommitTool := mcp.NewTool("get_commit",
 		mcp.WithDescription("Get details of a specific commit in a GitHub repository"),
@@ -37,7 +36,7 @@ func RegisterCommitTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(getCommitTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(getCommitTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -96,7 +95,7 @@ func RegisterCommitTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(listCommitsTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(listCommitsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -183,7 +182,7 @@ func RegisterCommitTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(compareCommitsTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(compareCommitsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -236,7 +235,7 @@ func RegisterCommitTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(getCommitStatusTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(getCommitStatusTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -294,7 +293,7 @@ func RegisterCommitTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createCommitCommentTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createCommitCommentTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -358,7 +357,7 @@ func RegisterCommitTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(listCommitCommentsTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(listCommitCommentsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -432,7 +431,7 @@ func RegisterCommitTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createCommitTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createCommitTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {

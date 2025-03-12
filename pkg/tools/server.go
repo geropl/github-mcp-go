@@ -12,22 +12,24 @@ import (
 
 // Server wraps the MCP server and provides additional functionality
 type Server struct {
-	server *server.MCPServer
-	client *ghclient.Client
-	logger *logrus.Logger
+	server      *server.MCPServer
+	client      *ghclient.Client
+	logger      *logrus.Logger
+	writeAccess bool
 }
 
 // NewServer creates a new MCP server
-func NewServer(name, version string, client *ghclient.Client, logger *logrus.Logger) *Server {
+func NewServer(name, version string, client *ghclient.Client, logger *logrus.Logger, writeAccess bool) *Server {
 	s := server.NewMCPServer(
 		name,
 		version,
 	)
 
 	return &Server{
-		server: s,
-		client: client,
-		logger: logger,
+		server:      s,
+		client:      client,
+		logger:      logger,
+		writeAccess: writeAccess,
 	}
 }
 
@@ -42,7 +44,12 @@ func (s *Server) GetLogger() *logrus.Logger {
 }
 
 // RegisterTool registers a tool with the server
-func (s *Server) RegisterTool(tool mcp.Tool, handler func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error)) {
+func (s *Server) RegisterTool(tool mcp.Tool, readonly bool, handler func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error)) {
+	if !readonly && !s.writeAccess {
+		s.logger.Infof("Skipping registration of write tool %s as write access is disabled", tool.Name)
+		return
+	}
+
 	s.server.AddTool(tool, handler)
 }
 
@@ -59,6 +66,11 @@ func RegisterTools(s *Server) {
 	RegisterCommitTools(s)
 	RegisterBranchTools(s)
 	RegisterSearchTools(s)
+}
+
+// WriteAccess returns whether write access is enabled
+func (s *Server) WriteAccess() bool {
+	return s.writeAccess
 }
 
 // GetReadOnlyToolNames returns a map of tool names that are read-only
