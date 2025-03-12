@@ -13,22 +13,21 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 7. Implemented issue operations tools
 8. Implemented commit operations tools
 9. Implemented branch operations tools
-10. Set up the testing framework with go-vcr and golden files
+10. Implemented search operations tools
+11. Set up the testing framework with go-vcr and golden files
 
 The current focus is on:
 
-1. **Implementing comprehensive tests for repository, file, issue, and branch operations**:
-   - Defined test cases for repository operations tools
-   - Following the same iterative approach used for pull request tests
-   - Organizing test cases by tool and type (happy path vs. error cases)
-   - Implementing tests for search_repositories tool
-   - Documenting limitations with create_repository and fork_repository tests
-   - Defined test cases for issue operations tools
-   - Defined test cases for branch operations tools
+1. **Improving search operations**:
+   - Fixed GitHub API issue with search_issues tool by adding required "type" parameter
+   - Consolidated all search-related API operations in pkg/github/search.go
+   - Consolidated all search-related tools in pkg/tools/search.go
+   - Implemented comprehensive test cases for all search operations
 
-2. Once testing is complete for repository, file, issue, and branch operations:
-   - Implementing the remaining tools (search operations)
-   - Adding tests for the remaining tools
+2. **Preparing for end-to-end testing**:
+   - Ensuring all components work together seamlessly
+   - Identifying potential edge cases
+   - Planning for integration testing
 
 ## Recent Changes
 
@@ -64,6 +63,15 @@ The current focus is on:
   - delete_branch: Delete a branch
   - update_branch_protection: Update protection settings for a branch
   - remove_branch_protection: Remove protection settings from a branch
+- Implemented search operations tools:
+  - search_code: Search for code across GitHub repositories
+  - search_issues: Search for issues and pull requests
+  - search_commits: Search for commits across repositories
+  - search_repositories: Search for GitHub repositories
+- Fixed GitHub API issue with search_issues tool by adding required "type" parameter
+- Consolidated all search-related API operations in pkg/github/search.go
+- Consolidated all search-related tools in pkg/tools/search.go
+- Added comprehensive test cases for all search operations
 - Set up testing framework with go-vcr and golden files
 - Implemented the "SuccessfulCreation" test case for create_pull_request
 - Defined a comprehensive set of test cases for all pull request tools
@@ -247,9 +255,8 @@ The current focus is on:
 
 ## Next Steps
 
-1. Implement search operations tools
-2. Implement tests for search operations tools
-3. Add end-to-end tests
+1. Polish documentation
+2. Add GitHub release workflow
 
 ## Active Decisions
 
@@ -280,7 +287,7 @@ The current focus is on:
    - Issue operations (completed)
    - Commit operations (completed)
    - Branch operations (completed)
-   - Search operations (next)
+   - Search operations (completed)
 
 5. **Response Formatting**
    - Using markdown formatting for all tool responses instead of raw JSON

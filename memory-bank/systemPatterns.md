@@ -37,6 +37,37 @@ func NewRepositoryOperations(client *github.Client, logger *logrus.Logger) *Repo
 }
 ```
 
+### 2. API Requirement Handling
+
+- Handle external API requirements transparently
+- Provide sensible defaults for required parameters
+- Allow explicit overrides through tool parameters
+
+Example from search_issues tool:
+```go
+// Process the type parameter
+lowerQuery := strings.ToLower(query)
+if !hasType || itemType == "" {
+    // Default to "issue" if not specified
+    itemType = "issue"
+}
+
+// Validate and normalize the type
+switch strings.ToLower(itemType) {
+case "issue":
+    if !strings.Contains(lowerQuery, "is:issue") {
+        queryParts = append(queryParts, "is:issue")
+    }
+case "pull-request", "pr":
+    if !strings.Contains(lowerQuery, "is:pr") && !strings.Contains(lowerQuery, "is:pull-request") {
+        queryParts = append(queryParts, "is:pull-request")
+    }
+default:
+    return mcp.NewToolResultError(errors.FormatGitHubError(
+        errors.NewInvalidArgumentError("type must be either 'issue' or 'pull-request'"))), nil
+}
+```
+
 ### 2. Command Pattern
 
 - Each tool is implemented as a command
@@ -70,6 +101,26 @@ func convertGitHubRepositoryToToolResult(repo *github.Repository) *mcp.CallToolR
 ```go
 func RegisterRepositoryTools(server *server.MCPServer, operations *RepositoryOperations) {
     // Register tools
+}
+```
+
+### 5. Functional Grouping Pattern
+
+- Group related tools and operations by functionality
+- Consolidate similar operations in a single file
+- Maintain clear separation between different resource types
+
+Example:
+```go
+// All search-related operations are in pkg/github/search.go
+type SearchOperations struct {
+    client *Client
+    logger *logrus.Logger
+}
+
+// All search-related tools are in pkg/tools/search.go
+func RegisterSearchTools(s *Server) {
+    // Register search_code, search_issues, search_commits, search_repositories
 }
 ```
 
@@ -120,6 +171,61 @@ func TestPullRequest(t *testing.T) {
         // Additional test cases (commented out until ready to implement)
     }
 
+    for _, tc := range testCases {
+        t.Run(tc.Name, func(t *testing.T) {
+            RunTest(t, tc)
+        })
+    }
+}
+```
+
+### Test Organization
+
+Tests are organized by functionality and grouped together in test files:
+
+```go
+// All search-related tests are in pkg/tools/search_test.go
+func TestSearch(t *testing.T) {
+    testCases := []*TestCase{
+        // search_repositories test cases
+        {
+            Name: "BasicSearch",
+            Tool: "search_repositories",
+            Input: map[string]interface{}{
+                "query": "language:go",
+            },
+        },
+        
+        // search_code test cases
+        {
+            Name: "BasicCodeSearch",
+            Tool: "search_code",
+            Input: map[string]interface{}{
+                "query": "function",
+            },
+        },
+        
+        // search_issues test cases
+        {
+            Name: "BasicIssueSearch",
+            Tool: "search_issues",
+            Input: map[string]interface{}{
+                "query": "bug",
+                "type":  "issue",
+            },
+        },
+        
+        // search_commits test cases
+        {
+            Name: "BasicCommitSearch",
+            Tool: "search_commits",
+            Input: map[string]interface{}{
+                "query": "fix bug",
+            },
+        },
+    }
+    
+    // Run all test cases
     for _, tc := range testCases {
         t.Run(tc.Name, func(t *testing.T) {
             RunTest(t, tc)
