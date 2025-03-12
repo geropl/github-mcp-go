@@ -188,6 +188,15 @@ func TestSearch(t *testing.T) {
 			Tool: "search_issues",
 			Input: map[string]interface{}{
 				"query": "bug",
+				"type":  "issue",
+			},
+		},
+		{
+			Name: "BasicPullRequestSearch",
+			Tool: "search_issues",
+			Input: map[string]interface{}{
+				"query": "feature",
+				"type":  "pull-request",
 			},
 		},
 		{

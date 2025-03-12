@@ -154,6 +154,9 @@ func RegisterSearchTools(s *Server) {
 			mcp.Required(),
 			mcp.Description("Search query (see GitHub search syntax)"),
 		),
+		mcp.WithString("type",
+			mcp.Description("Type of items to search for (issue, pull-request). Default: issue"),
+		),
 		mcp.WithString("state",
 			mcp.Description("Filter by issue state (open, closed, all)"),
 		),
@@ -186,6 +189,7 @@ func RegisterSearchTools(s *Server) {
 		labels, hasLabels := request.Params.Arguments["labels"].(string)
 		owner, hasOwner := request.Params.Arguments["owner"].(string)
 		repo, hasRepo := request.Params.Arguments["repo"].(string)
+		itemType, hasType := request.Params.Arguments["type"].(string)
 
 		// Build the query with filters
 		queryParts := []string{query}
@@ -210,6 +214,28 @@ func RegisterSearchTools(s *Server) {
 			} else {
 				queryParts = append(queryParts, fmt.Sprintf("user:%s", owner))
 			}
+		}
+
+		// Process the type parameter
+		lowerQuery := strings.ToLower(query)
+		if !hasType || itemType == "" {
+			// Default to "issue" if not specified
+			itemType = "issue"
+		}
+
+		// Validate and normalize the type
+		switch strings.ToLower(itemType) {
+		case "issue":
+			if !strings.Contains(lowerQuery, "is:issue") {
+				queryParts = append(queryParts, "is:issue")
+			}
+		case "pull-request", "pr":
+			if !strings.Contains(lowerQuery, "is:pr") && !strings.Contains(lowerQuery, "is:pull-request") {
+				queryParts = append(queryParts, "is:pull-request")
+			}
+		default:
+			return mcp.NewToolResultError(errors.FormatGitHubError(
+				errors.NewInvalidArgumentError("type must be either 'issue' or 'pull-request'"))), nil
 		}
 
 		finalQuery := strings.Join(queryParts, " ")

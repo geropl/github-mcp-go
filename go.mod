@@ -3,6 +3,7 @@ module github.com/geropl/github-mcp-go
 go 1.23.6
 
 require (
+	github.com/google/go-cmp v0.6.0
 	github.com/google/go-github/v69 v69.2.0
 	github.com/mark3labs/mcp-go v0.11.2
 	github.com/sirupsen/logrus v1.9.3

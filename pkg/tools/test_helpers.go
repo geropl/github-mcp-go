@@ -14,11 +14,13 @@ import (
 	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
+	"github.com/mark3labs/mcp-go/server"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/cassette"
 	"gopkg.in/dnaeon/go-vcr.v4/pkg/recorder"
 
 	"github.com/geropl/github-mcp-go/pkg/github"
+	"github.com/google/go-cmp/cmp"
 	gh "github.com/google/go-github/v69/github"
 )
 
@@ -74,40 +76,7 @@ func RunTest(t *testing.T, tc *TestCase) {
 	defer r.Stop() // Ensure recorder is stopped
 
 	testCtx := context.Background()
-	actual, testErr := executeTestTool(testCtx, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		// Create a proper JSON-RPC request
-		jsonRpcRequest := mcp.JSONRPCRequest{
-			JSONRPC: "2.0",
-			ID:      "1",
-			Params:  request.Params,
-		}
-		jsonRpcRequest.Method = "tools/call"
-
-		rawMessage, err := json.Marshal(jsonRpcRequest)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal request: %v", err)
-		}
-
-		rawResponse := s.server.HandleMessage(ctx, rawMessage)
-
-		// Check if the response is an error
-		if jsonRpcError, ok := rawResponse.(mcp.JSONRPCError); ok {
-			return nil, fmt.Errorf("JSON-RPC error: %s", jsonRpcError.Error.Message)
-		}
-
-		// Check if the response is a success
-		jsonRpcResponse, ok := rawResponse.(mcp.JSONRPCResponse)
-		if !ok {
-			return nil, fmt.Errorf("unexpected response type: %T", rawResponse)
-		}
-
-		// Process the result based on its type
-		result, ok := jsonRpcResponse.Result.(*mcp.CallToolResult)
-		if !ok {
-			return nil, fmt.Errorf("unexpected result type: %T", jsonRpcResponse.Result)
-		}
-		return result, nil
-	}, tc.Tool, tc.Input)
+	actual, testErr := executeTestTool(testCtx, createCallToolHandler(s.server), tc.Tool, tc.Input)
 	if testErr != nil {
 		t.Fatalf("Failed to execute test tool: %v", testErr)
 	}
@@ -134,11 +103,11 @@ func RunTest(t *testing.T, tc *TestCase) {
 	}
 
 	// Compare actual and expected results
-	if actual.Output != expected.Output {
-		t.Errorf("Output mismatch:\nExpected: %s\nActual: %s", expected.Output, actual.Output)
+	if diff := cmp.Diff(expected.Output, actual.Output); diff != "" {
+		t.Errorf("Test output mismatch (-want +got):\n%s", diff)
 	}
-	if actual.Err != expected.Err {
-		t.Errorf("Error mismatch:\nExpected: %s\nActual: %s", expected.Err, actual.Err)
+	if diff := cmp.Diff(expected.Err, actual.Err); diff != "" {
+		t.Errorf("Error mismatch (-want +got):\n%s", diff)
 	}
 }
 
@@ -381,4 +350,41 @@ func createCommit(ctx context.Context, client *github.Client, owner, repo, branc
 		return fmt.Errorf("failed to create file: %v", err)
 	}
 	return nil
+}
+
+func createCallToolHandler(server *server.MCPServer) func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Create a proper JSON-RPC request
+		jsonRpcRequest := mcp.JSONRPCRequest{
+			JSONRPC: "2.0",
+			ID:      "1",
+			Params:  request.Params,
+		}
+		jsonRpcRequest.Method = "tools/call"
+
+		rawMessage, err := json.Marshal(jsonRpcRequest)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal request: %v", err)
+		}
+
+		rawResponse := server.HandleMessage(ctx, rawMessage)
+
+		// Check if the response is an error
+		if jsonRpcError, ok := rawResponse.(mcp.JSONRPCError); ok {
+			return nil, fmt.Errorf("JSON-RPC error: %s", jsonRpcError.Error.Message)
+		}
+
+		// Check if the response is a success
+		jsonRpcResponse, ok := rawResponse.(mcp.JSONRPCResponse)
+		if !ok {
+			return nil, fmt.Errorf("unexpected response type: %T", rawResponse)
+		}
+
+		// Process the result based on its type
+		result, ok := jsonRpcResponse.Result.(*mcp.CallToolResult)
+		if !ok {
+			return nil, fmt.Errorf("unexpected result type: %T", jsonRpcResponse.Result)
+		}
+		return result, nil
+	}
 }

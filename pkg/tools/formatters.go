@@ -409,7 +409,7 @@ func formatCommitCommentListToMarkdown(comments []*github.RepositoryComment) str
 		if comment.GetBody() != "" {
 			body := comment.GetBody()
 			if len(body) > 200 {
-				body = body[:200] + "..."
+				body = truncateString(body, 200) + "..."
 			}
 			md += fmt.Sprintf("%s\n\n", body)
 		}
@@ -425,7 +425,7 @@ func formatPullRequestDiffToMarkdown(number int, diff string) string {
 	// Truncate diff if it's too long
 	const maxDiffLength = 10000
 	if len(diff) > maxDiffLength {
-		diff = diff[:maxDiffLength] + "\n\n... (diff truncated due to size)"
+		diff = truncateString(diff, maxDiffLength) + "\n\n... (diff truncated due to size)"
 	}
 
 	md += "```diff\n" + diff + "\n```\n"
@@ -505,7 +505,7 @@ func formatIssueListToMarkdown(issues []*github.Issue) string {
 		if issue.GetBody() != "" {
 			body := issue.GetBody()
 			if len(body) > 100 {
-				body = body[:100] + "..."
+				body = truncateString(body, 100) + "..."
 			}
 			md += fmt.Sprintf("%s\n\n", body)
 		}
@@ -580,7 +580,7 @@ func formatIssueCommentListToMarkdown(comments []*github.IssueComment) string {
 		if comment.GetBody() != "" {
 			body := comment.GetBody()
 			if len(body) > 200 {
-				body = body[:200] + "..."
+				body = truncateString(body, 200) + "..."
 			}
 			md += fmt.Sprintf("%s\n\n", body)
 		}
@@ -797,7 +797,7 @@ func formatIssueSearchToMarkdown(result *ghClient.IssueSearchResult) string {
 		if issue.GetBody() != "" {
 			body := issue.GetBody()
 			if len(body) > 200 {
-				body = body[:200] + "..."
+				body = truncateString(body, 200) + "..."
 			}
 			sb.WriteString(fmt.Sprintf("\n%s\n\n", body))
 		}
@@ -862,4 +862,21 @@ func formatCommitSearchToMarkdown(result *ghClient.CommitSearchResult) string {
 	}
 
 	return sb.String()
+}
+
+func truncateString(s string, maxLength int) string {
+	if maxLength <= 0 {
+		return ""
+	}
+
+	// Convert to rune slice to properly handle Unicode characters
+	runes := []rune(s)
+
+	// If string is already shorter than max length, return it as is
+	if len(runes) <= maxLength {
+		return s
+	}
+
+	// Return truncated string with proper Unicode handling
+	return string(runes[:maxLength])
 }
