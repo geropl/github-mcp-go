@@ -31,6 +31,9 @@ The current focus is on:
 
 ## Recent Changes
 
+- Added GitHub release workflow for automated binary builds and releases
+- Created CHANGELOG.md to track changes between releases
+- Updated README.md with information about releases and installation from pre-built binaries
 - Merged PULL_REQUEST_TESTING.md and README-PR-TESTING.md into a single comprehensive TESTING.md file
 - Organized testing documentation into clear sections covering the approach, execution modes, and workflow
 - Improved documentation of go-vcr and golden files methodology
@@ -259,7 +262,8 @@ The current focus is on:
 ## Next Steps
 
 1. Polish documentation
-2. Add GitHub release workflow
+2. Complete repository operations tests for create_repository and fork_repository
+3. Plan for end-to-end testing
 
 ## Active Decisions
 
