@@ -18,18 +18,32 @@ A Model Context Protocol (MCP) server for GitHub, implemented in Go. This server
 
 ### Prerequisites
 
-- Go 1.21 or later
 - GitHub Personal Access Token with appropriate permissions
+
+### Using Pre-built Binaries
+
+You can download pre-built binaries for your platform from the [GitHub Releases](https://github.com/geropl/github-mcp-go/releases) page.
+
+```bash
+# Download the latest release for your platform
+# Example for Linux (amd64):
+curl -L https://github.com/geropl/github-mcp-go/releases/latest/download/github-mcp-go_<version>_linux_amd64 -o github-mcp-go
+chmod +x github-mcp-go
+```
 
 ### Building from Source
 
+If you prefer to build from source:
+
 ```bash
+# Prerequisites: Go 1.23 or later
+
 # Clone the repository
-git clone https://github.com/modelcontextprotocol/github-mcp-go.git
+git clone https://github.com/geropl/github-mcp-go.git
 cd github-mcp-go
 
 # Build the server
-go build -o github-mcp-go ./cmd/github-mcp-go
+go build -o github-mcp-go .
 ```
 
 ## Usage
@@ -84,6 +98,27 @@ To use the server with Claude for Desktop, add the following to your Claude for 
 - `get_file_contents`: Get the contents of a file or directory
 - `create_or_update_file`: Create or update a file
 - `push_files`: Push multiple files in a single commit
+
+## Releases
+
+The project follows [Semantic Versioning](https://semver.org/). New releases are automatically built and published to GitHub Releases when a new tag is pushed to the repository.
+
+### Release Process
+
+1. Update the CHANGELOG.md file with the changes in the new version
+2. Create and push a new tag:
+   ```bash
+   git tag -a v0.1.1 -m "Release v0.1.1"
+   git push origin v0.1.1
+   ```
+3. The GitHub Actions workflow will automatically build binaries for multiple platforms and create a release
+
+### Available Platforms
+
+Pre-built binaries are available for:
+- Linux (amd64, arm64)
+- macOS (amd64, arm64)
+- Windows (amd64)
 
 ## Development
 

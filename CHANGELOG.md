@@ -1,0 +1,54 @@
+# Changelog
+
+All notable changes to the GitHub MCP Go project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- GitHub release workflow for automated binary builds and releases
+
+## [0.1.0] - Initial Release
+
+### Added
+- Core server functionality
+- GitHub client integration
+- Repository operations tools
+  - `search_repositories`: Search for GitHub repositories
+  - `create_repository`: Create a new GitHub repository
+  - `fork_repository`: Fork a GitHub repository
+- Pull request operations tools
+  - `create_pull_request`: Create a new pull request
+  - `get_pull_request`: Get detailed information about a pull request
+  - `get_pull_request_diff`: Get the diff of a pull request
+- File operations tools
+  - `get_file_contents`: Get contents of a file or directory
+  - `create_or_update_file`: Create or update a single file
+  - `push_files`: Push multiple files in a single commit
+- Issue operations tools
+  - `create_issue`: Create a new issue
+  - `list_issues`: List issues with filtering options
+  - `update_issue`: Update an existing issue
+  - `add_issue_comment`: Add a comment to an issue
+  - `get_issue`: Get details of a specific issue
+- Branch operations tools
+  - `list_branches`: List branches in a repository
+  - `get_branch`: Get details about a specific branch
+  - `create_branch`: Create a new branch
+  - `merge_branches`: Merge one branch into another
+  - `delete_branch`: Delete a branch
+- Search operations tools
+  - `search_code`: Search for code across repositories
+  - `search_issues`: Search for issues and pull requests
+  - `search_commits`: Search for commits
+- Commit operations tools
+  - `get_commit`: Get details of a specific commit
+  - `list_commits`: List commits in a repository
+  - `compare_commits`: Compare two commits or branches
+  - `get_commit_status`: Get the combined status for a specific commit
+  - `create_commit_comment`: Add a comment to a specific commit
+  - `list_commit_comments`: List comments for a specific commit
+  - `create_commit`: Create a new commit directly
+- Testing framework with go-vcr and golden files

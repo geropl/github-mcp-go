@@ -2,74 +2,20 @@ package tools
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/github"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/server"
+	"github.com/geropl/github-mcp-go/pkg/errors"
+	"github.com/geropl/github-mcp-go/pkg/github"
 )
 
 // RegisterRepositoryTools registers repository-related tools
-func RegisterRepositoryTools(s *server.Server) {
+func RegisterRepositoryTools(s *Server) {
 	client := s.GetClient()
 	logger := s.GetLogger()
 	repoOps := github.NewRepositoryOperations(client, logger)
 
-	// Register search_repositories tool
-	searchReposTool := mcp.NewTool("search_repositories",
-		mcp.WithDescription("Search for GitHub repositories"),
-		mcp.WithString("query",
-			mcp.Required(),
-			mcp.Description("Search query (see GitHub search syntax)"),
-		),
-		mcp.WithNumber("page",
-			mcp.Description("Page number for pagination (default: 1)"),
-		),
-		mcp.WithNumber("perPage",
-			mcp.Description("Number of results per page (default: 30, max: 100)"),
-		),
-	)
-
-	s.RegisterTool(searchReposTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		// Extract parameters
-		query, ok := request.Params.Arguments["query"].(string)
-		if !ok {
-			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("query must be a string"))), nil
-		}
-
-		var page, perPage int
-		if pageVal, ok := request.Params.Arguments["page"]; ok {
-			if pageFloat, ok := pageVal.(float64); ok {
-				page = int(pageFloat)
-			}
-		}
-
-		if perPageVal, ok := request.Params.Arguments["perPage"]; ok {
-			if perPageFloat, ok := perPageVal.(float64); ok {
-				perPage = int(perPageFloat)
-			}
-		}
-
-		// Call the operation
-		result, err := repoOps.SearchRepositories(ctx, query, page, perPage)
-		if err != nil {
-			if ghErr, ok := err.(*errors.GitHubError); ok {
-				return mcp.NewToolResultError(errors.FormatGitHubError(ghErr)), nil
-			}
-			return mcp.NewToolResultError(fmt.Sprintf("Error searching repositories: %v", err)), nil
-		}
-
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
-	})
 
 	// Register create_repository tool
 	createRepoTool := mcp.NewTool("create_repository",
@@ -126,13 +72,9 @@ func RegisterRepositoryTools(s *server.Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error creating repository: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		// Format the result as markdown
+		markdown := formatRepositoryToMarkdown(result)
+		return mcp.NewToolResultText(markdown), nil
 	})
 
 	// Register fork_repository tool
@@ -179,12 +121,8 @@ func RegisterRepositoryTools(s *server.Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error forking repository: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		// Format the result as markdown
+		markdown := formatRepositoryToMarkdown(result)
+		return mcp.NewToolResultText(markdown), nil
 	})
 }

@@ -2,18 +2,16 @@ package tools
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
-	"github.com/modelcontextprotocol/github-mcp-go/internal/errors"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/github"
-	"github.com/modelcontextprotocol/github-mcp-go/internal/server"
+	"github.com/geropl/github-mcp-go/pkg/errors"
+	"github.com/geropl/github-mcp-go/pkg/github"
 )
 
 // RegisterPullRequestTools registers pull request-related tools
-func RegisterPullRequestTools(s *server.Server) {
+func RegisterPullRequestTools(s *Server) {
 	client := s.GetClient()
 	logger := s.GetLogger()
 	prOps := github.NewPullRequestOperations(client, logger)
@@ -99,13 +97,9 @@ func RegisterPullRequestTools(s *server.Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error creating pull request: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		// Format the result as markdown
+		markdown := formatPullRequestToMarkdown(result)
+		return mcp.NewToolResultText(markdown), nil
 	})
 
 	// Register get_pull_request tool
@@ -152,13 +146,9 @@ func RegisterPullRequestTools(s *server.Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error getting pull request: %v", err)), nil
 		}
 
-		// Format the result
-		jsonResult, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
-			return mcp.NewToolResultError(fmt.Sprintf("Error formatting result: %v", err)), nil
-		}
-
-		return mcp.NewToolResultText(string(jsonResult)), nil
+		// Format the result as markdown
+		markdown := formatPullRequestToMarkdown(result)
+		return mcp.NewToolResultText(markdown), nil
 	})
 
 	// Register get_pull_request_diff tool
@@ -205,6 +195,8 @@ func RegisterPullRequestTools(s *server.Server) {
 			return mcp.NewToolResultError(fmt.Sprintf("Error getting pull request diff: %v", err)), nil
 		}
 
-		return mcp.NewToolResultText(diff), nil
+		// Format the diff as markdown
+		markdown := formatPullRequestDiffToMarkdown(number, diff)
+		return mcp.NewToolResultText(markdown), nil
 	})
 }

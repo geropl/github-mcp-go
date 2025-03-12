@@ -25,17 +25,28 @@
    - Records HTTP interactions for testing
    - Allows for deterministic testing without live API calls
    - Supports table-driven tests with recorded cassettes
+   - Sanitizes sensitive information in cassettes
+   - Provides matching options for request/response pairs
 
 2. **testify**
    - Testing toolkit for Go
    - Provides assertions and mocking capabilities
-   - Will be used for unit and integration tests
+   - Used for unit and integration tests
+
+3. **Golden Files**
+   - Not a library but a testing pattern
+   - Stores expected test results in JSON format
+   - Updated with `-golden` flag when test behavior changes
+   - Used for comparing actual results against expected results
 
 ## Development Environment
 
 - Go 1.21 or later
 - Git for version control
 - GitHub API access via personal access token
+- Testing flags:
+  - `-record`: Records new HTTP interactions
+  - `-golden`: Updates golden files with current test results
 
 ## API Dependencies
 
