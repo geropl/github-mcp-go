@@ -273,8 +273,10 @@
     - EmptyQuery
     - InvalidPagination
     - ComplexQuerySyntaxError
+- Consolidated testing documentation into a single comprehensive TESTING.md file
+- Improved documentation of the testing approach, including go-vcr recording and golden files
+- Provided clear instructions for running tests in different modes (normal, recording, golden)
 - Comprehensive test plan for pull request operations is created
-- Detailed testing documentation is created
 - README is created
 
 ## What's Left to Build

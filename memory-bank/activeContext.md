@@ -31,6 +31,9 @@ The current focus is on:
 
 ## Recent Changes
 
+- Merged PULL_REQUEST_TESTING.md and README-PR-TESTING.md into a single comprehensive TESTING.md file
+- Organized testing documentation into clear sections covering the approach, execution modes, and workflow
+- Improved documentation of go-vcr and golden files methodology
 - Created project structure
 - Initialized Go module
 - Added dependencies (mcp-go, go-github, logrus, go-vcr)
@@ -278,7 +281,8 @@ The current focus is on:
    - Sanitizing sensitive information in cassettes
    - Taking an iterative approach: make one test case work, then move to the next
    - Starting with the "happy path" test cases before error cases
-   - Documenting the testing process in detail for future reference
+   - Documenting the testing process in detail in TESTING.md
+   - Providing clear instructions for running tests in different modes (normal, recording, golden)
 
 4. **Tool Implementation Priority**
    - Repository operations (completed)
