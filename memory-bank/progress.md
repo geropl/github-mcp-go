@@ -13,8 +13,15 @@
 | Branch Operations | Completed | 100% |
 | Search Operations | Completed | 100% |
 | Commit Operations | Completed | 100% |
+| GitHub Actions Operations | Not Started | 0% |
 | Testing | In Progress | 95% |
 | Documentation | Completed | 100% |
+
+### PRD Implementation Progress
+
+| PRD | Status | Progress |
+|-----|--------|----------|
+| 001-action-tools | Not Started | 0% |
 
 ### Testing Progress
 
@@ -30,6 +37,8 @@
 
 ## What Works
 
+- PRD-based workflow is established for feature development
+- First PRD (001-action-tools) is created for GitHub Actions workflow tools
 - GitHub release workflow is implemented for automated binary builds and releases
 - CHANGELOG.md is created to track changes between releases
 - README.md is updated with information about releases and installation from pre-built binaries
@@ -284,7 +293,21 @@
 
 ## What's Left to Build
 
-1. **Testing**
+1. **GitHub Actions Tools (PRD 001-action-tools)**
+   - Implement GitHub Actions API operations in pkg/github/actions.go
+   - Implement GitHub Actions tools in pkg/tools/actions.go
+   - Create formatters for GitHub Actions API responses
+   - Implement the following tools:
+     - list_workflows: List all workflows in a repository
+     - get_workflow: Get detailed information about a specific workflow
+     - list_workflow_runs: List workflow runs for a repository or a specific workflow
+     - get_workflow_run: Get detailed information about a specific workflow run
+     - download_workflow_run_logs: Download and process the logs for a workflow run
+     - list_workflow_jobs: List jobs for a workflow run
+     - get_workflow_job: Get detailed information about a specific job
+   - Create tests for all GitHub Actions tools
+
+2. **Testing**
    - Complete repository operations tests:
      - Implement tests for create_repository (requires token with write permissions)
      - Implement tests for fork_repository (requires token with write permissions)
@@ -317,13 +340,20 @@ Current focus:
 
 ## Next Milestone
 
-**Milestone 2: Complete Repository Operations Testing**
+**Milestone 2: GitHub Actions Tools Implementation**
+- Implement all GitHub Actions tools as specified in PRD 001-action-tools
+- Create tests for all GitHub Actions tools
+- Document the implementation in the PRD
+
+Target Completion: TBD
+
+**Milestone 3: Complete Repository Operations Testing**
 - Implement tests for all repository operations tools
 - Follow the iterative approach outlined in the testing documentation
 
 Target Completion: TBD
 
-**Milestone 3: End-to-End Testing**
+**Milestone 4: End-to-End Testing**
 - Implement end-to-end tests for the entire MCP server
 - Test all tools together in realistic scenarios
 - Ensure proper error handling across all components

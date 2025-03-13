@@ -59,3 +59,32 @@
 - Environment variables for authentication
 - Configuration for server name and version
 - Optional logging configuration
+
+## Documentation Approach
+
+### Project Requirement Documents (PRDs)
+
+- Each significant feature begins with a Project Requirement Document
+- PRDs are stored in the `prds/` directory with sequential numbering
+- PRDs document both requirements and implementation progress
+- PRD structure includes:
+  - Overview
+  - Background
+  - Requirements
+  - Implementation Details
+  - Testing Strategy
+  - Progress
+  - Future Considerations
+
+### Memory Bank
+
+- Core project documentation is maintained in the memory bank
+- Memory bank files provide context for the project's purpose, architecture, and progress
+- Updated regularly to reflect current state and decisions
+
+### Code Documentation
+
+- Go doc comments for exported functions and types
+- README.md for high-level project overview
+- TESTING.md for testing approach and instructions
+- CHANGELOG.md for tracking changes between releases

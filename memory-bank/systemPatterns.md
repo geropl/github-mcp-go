@@ -138,6 +138,44 @@ type GitHubError struct {
 }
 ```
 
+## Feature Development Workflow
+
+### Project Requirement Documents (PRDs)
+
+- Each significant feature begins with a Project Requirement Document
+- PRDs are stored in the `prds/` directory
+- PRDs are numbered sequentially (e.g., `001-action-tools`, `002-feature-name`)
+- PRDs document both requirements and implementation progress
+- Implementation status is tracked within each PRD
+
+```mermaid
+flowchart TD
+    A[Identify New Feature] --> B[Create PRD with Sequential Number]
+    B --> C[Document Requirements]
+    C --> D[Begin Implementation]
+    D --> E[Document Progress in PRD]
+    E --> F[Complete Implementation]
+    F --> G[Final PRD Update]
+```
+
+### PRD Structure
+
+- **Overview**: Brief description of the feature
+- **Background**: Context and motivation
+- **Requirements**: Detailed specifications
+- **Implementation Details**: Technical approach
+- **Testing Strategy**: How the feature will be tested
+- **Progress**: Current implementation status
+- **Future Considerations**: Potential enhancements
+
+### PRD-Based Development Process
+
+1. Create a new PRD with the next sequential number
+2. Document requirements thoroughly before implementation
+3. Update the PRD with implementation progress
+4. Use the PRD to track what's completed and what's next
+5. Finalize the PRD when implementation is complete
+
 ## Testing Strategy
 
 ### Approach

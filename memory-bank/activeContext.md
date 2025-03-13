@@ -2,6 +2,8 @@
 
 ## Current Focus
 
+We have adopted a new PRD-based workflow for feature development. Each significant feature now begins with a Project Requirement Document (PRD) that outlines requirements and tracks implementation progress. Our first PRD (001-action-tools) has been created for implementing GitHub Actions workflow tools.
+
 We have completed the initial phase of porting the GitHub MCP server from TypeScript to Go. We have:
 
 1. Set up the project structure
@@ -18,19 +20,26 @@ We have completed the initial phase of porting the GitHub MCP server from TypeSc
 
 The current focus is on:
 
-1. **Improving search operations**:
+1. **Implementing GitHub Actions tools**:
+   - Following the requirements in PRD 001-action-tools
+   - Implementing read-only tools for GitHub Actions workflows
+   - Tracking implementation progress in the PRD
+
+2. **Improving search operations**:
    - Fixed GitHub API issue with search_issues tool by adding required "type" parameter
    - Consolidated all search-related API operations in pkg/github/search.go
    - Consolidated all search-related tools in pkg/tools/search.go
    - Implemented comprehensive test cases for all search operations
 
-2. **Preparing for end-to-end testing**:
+3. **Preparing for end-to-end testing**:
    - Ensuring all components work together seamlessly
    - Identifying potential edge cases
    - Planning for integration testing
 
 ## Recent Changes
 
+- Established new PRD-based workflow for feature development
+- Created first PRD (001-action-tools) for GitHub Actions workflow tools
 - Added GitHub release workflow for automated binary builds and releases
 - Created CHANGELOG.md to track changes between releases
 - Updated README.md with information about releases and installation from pre-built binaries
@@ -261,13 +270,20 @@ The current focus is on:
 
 ## Next Steps
 
-1. Polish documentation
-2. Complete repository operations tests for create_repository and fork_repository
-3. Plan for end-to-end testing
+1. Implement GitHub Actions tools as specified in PRD 001-action-tools
+2. Polish documentation
+3. Complete repository operations tests for create_repository and fork_repository
+4. Plan for end-to-end testing
 
 ## Active Decisions
 
-1. **Error Handling Strategy**
+1. **Feature Development Process**
+   - Using PRDs to document requirements and track implementation progress
+   - PRDs are numbered sequentially and stored in the `prds/` directory
+   - Implementation status is tracked within each PRD
+   - PRDs serve as the source of truth for what needs to be implemented
+
+2. **Error Handling Strategy**
    - Using logrus for structured logging
    - Created custom error types for different error categories
    - Providing detailed error messages for troubleshooting
