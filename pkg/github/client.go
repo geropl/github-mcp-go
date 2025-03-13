@@ -1,13 +1,11 @@
 package github
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/google/go-github/v69/github"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/oauth2"
 
 	"github.com/geropl/github-mcp-go/pkg/errors"
 )
@@ -20,12 +18,11 @@ type Client struct {
 
 // NewClient creates a new GitHub client
 func NewClient(token string, logger *logrus.Logger) *Client {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-	client := github.NewClient(tc)
+	httpClient := &http.Client{}
+	client := github.NewClient(httpClient)
+	if token != "" {
+		client = client.WithAuthToken(token)
+	}
 
 	return &Client{
 		client: client,
