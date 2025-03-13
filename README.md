@@ -26,10 +26,15 @@ A Model Context Protocol (MCP) server for GitHub, implemented in Go. This server
 You can download pre-built binaries for your platform from the [GitHub Releases](https://github.com/geropl/github-mcp-go/releases) page.
 
 ```bash
-# Download the latest release for your platform
-# Example for Linux (amd64):
-curl -L https://github.com/geropl/github-mcp-go/releases/latest/download/github-mcp-go_<version>_linux_amd64 -o github-mcp-go
-chmod +x github-mcp-go
+# Download the latest release - for "linux_amd64" in this case
+RELEASE="$(curl -s https://api.github.com/repos/geropl/github-mcp-go/releases/latest)"
+DOWNLOAD_URL="$(echo $RELEASE | jq -r '.assets[] | select(.name | contains("linux_amd64")) | .browser_download_url')"
+curl -L -o ./github-mcp-go $DOWNLOAD_URL
+chmod +x ./github-mcp-go
+
+# Setup the mcp server (can be called in .gitpod.yml, dotfiles repo, etc.)
+./github-mcp-go setup --write-access="${GITHUB_MCP_WRITE_ACCESS:-false}" --auto-approve=allow-read-only || true
+rm -f ./github-mcp-go
 ```
 
 ### Building from Source
@@ -57,20 +62,7 @@ The server requires a GitHub Personal Access Token to authenticate with the GitH
 export GITHUB_PERSONAL_ACCESS_TOKEN=your_token_here
 ```
 
-### Running the Server
-
-```bash
-# Run the server directly (read-only mode)
-./github-mcp-go serve
-
-# Run the server with write access enabled
-./github-mcp-go serve --write-access
-
-# Show help
-./github-mcp-go --help
-```
-
-### Setup Command
+### Setup
 
 The server includes a convenient setup command to install and configure the MCP server for use with AI assistants:
 
@@ -86,6 +78,19 @@ The server includes a convenient setup command to install and configure the MCP 
 
 # Show setup help
 ./github-mcp-go setup --help
+```
+
+### Running the Server
+
+```bash
+# Run the server directly (read-only mode)
+./github-mcp-go serve
+
+# Run the server with write access enabled
+./github-mcp-go serve --write-access
+
+# Show help
+./github-mcp-go --help
 ```
 
 #### Auto-Approval Options
