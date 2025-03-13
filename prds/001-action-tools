@@ -216,6 +216,38 @@ Gets detailed information about a specific job.
 - `head_sha`: Commit SHA the job ran on
 - `labels`: Array of labels for the job's runner
 
+## Implementation Status
+
+| Tool | Status | Progress |
+|------|--------|----------|
+| list_workflows | Completed | 100% |
+| get_workflow | Not Started | 0% |
+| list_workflow_runs | Not Started | 0% |
+| get_workflow_run | Not Started | 0% |
+| download_workflow_run_logs | Not Started | 0% |
+| list_workflow_jobs | Not Started | 0% |
+| get_workflow_job | Not Started | 0% |
+| **Overall Progress** | **In Progress** | **14%** |
+
+### Completed Work
+
+- Created `pkg/github/actions.go` with the `ListWorkflows` operation
+- Created `pkg/tools/actions.go` with the `list_workflows` tool
+- Updated `pkg/tools/server.go` to register the actions tools
+- Created `pkg/tools/actions_test.go` with test cases for `list_workflows`
+- Added `list_workflows` to the read-only tools list
+- Successfully implemented and tested the `list_workflows` tool with both happy path and error cases:
+  - ListWorkflows (happy path)
+  - ListWorkflowsInvalidOwner (error case)
+  - ListWorkflowsInvalidRepo (error case)
+  - ListWorkflowsNonExistentRepo (error case)
+
+### Next Steps
+
+1. Implement the `get_workflow` tool
+2. Create tests for the `get_workflow` tool
+3. Continue with the remaining tools in order
+
 ## Implementation Details
 
 ### Architecture

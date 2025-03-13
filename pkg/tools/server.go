@@ -66,6 +66,7 @@ func RegisterTools(s *Server) {
 	RegisterCommitTools(s)
 	RegisterBranchTools(s)
 	RegisterSearchTools(s)
+	RegisterActionsTools(s)
 }
 
 // WriteAccess returns whether write access is enabled
@@ -94,5 +95,6 @@ func GetReadOnlyToolNames() map[string]bool {
 		"list_commit_comments":  true,
 		"list_branches":         true,
 		"get_branch":            true,
+		"list_workflows":        true,
 	}
 }

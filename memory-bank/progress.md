@@ -13,7 +13,7 @@
 | Branch Operations | Completed | 100% |
 | Search Operations | Completed | 100% |
 | Commit Operations | Completed | 100% |
-| GitHub Actions Operations | Not Started | 0% |
+| GitHub Actions Operations | In Progress | 14% |
 | Testing | In Progress | 95% |
 | Documentation | Completed | 100% |
 
@@ -21,7 +21,7 @@
 
 | PRD | Status | Progress |
 |-----|--------|----------|
-| 001-action-tools | Not Started | 0% |
+| 001-action-tools | In Progress | 14% |
 
 ### Testing Progress
 
@@ -34,9 +34,17 @@
 | Branch Operations Tests | Completed | 100% |
 | Search Operations Tests | Completed | 100% |
 | Commit Operations Tests | Completed | 100% |
+| Actions Operations Tests | In Progress | 14% |
 
 ## What Works
 
+- GitHub Actions operations tools are partially implemented:
+  - list_workflows: List all workflows in a repository
+- GitHub Actions operations tests are implemented for list_workflows (4 test cases):
+  - ListWorkflows
+  - ListWorkflowsInvalidOwner
+  - ListWorkflowsInvalidRepo
+  - ListWorkflowsNonExistentRepo
 - PRD-based workflow is established for feature development
 - First PRD (001-action-tools) is created for GitHub Actions workflow tools
 - GitHub release workflow is implemented for automated binary builds and releases
@@ -294,18 +302,16 @@
 ## What's Left to Build
 
 1. **GitHub Actions Tools (PRD 001-action-tools)**
-   - Implement GitHub Actions API operations in pkg/github/actions.go
-   - Implement GitHub Actions tools in pkg/tools/actions.go
-   - Create formatters for GitHub Actions API responses
+   - Continue implementing GitHub Actions API operations in pkg/github/actions.go
+   - Continue implementing GitHub Actions tools in pkg/tools/actions.go
    - Implement the following tools:
-     - list_workflows: List all workflows in a repository
      - get_workflow: Get detailed information about a specific workflow
      - list_workflow_runs: List workflow runs for a repository or a specific workflow
      - get_workflow_run: Get detailed information about a specific workflow run
      - download_workflow_run_logs: Download and process the logs for a workflow run
      - list_workflow_jobs: List jobs for a workflow run
      - get_workflow_job: Get detailed information about a specific job
-   - Create tests for all GitHub Actions tools
+   - Create tests for the remaining GitHub Actions tools
 
 2. **Testing**
    - Complete repository operations tests:

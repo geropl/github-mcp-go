@@ -23,6 +23,8 @@ The current focus is on:
 1. **Implementing GitHub Actions tools**:
    - Following the requirements in PRD 001-action-tools
    - Implementing read-only tools for GitHub Actions workflows
+   - Started implementation with the list_workflows tool
+   - Created tests for the list_workflows tool
    - Tracking implementation progress in the PRD
 
 2. **Improving search operations**:
@@ -38,6 +40,13 @@ The current focus is on:
 
 ## Recent Changes
 
+- Started implementing GitHub Actions tools:
+  - Created pkg/github/actions.go with the ListWorkflows operation
+  - Created pkg/tools/actions.go with the list_workflows tool
+  - Updated pkg/tools/server.go to register the actions tools
+  - Created pkg/tools/actions_test.go with test cases for list_workflows
+  - Added list_workflows to the read-only tools list
+  - Successfully implemented and tested the list_workflows tool with both happy path and error cases
 - Established new PRD-based workflow for feature development
 - Created first PRD (001-action-tools) for GitHub Actions workflow tools
 - Added GitHub release workflow for automated binary builds and releases
