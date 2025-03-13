@@ -14,6 +14,15 @@ A Model Context Protocol (MCP) server for GitHub, implemented in Go. This server
   - Write access is disabled by default for safety
   - Fine-grained auto-approval options
 
+## Planned Features
+
+- [ ] "get_diff"
+  - diff between two commits
+  - ? Should this be in the output of `compare_commits`?
+- [ ] support "actions", most importantly [workflow runs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28):
+  - navigate those (list, read)
+  - retrieve logs
+
 
 ## Installation
 
