@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - No unreleased changes yet
 
+## [0.2.1] - 2025-03-13
+
+### Added
+- Minimal Gitpod configuration for improved development experience
+
+### Fixed
+- GitHub client construction to properly configure the token
+
 ## [0.2.0] - 2025-03-12
 
 ### Added
