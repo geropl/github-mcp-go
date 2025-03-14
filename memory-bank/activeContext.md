@@ -40,6 +40,12 @@ The current focus is on:
 
 ## Recent Changes
 
+- Continued implementing GitHub Actions tools:
+  - Added GetWorkflow operation to pkg/github/actions.go
+  - Added get_workflow tool to pkg/tools/actions.go
+  - Added test cases for get_workflow to pkg/tools/actions_test.go
+  - Successfully implemented and tested the get_workflow tool with both happy path and error cases
+  - Updated PRD 001-action-tools to reflect implementation progress (now at 29%)
 - Started implementing GitHub Actions tools:
   - Created pkg/github/actions.go with the ListWorkflows operation
   - Created pkg/tools/actions.go with the list_workflows tool

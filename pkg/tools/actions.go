@@ -18,6 +18,54 @@ func RegisterActionsTools(s *Server) {
 	logger := s.GetLogger()
 	actionsOps := github.NewActionsOperations(client, logger)
 
+	// Register get_workflow tool
+	getWorkflowTool := mcp.NewTool("get_workflow",
+		mcp.WithDescription("Get detailed information about a specific workflow"),
+		mcp.WithString("owner",
+			mcp.Required(),
+			mcp.Description("Repository owner (username or organization)"),
+		),
+		mcp.WithString("repo",
+			mcp.Required(),
+			mcp.Description("Repository name"),
+		),
+		mcp.WithString("workflow_id",
+			mcp.Required(),
+			mcp.Description("The ID or filename of the workflow (can be a numeric ID or a filename)"),
+		),
+	)
+
+	s.RegisterTool(getWorkflowTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Extract parameters
+		owner, ok := request.Params.Arguments["owner"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("owner must be a string"))), nil
+		}
+
+		repo, ok := request.Params.Arguments["repo"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("repo must be a string"))), nil
+		}
+
+		workflowID, ok := request.Params.Arguments["workflow_id"]
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("workflow_id is required"))), nil
+		}
+
+		// Call the operation
+		workflow, err := actionsOps.GetWorkflow(ctx, owner, repo, workflowID)
+		if err != nil {
+			if ghErr, ok := err.(*errors.GitHubError); ok {
+				return mcp.NewToolResultError(errors.FormatGitHubError(ghErr)), nil
+			}
+			return mcp.NewToolResultError(fmt.Sprintf("Error getting workflow: %v", err)), nil
+		}
+
+		// Format the result as markdown
+		markdown := formatWorkflowToMarkdown(workflow)
+		return mcp.NewToolResultText(markdown), nil
+	})
+
 	// Register list_workflows tool
 	listWorkflowsTool := mcp.NewTool("list_workflows",
 		mcp.WithDescription("List all workflows in a repository"),
@@ -77,6 +125,36 @@ func RegisterActionsTools(s *Server) {
 		markdown := formatWorkflowsToMarkdown(workflows)
 		return mcp.NewToolResultText(markdown), nil
 	})
+}
+
+// formatWorkflowToMarkdown converts a GitHub workflow to markdown
+func formatWorkflowToMarkdown(workflow *gh.Workflow) string {
+	md := fmt.Sprintf("# Workflow: %s\n\n", workflow.GetName())
+	
+	md += fmt.Sprintf("**ID:** %d  \n", workflow.GetID())
+	md += fmt.Sprintf("**Path:** %s  \n", workflow.GetPath())
+	md += fmt.Sprintf("**State:** %s  \n", workflow.GetState())
+	
+	// Format dates if available
+	createdAt := workflow.GetCreatedAt()
+	if !createdAt.IsZero() {
+		md += fmt.Sprintf("**Created:** %s  \n", createdAt.Format(time.RFC1123))
+	}
+	
+	updatedAt := workflow.GetUpdatedAt()
+	if !updatedAt.IsZero() {
+		md += fmt.Sprintf("**Updated:** %s  \n", updatedAt.Format(time.RFC1123))
+	}
+	
+	md += fmt.Sprintf("**URL:** %s  \n\n", workflow.GetHTMLURL())
+	
+	// Add badge URL if available
+	badgeURL := workflow.GetBadgeURL()
+	if badgeURL != "" {
+		md += fmt.Sprintf("**Badge URL:** %s  \n\n", badgeURL)
+	}
+	
+	return md
 }
 
 // formatWorkflowsToMarkdown converts GitHub workflows to markdown

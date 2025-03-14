@@ -13,7 +13,7 @@
 | Branch Operations | Completed | 100% |
 | Search Operations | Completed | 100% |
 | Commit Operations | Completed | 100% |
-| GitHub Actions Operations | In Progress | 14% |
+| GitHub Actions Operations | In Progress | 29% |
 | Testing | In Progress | 95% |
 | Documentation | Completed | 100% |
 
@@ -21,7 +21,7 @@
 
 | PRD | Status | Progress |
 |-----|--------|----------|
-| 001-action-tools | In Progress | 14% |
+| 001-action-tools | In Progress | 29% |
 
 ### Testing Progress
 
@@ -34,17 +34,27 @@
 | Branch Operations Tests | Completed | 100% |
 | Search Operations Tests | Completed | 100% |
 | Commit Operations Tests | Completed | 100% |
-| Actions Operations Tests | In Progress | 14% |
+| Actions Operations Tests | In Progress | 29% |
 
 ## What Works
 
 - GitHub Actions operations tools are partially implemented:
   - list_workflows: List all workflows in a repository
-- GitHub Actions operations tests are implemented for list_workflows (4 test cases):
-  - ListWorkflows
-  - ListWorkflowsInvalidOwner
-  - ListWorkflowsInvalidRepo
-  - ListWorkflowsNonExistentRepo
+  - get_workflow: Get detailed information about a specific workflow
+- GitHub Actions operations tests are implemented for:
+  - list_workflows (4 test cases):
+    - ListWorkflows
+    - ListWorkflowsInvalidOwner
+    - ListWorkflowsInvalidRepo
+    - ListWorkflowsNonExistentRepo
+  - get_workflow (7 test cases):
+    - GetWorkflowByID
+    - GetWorkflowByFileName
+    - GetWorkflowInvalidOwner
+    - GetWorkflowInvalidRepo
+    - GetWorkflowInvalidID
+    - GetWorkflowNonExistentID
+    - GetWorkflowNonExistentFileName
 - PRD-based workflow is established for feature development
 - First PRD (001-action-tools) is created for GitHub Actions workflow tools
 - GitHub release workflow is implemented for automated binary builds and releases
@@ -305,7 +315,6 @@
    - Continue implementing GitHub Actions API operations in pkg/github/actions.go
    - Continue implementing GitHub Actions tools in pkg/tools/actions.go
    - Implement the following tools:
-     - get_workflow: Get detailed information about a specific workflow
      - list_workflow_runs: List workflow runs for a repository or a specific workflow
      - get_workflow_run: Get detailed information about a specific workflow run
      - download_workflow_run_logs: Download and process the logs for a workflow run
