@@ -2,26 +2,25 @@
 
 ## Current Focus
 
-We are implementing GitHub Actions tools following PRD 001-action-tools, with current progress at 29%. The focus is on read-only tools for GitHub Actions workflows.
+We are implementing GitHub Actions tools following PRD 001-action-tools, with current progress at 43%. The focus is on read-only tools for GitHub Actions workflows.
 
 Current priorities:
-1. **GitHub Actions tools implementation** (29% complete)
-   - Implemented: list_workflows, get_workflow
-   - Next: list_workflow_runs, get_workflow_run, download_workflow_run_logs, list_workflow_jobs, get_workflow_job
+1. **GitHub Actions tools implementation** (43% complete)
+   - Implemented: list_workflows, get_workflow, list_workflow_runs
+   - Next: get_workflow_run, download_workflow_run_logs, list_workflow_jobs, get_workflow_job
 
 2. **Testing completion**
    - Repository operations tests need completion (50% done)
-   - Actions operations tests in progress (29% done)
+   - Actions operations tests in progress (43% done)
    - All other test categories are complete
 
 3. **End-to-end testing preparation**
 
 ## Recent Changes
 
-- Added GetWorkflow operation and get_workflow tool with tests
-- Added ListWorkflows operation and list_workflows tool with tests
-- Updated PRD 001-action-tools to reflect implementation progress (29%)
-- Established PRD-based workflow for feature development
+- Added ListWorkflowRuns operation and list_workflow_runs tool with tests
+- Updated PRD 001-action-tools to reflect implementation progress (43%)
+- Added formatter for workflow runs in markdown format
 
 ## Next Steps
 

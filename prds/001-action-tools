@@ -222,20 +222,20 @@ Gets detailed information about a specific job.
 |------|--------|----------|
 | list_workflows | Completed | 100% |
 | get_workflow | Completed | 100% |
-| list_workflow_runs | Not Started | 0% |
+| list_workflow_runs | Completed | 100% |
 | get_workflow_run | Not Started | 0% |
 | download_workflow_run_logs | Not Started | 0% |
 | list_workflow_jobs | Not Started | 0% |
 | get_workflow_job | Not Started | 0% |
-| **Overall Progress** | **In Progress** | **29%** |
+| **Overall Progress** | **In Progress** | **43%** |
 
 ### Completed Work
 
-- Created `pkg/github/actions.go` with the `ListWorkflows` and `GetWorkflow` operations
-- Created `pkg/tools/actions.go` with the `list_workflows` and `get_workflow` tools
+- Created `pkg/github/actions.go` with the `ListWorkflows`, `GetWorkflow`, and `ListWorkflowRuns` operations
+- Created `pkg/tools/actions.go` with the `list_workflows`, `get_workflow`, and `list_workflow_runs` tools
 - Updated `pkg/tools/server.go` to register the actions tools
-- Created `pkg/tools/actions_test.go` with test cases for `list_workflows` and `get_workflow`
-- Added `list_workflows` and `get_workflow` to the read-only tools list
+- Created `pkg/tools/actions_test.go` with test cases for all implemented tools
+- Added all implemented tools to the read-only tools list
 - Successfully implemented and tested the `list_workflows` tool with both happy path and error cases:
   - ListWorkflows (happy path)
   - ListWorkflowsInvalidOwner (error case)
@@ -249,11 +249,19 @@ Gets detailed information about a specific job.
   - GetWorkflowInvalidID (error case)
   - GetWorkflowNonExistentID (error case)
   - GetWorkflowNonExistentFileName (error case)
+- Successfully implemented and tested the `list_workflow_runs` tool with both happy path and error cases:
+  - ListWorkflowRuns (happy path)
+  - ListWorkflowRunsWithWorkflowID (happy path)
+  - ListWorkflowRunsWithFilters (happy path)
+  - ListWorkflowRunsInvalidOwner (error case)
+  - ListWorkflowRunsInvalidRepo (error case)
+  - ListWorkflowRunsNonExistentRepo (error case)
+  - ListWorkflowRunsInvalidWorkflowID (error case)
 
 ### Next Steps
 
-1. Implement the `list_workflow_runs` tool
-2. Create tests for the `list_workflow_runs` tool
+1. Implement the `get_workflow_run` tool
+2. Create tests for the `get_workflow_run` tool
 3. Continue with the remaining tools in order
 
 ## Implementation Details

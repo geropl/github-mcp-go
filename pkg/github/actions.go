@@ -112,3 +112,103 @@ func (a *ActionsOperations) GetWorkflow(ctx context.Context, owner, repo string,
 	
 	return workflow, nil
 }
+
+// ListWorkflowRuns lists workflow runs for a repository or a specific workflow
+func (a *ActionsOperations) ListWorkflowRuns(
+	ctx context.Context,
+	owner, repo string,
+	workflowID interface{},
+	branch, status, event string,
+	page, perPage int,
+) (*github.WorkflowRuns, error) {
+	// Validate owner and repo
+	if owner == "" {
+		return nil, errors.NewValidationError("owner cannot be empty")
+	}
+	if repo == "" {
+		return nil, errors.NewValidationError("repository name cannot be empty")
+	}
+
+	// Set default pagination values if not provided
+	if page <= 0 {
+		page = 1
+	}
+	if perPage <= 0 {
+		perPage = 30
+	} else if perPage > 100 {
+		perPage = 100
+	}
+
+	// Create options for the API call
+	opts := &github.ListWorkflowRunsOptions{
+		ListOptions: github.ListOptions{
+			Page:    page,
+			PerPage: perPage,
+		},
+	}
+
+	// Add optional filters if provided
+	if branch != "" {
+		opts.Branch = branch
+	}
+	if status != "" {
+		opts.Status = status
+	}
+	if event != "" {
+		opts.Event = event
+	}
+
+	// Call the GitHub API
+	var runs *github.WorkflowRuns
+	var err error
+
+	// If workflowID is provided, list runs for that specific workflow
+	if workflowID != nil {
+		// Handle different types of workflowID (can be int64 or string)
+		var id int64
+		var name string
+
+		switch v := workflowID.(type) {
+		case int64:
+			id = v
+		case float64:
+			id = int64(v)
+		case int:
+			id = int64(v)
+		case string:
+			if v == "" {
+				// Empty string means no workflow filter, list all runs
+				runs, _, err = a.client.GetClient().Actions.ListRepositoryWorkflowRuns(ctx, owner, repo, opts)
+				if err != nil {
+					return nil, a.client.HandleError(err)
+				}
+				return runs, nil
+			}
+
+			// Try to convert string to int64 if it looks like a number
+			if i, err := strconv.ParseInt(v, 10, 64); err == nil {
+				id = i
+			} else {
+				name = v
+			}
+		default:
+			return nil, errors.NewValidationError(fmt.Sprintf("workflow_id must be a string or number, got %T", workflowID))
+		}
+
+		// Call the appropriate API method based on the workflow identifier
+		if id != 0 {
+			runs, _, err = a.client.GetClient().Actions.ListWorkflowRunsByID(ctx, owner, repo, id, opts)
+		} else if name != "" {
+			runs, _, err = a.client.GetClient().Actions.ListWorkflowRunsByFileName(ctx, owner, repo, name, opts)
+		}
+	} else {
+		// No workflow ID provided, list all runs for the repository
+		runs, _, err = a.client.GetClient().Actions.ListRepositoryWorkflowRuns(ctx, owner, repo, opts)
+	}
+
+	if err != nil {
+		return nil, a.client.HandleError(err)
+	}
+
+	return runs, nil
+}

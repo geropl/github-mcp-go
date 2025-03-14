@@ -108,6 +108,70 @@ func TestActions(t *testing.T) {
 				"repo":  "non-existent-repo",
 			},
 		},
+		
+		// list_workflow_runs - Happy Path
+		{
+			Name: "ListWorkflowRuns",
+			Tool: "list_workflow_runs",
+			Input: map[string]interface{}{
+				"owner": "geropl",
+				"repo":  "github-mcp-go-test",
+			},
+		},
+		{
+			Name: "ListWorkflowRunsWithWorkflowID",
+			Tool: "list_workflow_runs",
+			Input: map[string]interface{}{
+				"owner":       "geropl",
+				"repo":        "github-mcp-go-test",
+				"workflow_id": "149593961", // Actual workflow ID
+			},
+		},
+		{
+			Name: "ListWorkflowRunsWithFilters",
+			Tool: "list_workflow_runs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"branch": "main",
+				"status": "completed",
+			},
+		},
+		
+		// list_workflow_runs - Error Cases
+		{
+			Name: "ListWorkflowRunsInvalidOwner",
+			Tool: "list_workflow_runs",
+			Input: map[string]interface{}{
+				"owner": "",
+				"repo":  "github-mcp-go-test",
+			},
+		},
+		{
+			Name: "ListWorkflowRunsInvalidRepo",
+			Tool: "list_workflow_runs",
+			Input: map[string]interface{}{
+				"owner": "geropl",
+				"repo":  "",
+			},
+		},
+		{
+			Name: "ListWorkflowRunsNonExistentRepo",
+			Tool: "list_workflow_runs",
+			Input: map[string]interface{}{
+				"owner": "geropl",
+				"repo":  "non-existent-repo",
+			},
+		},
+		{
+			Name: "ListWorkflowRunsInvalidWorkflowID",
+			Tool: "list_workflow_runs",
+			Input: map[string]interface{}{
+				"owner":       "geropl",
+				"repo":        "github-mcp-go-test",
+				"workflow_id": true, // Invalid type
+			},
+		},
 	}
 
 	// Run all test cases
