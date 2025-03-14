@@ -28,6 +28,11 @@
 - Start with "happy path" test cases before error cases
 - Comment out test cases that aren't ready to be implemented yet
 
+### Test Completion Rule
+- Never mark a feature as complete until ALL its tests pass
+- Verify each test case in normal mode before moving to the next
+- Document any test limitations or TODOs in code comments
+
 ### Test Structure
 - Table-driven tests with TestCase structs
 - Each test case has a Name, Tool, and Input

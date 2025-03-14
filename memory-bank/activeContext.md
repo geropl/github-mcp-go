@@ -343,3 +343,5 @@ The current focus is on:
 5. Balancing the iterative testing approach with comprehensive coverage
 6. Maintaining consistent test case organization across different tools
 7. Handling limitations with GitHub API permissions for tests that require write access
+8. Ensuring tests are fully completed before moving to new features
+9. Verifying tests pass in normal mode, not just recording/golden mode

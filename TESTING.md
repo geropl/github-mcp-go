@@ -155,6 +155,17 @@ The project follows an iterative testing approach:
 2. Make each test case work completely before moving to the next
 3. Start with "happy path" test cases before error cases
 
+## Test Completion Requirements
+
+Before moving to the next test case or feature, ensure:
+
+1. ✅ Test passes in normal mode (not just recording/golden mode)
+2. ✅ Error cases are implemented and passing
+3. ✅ Edge cases are considered and tested
+4. ✅ Test output is verified against expected behavior
+
+A test is only "complete" when all these criteria are met.
+
 ### Step-by-Step Implementation
 
 1. **Uncomment or add a test case** in the appropriate test file
@@ -170,4 +181,24 @@ The project follows an iterative testing approach:
    ```bash
    go test -v ./pkg/tools -run TestCategory/TestCaseName
    ```
+   - Ensure the test passes without flags
+   - Check that error cases fail appropriately
+   - Verify the output matches expected behavior
 5. **Move to the next test case**
+
+## Troubleshooting Common Test Issues
+
+### Test Passes in Recording Mode But Fails in Normal Mode
+- Check for time-dependent values in responses
+- Verify API responses haven't changed
+- Ensure golden files match current implementation
+
+### Inconsistent Test Results
+- Check for race conditions or external dependencies
+- Verify test isolation (tests shouldn't depend on each other)
+- Ensure cleanup functions run properly
+
+### VCR Recording Issues
+- Check GitHub token permissions
+- Verify network connectivity
+- Ensure the test repository exists and is accessible
