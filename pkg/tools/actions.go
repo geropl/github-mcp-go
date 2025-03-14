@@ -191,6 +191,49 @@ func RegisterActionsTools(s *Server) {
 		),
 	)
 	
+	// Register list_workflow_jobs tool
+	listWorkflowJobsTool := mcp.NewTool("list_workflow_jobs",
+		mcp.WithDescription("Lists jobs for a workflow run"),
+		mcp.WithString("owner",
+			mcp.Required(),
+			mcp.Description("Repository owner (username or organization)"),
+		),
+		mcp.WithString("repo",
+			mcp.Required(),
+			mcp.Description("Repository name"),
+		),
+		mcp.WithString("run_id",
+			mcp.Required(),
+			mcp.Description("The ID of the workflow run"),
+		),
+		mcp.WithString("filter",
+			mcp.Description("Filter jobs by their status (completed, in_progress, queued)"),
+		),
+		mcp.WithNumber("page",
+			mcp.Description("Page number for pagination (default: 1)"),
+		),
+		mcp.WithNumber("perPage",
+			mcp.Description("Number of results per page (default: 30, max: 100)"),
+		),
+	)
+	
+	// Register get_workflow_job tool
+	getWorkflowJobTool := mcp.NewTool("get_workflow_job",
+		mcp.WithDescription("Gets detailed information about a specific job"),
+		mcp.WithString("owner",
+			mcp.Required(),
+			mcp.Description("Repository owner (username or organization)"),
+		),
+		mcp.WithString("repo",
+			mcp.Required(),
+			mcp.Description("Repository name"),
+		),
+		mcp.WithString("job_id",
+			mcp.Required(),
+			mcp.Description("The ID of the job"),
+		),
+	)
+	
 	s.RegisterTool(getWorkflowRunTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
@@ -313,6 +356,91 @@ func RegisterActionsTools(s *Server) {
 
 		// Format the result as markdown
 		markdown := formatWorkflowRunsToMarkdown(runs)
+		return mcp.NewToolResultText(markdown), nil
+	})
+	
+	// Register the list_workflow_jobs tool
+	s.RegisterTool(listWorkflowJobsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Extract parameters
+		owner, ok := request.Params.Arguments["owner"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("owner must be a string"))), nil
+		}
+
+		repo, ok := request.Params.Arguments["repo"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("repo must be a string"))), nil
+		}
+
+		runID, ok := request.Params.Arguments["run_id"]
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("run_id is required"))), nil
+		}
+		
+		// Extract optional parameters
+		filter := ""
+		if val, ok := request.Params.Arguments["filter"].(string); ok {
+			filter = val
+		}
+		
+		// Extract pagination parameters with defaults
+		page := 1
+		if pageVal, ok := request.Params.Arguments["page"]; ok {
+			if pageFloat, ok := pageVal.(float64); ok {
+				page = int(pageFloat)
+			}
+		}
+
+		perPage := 30
+		if perPageVal, ok := request.Params.Arguments["perPage"]; ok {
+			if perPageFloat, ok := perPageVal.(float64); ok {
+				perPage = int(perPageFloat)
+			}
+		}
+
+		// Call the operation
+		jobs, err := actionsOps.ListWorkflowJobs(ctx, owner, repo, runID, filter, page, perPage)
+		if err != nil {
+			if ghErr, ok := err.(*errors.GitHubError); ok {
+				return mcp.NewToolResultError(errors.FormatGitHubError(ghErr)), nil
+			}
+			return mcp.NewToolResultError(fmt.Sprintf("Error listing workflow jobs: %v", err)), nil
+		}
+
+		// Format the result as markdown
+		markdown := formatJobsToMarkdown(jobs)
+		return mcp.NewToolResultText(markdown), nil
+	})
+	
+	// Register the get_workflow_job tool
+	s.RegisterTool(getWorkflowJobTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Extract parameters
+		owner, ok := request.Params.Arguments["owner"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("owner must be a string"))), nil
+		}
+
+		repo, ok := request.Params.Arguments["repo"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("repo must be a string"))), nil
+		}
+
+		jobID, ok := request.Params.Arguments["job_id"]
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("job_id is required"))), nil
+		}
+
+		// Call the operation
+		job, err := actionsOps.GetWorkflowJob(ctx, owner, repo, jobID)
+		if err != nil {
+			if ghErr, ok := err.(*errors.GitHubError); ok {
+				return mcp.NewToolResultError(errors.FormatGitHubError(ghErr)), nil
+			}
+			return mcp.NewToolResultError(fmt.Sprintf("Error getting workflow job: %v", err)), nil
+		}
+
+		// Format the result as markdown
+		markdown := formatJobToMarkdown(job)
 		return mcp.NewToolResultText(markdown), nil
 	})
 }
@@ -528,6 +656,144 @@ func formatLogsResultToMarkdown(result *github.LogsResult) string {
 	md += "\n## Usage Instructions\n\n"
 	md += "The logs have been extracted to the *Logs Directory* mentioned above. You can access the log files directly to view their contents.\n\n"
 	md += "**Note:** The logs directory is temporary and will be cleaned up when the server restarts.\n"
+	
+	return md
+}
+
+// formatJobToMarkdown converts a GitHub workflow job to markdown
+func formatJobToMarkdown(job *gh.WorkflowJob) string {
+	md := fmt.Sprintf("# Workflow Job: %s\n\n", job.GetName())
+	
+	md += fmt.Sprintf("**ID:** %d  \n", job.GetID())
+	md += fmt.Sprintf("**Run ID:** %d  \n", job.GetRunID())
+	md += fmt.Sprintf("**Status:** %s  \n", job.GetStatus())
+	
+	// Add conclusion if available
+	conclusion := job.GetConclusion()
+	if conclusion != "" {
+		md += fmt.Sprintf("**Conclusion:** %s  \n", conclusion)
+	}
+	
+	// Format dates if available
+	startedAt := job.GetStartedAt()
+	if !startedAt.IsZero() {
+		md += fmt.Sprintf("**Started:** %s  \n", startedAt.Format(time.RFC1123))
+	}
+	
+	completedAt := job.GetCompletedAt()
+	if !completedAt.IsZero() {
+		md += fmt.Sprintf("**Completed:** %s  \n", completedAt.Format(time.RFC1123))
+	}
+	
+	// Add runner information if available
+	if job.GetRunnerID() != 0 {
+		md += fmt.Sprintf("**Runner ID:** %d  \n", job.GetRunnerID())
+	}
+	
+	if job.GetRunnerName() != "" {
+		md += fmt.Sprintf("**Runner Name:** %s  \n", job.GetRunnerName())
+	}
+	
+	if job.GetRunnerGroupID() != 0 {
+		md += fmt.Sprintf("**Runner Group ID:** %d  \n", job.GetRunnerGroupID())
+	}
+	
+	if job.GetRunnerGroupName() != "" {
+		md += fmt.Sprintf("**Runner Group Name:** %s  \n", job.GetRunnerGroupName())
+	}
+	
+	// Add workflow information
+	md += fmt.Sprintf("**Workflow Name:** %s  \n", job.GetWorkflowName())
+	md += fmt.Sprintf("**Head SHA:** %s  \n\n", job.GetHeadSHA())
+	
+	// Add labels if available
+	if len(job.Labels) > 0 {
+		md += "## Labels\n\n"
+		for _, label := range job.Labels {
+			md += fmt.Sprintf("- %s\n", label)
+		}
+		md += "\n"
+	}
+	
+	// Add steps if available
+	if len(job.Steps) > 0 {
+		md += "## Steps\n\n"
+		for i, step := range job.Steps {
+			md += fmt.Sprintf("### %d. %s\n\n", i+1, step.GetName())
+			md += fmt.Sprintf("**Status:** %s  \n", step.GetStatus())
+			
+			// Add conclusion if available
+			stepConclusion := step.GetConclusion()
+			if stepConclusion != "" {
+				md += fmt.Sprintf("**Conclusion:** %s  \n", stepConclusion)
+			}
+			
+			md += fmt.Sprintf("**Number:** %d  \n", step.GetNumber())
+			
+			// Format dates if available
+			stepStartedAt := step.GetStartedAt()
+			if !stepStartedAt.IsZero() {
+				md += fmt.Sprintf("**Started:** %s  \n", stepStartedAt.Format(time.RFC1123))
+			}
+			
+			stepCompletedAt := step.GetCompletedAt()
+			if !stepCompletedAt.IsZero() {
+				md += fmt.Sprintf("**Completed:** %s  \n", stepCompletedAt.Format(time.RFC1123))
+			}
+			
+			md += "\n"
+		}
+	}
+	
+	return md
+}
+
+// formatJobsToMarkdown converts GitHub workflow jobs to markdown
+func formatJobsToMarkdown(jobs *gh.Jobs) string {
+	md := "# Workflow Jobs\n\n"
+	
+	if jobs.GetTotalCount() == 0 {
+		md += "No workflow jobs found.\n"
+		return md
+	}
+	
+	md += fmt.Sprintf("Found %d workflow jobs.\n\n", jobs.GetTotalCount())
+	
+	for i, job := range jobs.Jobs {
+		md += fmt.Sprintf("## %d. %s\n\n", i+1, job.GetName())
+		md += fmt.Sprintf("**ID:** %d  \n", job.GetID())
+		md += fmt.Sprintf("**Run ID:** %d  \n", job.GetRunID())
+		md += fmt.Sprintf("**Status:** %s  \n", job.GetStatus())
+		
+		// Add conclusion if available
+		conclusion := job.GetConclusion()
+		if conclusion != "" {
+			md += fmt.Sprintf("**Conclusion:** %s  \n", conclusion)
+		}
+		
+		// Format dates if available
+		startedAt := job.GetStartedAt()
+		if !startedAt.IsZero() {
+			md += fmt.Sprintf("**Started:** %s  \n", startedAt.Format(time.RFC1123))
+		}
+		
+		completedAt := job.GetCompletedAt()
+		if !completedAt.IsZero() {
+			md += fmt.Sprintf("**Completed:** %s  \n", completedAt.Format(time.RFC1123))
+		}
+		
+		// Add runner information if available
+		if job.GetRunnerName() != "" {
+			md += fmt.Sprintf("**Runner:** %s  \n", job.GetRunnerName())
+		}
+		
+		// Add step count
+		if len(job.Steps) > 0 {
+			md += fmt.Sprintf("**Steps:** %d  \n", len(job.Steps))
+		}
+		
+		md += "\n"
+	}
 	
 	return md
 }

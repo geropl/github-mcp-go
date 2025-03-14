@@ -288,6 +288,132 @@ func TestActions(t *testing.T) {
 				"run_id": true, // Invalid type
 			},
 		},
+		
+		// list_workflow_jobs - Happy Path
+		{
+			Name: "ListWorkflowJobs",
+			Tool: "list_workflow_jobs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "13839912722", // Actual run ID
+			},
+		},
+		{
+			Name: "ListWorkflowJobsWithFilter",
+			Tool: "list_workflow_jobs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "13839912722", // Actual run ID
+				"filter": "completed",
+			},
+		},
+		
+		// list_workflow_jobs - Error Cases
+		{
+			Name: "ListWorkflowJobsInvalidOwner",
+			Tool: "list_workflow_jobs",
+			Input: map[string]interface{}{
+				"owner":  "",
+				"repo":   "github-mcp-go-test",
+				"run_id": "13839912722",
+			},
+		},
+		{
+			Name: "ListWorkflowJobsInvalidRepo",
+			Tool: "list_workflow_jobs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "",
+				"run_id": "13839912722",
+			},
+		},
+		{
+			Name: "ListWorkflowJobsInvalidID",
+			Tool: "list_workflow_jobs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "",
+			},
+		},
+		{
+			Name: "ListWorkflowJobsNonExistentID",
+			Tool: "list_workflow_jobs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "99999999999", // Non-existent run ID
+			},
+		},
+		{
+			Name: "ListWorkflowJobsInvalidIDType",
+			Tool: "list_workflow_jobs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": true, // Invalid type
+			},
+		},
+		
+		// get_workflow_job - Happy Path
+		{
+			Name: "GetWorkflowJob",
+			Tool: "get_workflow_job",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"job_id": "38724486736", // Actual job ID
+			},
+		},
+		
+		// get_workflow_job - Error Cases
+		{
+			Name: "GetWorkflowJobInvalidOwner",
+			Tool: "get_workflow_job",
+			Input: map[string]interface{}{
+				"owner":  "",
+				"repo":   "github-mcp-go-test",
+				"job_id": "38724486736",
+			},
+		},
+		{
+			Name: "GetWorkflowJobInvalidRepo",
+			Tool: "get_workflow_job",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "",
+				"job_id": "38724486736",
+			},
+		},
+		{
+			Name: "GetWorkflowJobInvalidID",
+			Tool: "get_workflow_job",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"job_id": "",
+			},
+		},
+		{
+			Name: "GetWorkflowJobNonExistentID",
+			Tool: "get_workflow_job",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"job_id": "99999999999", // Non-existent job ID
+			},
+		},
+		{
+			Name: "GetWorkflowJobInvalidIDType",
+			Tool: "get_workflow_job",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"job_id": true, // Invalid type
+			},
+		},
 	}
 
 	// Run all test cases

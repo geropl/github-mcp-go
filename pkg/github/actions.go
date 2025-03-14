@@ -280,6 +280,117 @@ type LogsResult struct {
 	Files []string
 }
 
+// ListWorkflowJobs lists jobs for a workflow run
+func (a *ActionsOperations) ListWorkflowJobs(ctx context.Context, owner, repo string, runID interface{}, filter string, page, perPage int) (*github.Jobs, error) {
+	// Validate owner and repo
+	if owner == "" {
+		return nil, errors.NewValidationError("owner cannot be empty")
+	}
+	if repo == "" {
+		return nil, errors.NewValidationError("repository name cannot be empty")
+	}
+	
+	// Handle different types of runID (can be int64 or string)
+	var id int64
+	
+	switch v := runID.(type) {
+	case int64:
+		id = v
+	case float64:
+		id = int64(v)
+	case int:
+		id = int64(v)
+	case string:
+		if v == "" {
+			return nil, errors.NewValidationError("run_id cannot be empty")
+		}
+		
+		// Try to convert string to int64
+		var err error
+		id, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, errors.NewValidationError(fmt.Sprintf("run_id must be a valid number, got %s", v))
+		}
+	default:
+		return nil, errors.NewValidationError(fmt.Sprintf("run_id must be a string or number, got %T", runID))
+	}
+	
+	// Set default pagination values if not provided
+	if page <= 0 {
+		page = 1
+	}
+	if perPage <= 0 {
+		perPage = 30
+	} else if perPage > 100 {
+		perPage = 100
+	}
+	
+	// Create options for the API call
+	opts := &github.ListWorkflowJobsOptions{
+		ListOptions: github.ListOptions{
+			Page:    page,
+			PerPage: perPage,
+		},
+	}
+	
+	// Add filter if provided
+	if filter != "" {
+		opts.Filter = filter
+	}
+	
+	// Call the GitHub API
+	jobs, _, err := a.client.GetClient().Actions.ListWorkflowJobs(ctx, owner, repo, id, opts)
+	if err != nil {
+		return nil, a.client.HandleError(err)
+	}
+	
+	return jobs, nil
+}
+
+// GetWorkflowJob gets detailed information about a specific job
+func (a *ActionsOperations) GetWorkflowJob(ctx context.Context, owner, repo string, jobID interface{}) (*github.WorkflowJob, error) {
+	// Validate owner and repo
+	if owner == "" {
+		return nil, errors.NewValidationError("owner cannot be empty")
+	}
+	if repo == "" {
+		return nil, errors.NewValidationError("repository name cannot be empty")
+	}
+	
+	// Handle different types of jobID (can be int64 or string)
+	var id int64
+	
+	switch v := jobID.(type) {
+	case int64:
+		id = v
+	case float64:
+		id = int64(v)
+	case int:
+		id = int64(v)
+	case string:
+		if v == "" {
+			return nil, errors.NewValidationError("job_id cannot be empty")
+		}
+		
+		// Try to convert string to int64
+		var err error
+		id, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, errors.NewValidationError(fmt.Sprintf("job_id must be a valid number, got %s", v))
+		}
+	default:
+		return nil, errors.NewValidationError(fmt.Sprintf("job_id must be a string or number, got %T", jobID))
+	}
+	
+	// Call the GitHub API
+	job, _, err := a.client.GetClient().Actions.GetWorkflowJobByID(ctx, owner, repo, id)
+	if err != nil {
+		return nil, a.client.HandleError(err)
+	}
+	
+	return job, nil
+}
+
 // DownloadWorkflowRunLogs downloads and extracts logs for a workflow run
 func (a *ActionsOperations) DownloadWorkflowRunLogs(ctx context.Context, owner, repo string, runID interface{}) (*LogsResult, error) {
 	// Validate owner and repo

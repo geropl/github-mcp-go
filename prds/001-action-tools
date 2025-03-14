@@ -225,14 +225,14 @@ Gets detailed information about a specific job.
 | list_workflow_runs | Completed | 100% |
 | get_workflow_run | Completed | 100% |
 | download_workflow_run_logs | Completed | 100% |
-| list_workflow_jobs | Not Started | 0% |
-| get_workflow_job | Not Started | 0% |
-| **Overall Progress** | **In Progress** | **71%** |
+| list_workflow_jobs | Completed | 100% |
+| get_workflow_job | Completed | 100% |
+| **Overall Progress** | **Completed** | **100%** |
 
 ### Completed Work
 
-- Created `pkg/github/actions.go` with the `ListWorkflows`, `GetWorkflow`, `ListWorkflowRuns`, `GetWorkflowRun`, and `DownloadWorkflowRunLogs` operations
-- Created `pkg/tools/actions.go` with the `list_workflows`, `get_workflow`, `list_workflow_runs`, `get_workflow_run`, and `download_workflow_run_logs` tools
+- Created `pkg/github/actions.go` with the `ListWorkflows`, `GetWorkflow`, `ListWorkflowRuns`, `GetWorkflowRun`, `DownloadWorkflowRunLogs`, `ListWorkflowJobs`, and `GetWorkflowJob` operations
+- Created `pkg/tools/actions.go` with the `list_workflows`, `get_workflow`, `list_workflow_runs`, `get_workflow_run`, `download_workflow_run_logs`, `list_workflow_jobs`, and `get_workflow_job` tools
 - Updated `pkg/tools/server.go` to register the actions tools
 - Created `pkg/tools/actions_test.go` with test cases for all implemented tools
 - Added all implemented tools to the read-only tools list
@@ -271,13 +271,21 @@ Gets detailed information about a specific job.
   - DownloadWorkflowRunLogsInvalidID (error case)
   - DownloadWorkflowRunLogsNonExistentID (error case)
   - DownloadWorkflowRunLogsInvalidIDType (error case)
-
-### Next Steps
-
-1. Implement the `list_workflow_jobs` tool
-2. Create tests for the `list_workflow_jobs` tool
-3. Implement the `get_workflow_job` tool
-4. Create tests for the `get_workflow_job` tool
+- Successfully implemented and tested the `list_workflow_jobs` tool with both happy path and error cases:
+  - ListWorkflowJobs (happy path)
+  - ListWorkflowJobsWithFilter (happy path)
+  - ListWorkflowJobsInvalidOwner (error case)
+  - ListWorkflowJobsInvalidRepo (error case)
+  - ListWorkflowJobsInvalidID (error case)
+  - ListWorkflowJobsNonExistentID (error case)
+  - ListWorkflowJobsInvalidIDType (error case)
+- Successfully implemented and tested the `get_workflow_job` tool with both happy path and error cases:
+  - GetWorkflowJob (happy path)
+  - GetWorkflowJobInvalidOwner (error case)
+  - GetWorkflowJobInvalidRepo (error case)
+  - GetWorkflowJobInvalidID (error case)
+  - GetWorkflowJobNonExistentID (error case)
+  - GetWorkflowJobInvalidIDType (error case)
 
 ## Implementation Details
 
