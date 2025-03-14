@@ -82,3 +82,18 @@
 - Document testing approach and progress
 - Update progress.md with current status
 - Update activeContext.md with current focus
+
+### Memory Bank Management
+- Be mindful of space in memory bank files
+- Deleting irrelevant memories is a good thing
+- Follow short-term vs. long-term memory strategy:
+  - Short-term memory (activeContext.md, progress.md): Detailed, recent, specific
+  - Long-term memory (systemPatterns.md, techContext.md, projectbrief.md): Compressed, patterns, principles
+- Apply this strategy on every interaction with the memory bank
+- Use "compress memory bank" trigger to perform a compression run
+- When compressing memory bank files:
+  1. Focus on patterns over instances
+  2. Use tables and summaries instead of exhaustive lists
+  3. Keep only the most relevant and recent information in short-term memory
+  4. Distill important insights into long-term memory
+  5. Delete outdated or redundant information
