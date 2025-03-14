@@ -33,6 +33,18 @@
 - Verify each test case in normal mode before moving to the next
 - Document any test limitations or TODOs in code comments
 
+### Test Completion Checklist
+Before marking any feature as complete:
+1. ✓ All test cases are implemented in the test file
+2. ✓ All test cases have been run with `-record` flag
+3. ✓ All test cases have been run with `-golden` flag
+4. ✓ All test cases pass in normal mode
+5. ✓ Test directories exist in testdata/ for all test cases
+6. ✓ Test status is updated in progress.md
+7. ✓ Final verification is documented in activeContext.md
+
+IMPORTANT: Never mark a feature as complete until ALL items in this checklist are verified.
+
 ### Test Structure
 - Table-driven tests with TestCase structs
 - Each test case has a Name, Tool, and Input

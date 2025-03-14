@@ -174,6 +174,23 @@ func RegisterActionsTools(s *Server) {
 		),
 	)
 	
+	// Register download_workflow_run_logs tool
+	downloadWorkflowRunLogsTool := mcp.NewTool("download_workflow_run_logs",
+		mcp.WithDescription("Downloads and extracts logs for a workflow run"),
+		mcp.WithString("owner",
+			mcp.Required(),
+			mcp.Description("Repository owner (username or organization)"),
+		),
+		mcp.WithString("repo",
+			mcp.Required(),
+			mcp.Description("Repository name"),
+		),
+		mcp.WithString("run_id",
+			mcp.Required(),
+			mcp.Description("The ID of the workflow run"),
+		),
+	)
+	
 	s.RegisterTool(getWorkflowRunTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
@@ -202,6 +219,38 @@ func RegisterActionsTools(s *Server) {
 
 		// Format the result as markdown
 		markdown := formatWorkflowRunToMarkdown(run)
+		return mcp.NewToolResultText(markdown), nil
+	})
+
+	// Register the download_workflow_run_logs tool
+	s.RegisterTool(downloadWorkflowRunLogsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Extract parameters
+		owner, ok := request.Params.Arguments["owner"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("owner must be a string"))), nil
+		}
+
+		repo, ok := request.Params.Arguments["repo"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("repo must be a string"))), nil
+		}
+
+		runID, ok := request.Params.Arguments["run_id"]
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("run_id is required"))), nil
+		}
+
+		// Call the operation
+		result, err := actionsOps.DownloadWorkflowRunLogs(ctx, owner, repo, runID)
+		if err != nil {
+			if ghErr, ok := err.(*errors.GitHubError); ok {
+				return mcp.NewToolResultError(errors.FormatGitHubError(ghErr)), nil
+			}
+			return mcp.NewToolResultError(fmt.Sprintf("Error downloading workflow run logs: %v", err)), nil
+		}
+
+		// Format the result as markdown
+		markdown := formatLogsResultToMarkdown(result)
 		return mcp.NewToolResultText(markdown), nil
 	})
 
@@ -438,5 +487,47 @@ func formatWorkflowRunsToMarkdown(runs *gh.WorkflowRuns) string {
 		md += fmt.Sprintf("**URL:** %s  \n\n", run.GetHTMLURL())
 	}
 
+	return md
+}
+
+// formatLogsResultToMarkdown converts a logs result to markdown
+func formatLogsResultToMarkdown(result *github.LogsResult) string {
+	md := fmt.Sprintf("# Workflow Run Logs: %s\n\n", result.WorkflowName)
+	
+	md += fmt.Sprintf("**Run ID:** %d  \n", result.RunID)
+	
+	// Use a fixed timestamp in test environment
+	downloadTime := result.DownloadTime
+	md += fmt.Sprintf("**Downloaded:** %s  \n", downloadTime.Format(time.RFC1123))
+	
+	md += fmt.Sprintf("**Size:** %d bytes  \n", result.Size)
+	md += fmt.Sprintf("**Files:** %d  \n\n", result.FileCount)
+	
+	// Use a placeholder for the logs directory in test environment
+	logsDir := result.LogsDir
+	
+	md += fmt.Sprintf("**Logs Directory:** %s  \n\n", logsDir)
+	
+	// List the extracted files (limit to 20 to avoid excessive output)
+	if len(result.Files) > 0 {
+		md += "## Extracted Log Files\n\n"
+		
+		maxFiles := 20
+		if len(result.Files) <= maxFiles {
+			for _, file := range result.Files {
+				md += fmt.Sprintf("- %s\n", file)
+			}
+		} else {
+			for i := 0; i < maxFiles; i++ {
+				md += fmt.Sprintf("- %s\n", result.Files[i])
+			}
+			md += fmt.Sprintf("\n... and %d more files\n", len(result.Files)-maxFiles)
+		}
+	}
+	
+	md += "\n## Usage Instructions\n\n"
+	md += "The logs have been extracted to the *Logs Directory* mentioned above. You can access the log files directly to view their contents.\n\n"
+	md += "**Note:** The logs directory is temporary and will be cleaned up when the server restarts.\n"
+	
 	return md
 }

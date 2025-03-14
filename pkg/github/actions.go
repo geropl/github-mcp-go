@@ -1,9 +1,14 @@
 package github
 
 import (
+	"archive/zip"
 	"context"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/google/go-github/v69/github"
 	"github.com/sirupsen/logrus"
@@ -255,4 +260,199 @@ func (a *ActionsOperations) GetWorkflowRun(ctx context.Context, owner, repo stri
 	}
 	
 	return run, nil
+}
+
+// LogsResult contains information about downloaded workflow run logs
+type LogsResult struct {
+	// Path to the directory containing extracted log files
+	LogsDir string
+	// Size of the logs in bytes
+	Size int64
+	// Number of log files
+	FileCount int
+	// ID of the workflow run
+	RunID int64
+	// Name of the workflow
+	WorkflowName string
+	// Time when the logs were downloaded
+	DownloadTime time.Time
+	// Files in the logs directory
+	Files []string
+}
+
+// DownloadWorkflowRunLogs downloads and extracts logs for a workflow run
+func (a *ActionsOperations) DownloadWorkflowRunLogs(ctx context.Context, owner, repo string, runID interface{}) (*LogsResult, error) {
+	// Validate owner and repo
+	if owner == "" {
+		return nil, errors.NewValidationError("owner cannot be empty")
+	}
+	if repo == "" {
+		return nil, errors.NewValidationError("repository name cannot be empty")
+	}
+	
+	// Handle different types of runID (can be int64 or string)
+	var id int64
+	
+	switch v := runID.(type) {
+	case int64:
+		id = v
+	case float64:
+		id = int64(v)
+	case int:
+		id = int64(v)
+	case string:
+		if v == "" {
+			return nil, errors.NewValidationError("run_id cannot be empty")
+		}
+		
+		// Try to convert string to int64
+		var err error
+		id, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, errors.NewValidationError(fmt.Sprintf("run_id must be a valid number, got %s", v))
+		}
+	default:
+		return nil, errors.NewValidationError(fmt.Sprintf("run_id must be a string or number, got %T", runID))
+	}
+	
+	// Get workflow run to get the workflow name
+	run, err := a.GetWorkflowRun(ctx, owner, repo, id)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Create a temporary directory for the zip file
+	tempZipDir, err := os.MkdirTemp("", "github-workflow-logs-zip-*")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temporary directory for zip file: %w", err)
+	}
+	defer os.RemoveAll(tempZipDir) // Clean up the zip directory when done
+	
+	// Create a temporary directory for the extracted logs
+	logsDir, err := os.MkdirTemp("", fmt.Sprintf("github-workflow-logs-%s-%s-%d-*", owner, repo, id))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temporary directory for logs: %w", err)
+	}
+	
+	// Create the zip file path
+	zipFilePath := filepath.Join(tempZipDir, fmt.Sprintf("%s_%s_run_%d_logs.zip", owner, repo, id))
+	
+	// Get the URL to the logs
+	a.logger.Infof("Getting workflow run logs URL for %s/%s run %d", owner, repo, id)
+	logsURL, _, err := a.client.GetClient().Actions.GetWorkflowRunLogs(ctx, owner, repo, id, 0)
+	if err != nil {
+		os.RemoveAll(logsDir) // Clean up logs directory on error
+		return nil, a.client.HandleError(err)
+	}
+	
+	// Download the logs from the URL
+	a.logger.Infof("Downloading workflow run logs from %s", logsURL.String())
+	httpClient := a.client.GetClient().Client()
+	resp, err := httpClient.Get(logsURL.String())
+	if err != nil {
+		os.RemoveAll(logsDir) // Clean up logs directory on error
+		return nil, fmt.Errorf("failed to download logs: %w", err)
+	}
+	defer resp.Body.Close()
+	
+	// Check response status
+	if resp.StatusCode != 200 {
+		os.RemoveAll(logsDir) // Clean up logs directory on error
+		return nil, fmt.Errorf("failed to download logs: HTTP %d", resp.StatusCode)
+	}
+	
+	// Create the zip file
+	zipFile, err := os.Create(zipFilePath)
+	if err != nil {
+		os.RemoveAll(logsDir) // Clean up logs directory on error
+		return nil, fmt.Errorf("failed to create zip file: %w", err)
+	}
+	defer zipFile.Close()
+	
+	// Copy the response body to the zip file
+	a.logger.Infof("Saving logs to %s", zipFilePath)
+	size, err := io.Copy(zipFile, resp.Body)
+	if err != nil {
+		os.RemoveAll(logsDir) // Clean up logs directory on error
+		return nil, fmt.Errorf("failed to download logs: %w", err)
+	}
+	
+	// Close the zip file before extracting
+	zipFile.Close()
+	
+	// Extract the zip file
+	a.logger.Infof("Extracting workflow run logs to %s", logsDir)
+	fileCount, extractedFiles, err := extractZip(zipFilePath, logsDir)
+	if err != nil {
+		os.RemoveAll(logsDir) // Clean up logs directory on error
+		return nil, fmt.Errorf("failed to extract logs: %w", err)
+	}
+	
+	return &LogsResult{
+		LogsDir:      logsDir,
+		Size:         size,
+		FileCount:    fileCount,
+		RunID:        id,
+		WorkflowName: run.GetName(),
+		DownloadTime: time.Now(),
+		Files:        extractedFiles,
+	}, nil
+}
+
+// extractZip extracts a zip file to a destination directory
+func extractZip(zipFilePath, destDir string) (int, []string, error) {
+	// Open the zip file
+	reader, err := zip.OpenReader(zipFilePath)
+	if err != nil {
+		return 0, nil, fmt.Errorf("failed to open zip file: %w", err)
+	}
+	defer reader.Close()
+	
+	// Count the number of files and track their names
+	fileCount := 0
+	var extractedFiles []string
+	
+	// Extract each file
+	for _, file := range reader.File {
+		// Skip directories
+		if file.FileInfo().IsDir() {
+			continue
+		}
+		
+		// Open the file in the zip
+		rc, err := file.Open()
+		if err != nil {
+			return 0, nil, fmt.Errorf("failed to open file in zip: %w", err)
+		}
+		
+		// Create the file path in the destination directory
+		path := filepath.Join(destDir, file.Name)
+		
+		// Ensure the directory exists
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			rc.Close()
+			return 0, nil, fmt.Errorf("failed to create directory: %w", err)
+		}
+		
+		// Create the file
+		outFile, err := os.Create(path)
+		if err != nil {
+			rc.Close()
+			return 0, nil, fmt.Errorf("failed to create file: %w", err)
+		}
+		
+		// Copy the contents
+		_, err = io.Copy(outFile, rc)
+		outFile.Close()
+		rc.Close()
+		
+		if err != nil {
+			return 0, nil, fmt.Errorf("failed to write file: %w", err)
+		}
+		
+		fileCount++
+		extractedFiles = append(extractedFiles, file.Name)
+	}
+	
+	return fileCount, extractedFiles, nil
 }

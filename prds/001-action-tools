@@ -224,15 +224,15 @@ Gets detailed information about a specific job.
 | get_workflow | Completed | 100% |
 | list_workflow_runs | Completed | 100% |
 | get_workflow_run | Completed | 100% |
-| download_workflow_run_logs | Not Started | 0% |
+| download_workflow_run_logs | Completed | 100% |
 | list_workflow_jobs | Not Started | 0% |
 | get_workflow_job | Not Started | 0% |
-| **Overall Progress** | **In Progress** | **57%** |
+| **Overall Progress** | **In Progress** | **71%** |
 
 ### Completed Work
 
-- Created `pkg/github/actions.go` with the `ListWorkflows`, `GetWorkflow`, `ListWorkflowRuns`, and `GetWorkflowRun` operations
-- Created `pkg/tools/actions.go` with the `list_workflows`, `get_workflow`, `list_workflow_runs`, and `get_workflow_run` tools
+- Created `pkg/github/actions.go` with the `ListWorkflows`, `GetWorkflow`, `ListWorkflowRuns`, `GetWorkflowRun`, and `DownloadWorkflowRunLogs` operations
+- Created `pkg/tools/actions.go` with the `list_workflows`, `get_workflow`, `list_workflow_runs`, `get_workflow_run`, and `download_workflow_run_logs` tools
 - Updated `pkg/tools/server.go` to register the actions tools
 - Created `pkg/tools/actions_test.go` with test cases for all implemented tools
 - Added all implemented tools to the read-only tools list
@@ -264,12 +264,20 @@ Gets detailed information about a specific job.
   - GetWorkflowRunInvalidID (error case)
   - GetWorkflowRunNonExistentID (error case)
   - GetWorkflowRunInvalidIDType (error case)
+- Successfully implemented and tested the `download_workflow_run_logs` tool with both happy path and error cases:
+  - DownloadWorkflowRunLogs (happy path)
+  - DownloadWorkflowRunLogsInvalidOwner (error case)
+  - DownloadWorkflowRunLogsInvalidRepo (error case)
+  - DownloadWorkflowRunLogsInvalidID (error case)
+  - DownloadWorkflowRunLogsNonExistentID (error case)
+  - DownloadWorkflowRunLogsInvalidIDType (error case)
 
 ### Next Steps
 
-1. Implement the `download_workflow_run_logs` tool
-2. Create tests for the `download_workflow_run_logs` tool
-3. Continue with the remaining tools in order
+1. Implement the `list_workflow_jobs` tool
+2. Create tests for the `list_workflow_jobs` tool
+3. Implement the `get_workflow_job` tool
+4. Create tests for the `get_workflow_job` tool
 
 ## Implementation Details
 

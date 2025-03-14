@@ -230,6 +230,64 @@ func TestActions(t *testing.T) {
 				"run_id": true, // Invalid type
 			},
 		},
+		
+		// download_workflow_run_logs - Happy Path
+		{
+			Name: "DownloadWorkflowRunLogs",
+			Tool: "download_workflow_run_logs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "13839912722", // Actual run ID
+			},
+		},
+		
+		// download_workflow_run_logs - Error Cases
+		{
+			Name: "DownloadWorkflowRunLogsInvalidOwner",
+			Tool: "download_workflow_run_logs",
+			Input: map[string]interface{}{
+				"owner":  "",
+				"repo":   "github-mcp-go-test",
+				"run_id": "13839912722",
+			},
+		},
+		{
+			Name: "DownloadWorkflowRunLogsInvalidRepo",
+			Tool: "download_workflow_run_logs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "",
+				"run_id": "13839912722",
+			},
+		},
+		{
+			Name: "DownloadWorkflowRunLogsInvalidID",
+			Tool: "download_workflow_run_logs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "",
+			},
+		},
+		{
+			Name: "DownloadWorkflowRunLogsNonExistentID",
+			Tool: "download_workflow_run_logs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "99999999999", // Non-existent run ID
+			},
+		},
+		{
+			Name: "DownloadWorkflowRunLogsInvalidIDType",
+			Tool: "download_workflow_run_logs",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": true, // Invalid type
+			},
+		},
 	}
 
 	// Run all test cases
