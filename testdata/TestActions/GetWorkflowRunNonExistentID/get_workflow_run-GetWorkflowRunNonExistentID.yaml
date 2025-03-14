@@ -21,7 +21,7 @@ interactions:
                 - go-github/v69.2.0
             X-Github-Api-Version:
                 - "2022-11-28"
-        url: https://api.github.com/repos/geropl/github-mcp-go-test/actions/workflows/test-workflow.yml
+        url: https://api.github.com/repos/geropl/github-mcp-go-test/actions/runs/99999999999
         method: GET
       response:
         proto: HTTP/2.0
@@ -31,24 +31,18 @@ interactions:
         trailer: {}
         content_length: -1
         uncompressed: true
-        body: '{"id":149593961,"node_id":"W_kwDOOEmhcs4I6p9p","name":"Test Data Generation Workflow","path":".github/workflows/test-workflow.yml","state":"active","created_at":"2025-03-13T16:38:47.000Z","updated_at":"2025-03-13T16:38:47.000Z","url":"https://api.github.com/repos/geropl/github-mcp-go-test/actions/workflows/149593961","html_url":"https://github.com/geropl/github-mcp-go-test/blob/main/.github/workflows/test-workflow.yml","badge_url":"https://github.com/geropl/github-mcp-go-test/workflows/Test%20Data%20Generation%20Workflow/badge.svg"}'
+        body: '{"message":"Not Found","documentation_url":"https://docs.github.com/rest/actions/workflow-runs#get-a-workflow-run","status":"404"}'
         headers:
-            Accept-Ranges:
-                - bytes
             Access-Control-Allow-Origin:
                 - '*'
             Access-Control-Expose-Headers:
                 - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset
-            Cache-Control:
-                - public, max-age=60, s-maxage=60
             Content-Security-Policy:
                 - default-src 'none'
             Content-Type:
                 - application/json; charset=utf-8
             Date:
-                - Fri, 14 Mar 2025 11:46:06 GMT
-            Etag:
-                - W/"80f70541a4bebd4f078950282205c9f3272f8941e915f82e9a4c91b87b6824fc"
+                - Fri, 14 Mar 2025 11:46:09 GMT
             Referrer-Policy:
                 - origin-when-cross-origin, strict-origin-when-cross-origin
             Server:
@@ -56,7 +50,7 @@ interactions:
             Strict-Transport-Security:
                 - max-age=31536000; includeSubdomains; preload
             Vary:
-                - Accept,Accept-Encoding, Accept, X-Requested-With
+                - Accept-Encoding, Accept, X-Requested-With
             X-Content-Type-Options:
                 - nosniff
             X-Frame-Options:
@@ -66,19 +60,19 @@ interactions:
             X-Github-Media-Type:
                 - github.v3; format=json
             X-Github-Request-Id:
-                - 7202:1298:659FD70:68E6EC9:67D416FE
+                - 7202:1298:65A0AAB:68E7CC0:67D41701
             X-Ratelimit-Limit:
                 - "60"
             X-Ratelimit-Remaining:
-                - "54"
+                - "44"
             X-Ratelimit-Reset:
                 - "1741954994"
             X-Ratelimit-Resource:
                 - core
             X-Ratelimit-Used:
-                - "6"
+                - "16"
             X-Xss-Protection:
                 - "0"
-        status: 200 OK
-        code: 200
-        duration: 131.685911ms
+        status: 404 Not Found
+        code: 404
+        duration: 132.362805ms

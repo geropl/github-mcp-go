@@ -13,15 +13,15 @@
 | Branch Operations | Completed | 100% |
 | Search Operations | Completed | 100% |
 | Commit Operations | Completed | 100% |
-| GitHub Actions Operations | In Progress | 43% |
-| Testing | In Progress | 95% |
+| GitHub Actions Operations | In Progress | 57% |
+| Testing | In Progress | 96% |
 | Documentation | Completed | 100% |
 
 ### PRD Implementation Progress
 
 | PRD | Status | Progress |
 |-----|--------|----------|
-| 001-action-tools | In Progress | 43% |
+| 001-action-tools | In Progress | 57% |
 
 ### Testing Progress
 
@@ -34,7 +34,7 @@
 | Branch Operations Tests | Completed | 100% | Complete |
 | Search Operations Tests | Completed | 100% | Complete |
 | Commit Operations Tests | Completed | 100% | Complete |
-| Actions Operations Tests | In Progress | 43% | Partial |
+| Actions Operations Tests | In Progress | 57% | Partial |
 
 ## What Works
 
@@ -51,8 +51,8 @@
 - **Commit operations**: Complete
 - **Branch operations**: Complete
 - **Search operations**: Complete
-- **GitHub Actions operations**: Partial (43%)
-  - Implemented: list_workflows, get_workflow, list_workflow_runs
+- **GitHub Actions operations**: Partial (57%)
+  - Implemented: list_workflows, get_workflow, list_workflow_runs, get_workflow_run
 
 ### Testing Framework
 - Table-driven tests with go-vcr and golden files
@@ -68,7 +68,7 @@
 ## What's Left to Build
 
 1. **GitHub Actions Tools (PRD 001-action-tools)**
-   - Remaining tools: get_workflow_run, download_workflow_run_logs, list_workflow_jobs, get_workflow_job
+   - Remaining tools: download_workflow_run_logs, list_workflow_jobs, get_workflow_job
 
 2. **Testing**
    - Repository operations tests: create_repository, fork_repository

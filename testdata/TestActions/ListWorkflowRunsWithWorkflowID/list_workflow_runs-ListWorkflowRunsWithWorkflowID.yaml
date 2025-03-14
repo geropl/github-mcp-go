@@ -46,7 +46,7 @@ interactions:
             Content-Type:
                 - application/json; charset=utf-8
             Date:
-                - Fri, 14 Mar 2025 11:23:15 GMT
+                - Fri, 14 Mar 2025 11:46:08 GMT
             Etag:
                 - W/"473b3adf9edb501242c7ff9ce1ed713281568be6b65d536b55b0ecbef428a226"
             Referrer-Policy:
@@ -66,19 +66,19 @@ interactions:
             X-Github-Media-Type:
                 - github.v3; format=json
             X-Github-Request-Id:
-                - 6FBF:33CFBA:7DE9907:81D2B40:67D411A3
+                - 7202:1298:65A0490:68E7624:67D41700
             X-Ratelimit-Limit:
                 - "60"
             X-Ratelimit-Remaining:
-                - "58"
+                - "48"
             X-Ratelimit-Reset:
                 - "1741954994"
             X-Ratelimit-Resource:
                 - core
             X-Ratelimit-Used:
-                - "2"
+                - "12"
             X-Xss-Protection:
                 - "0"
         status: 200 OK
         code: 200
-        duration: 176.865657ms
+        duration: 189.807269ms

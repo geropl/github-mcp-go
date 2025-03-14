@@ -156,6 +156,54 @@ func RegisterActionsTools(s *Server) {
 			mcp.Description("Number of results per page (default: 30, max: 100)"),
 		),
 	)
+	
+	// Register get_workflow_run tool
+	getWorkflowRunTool := mcp.NewTool("get_workflow_run",
+		mcp.WithDescription("Gets detailed information about a specific workflow run"),
+		mcp.WithString("owner",
+			mcp.Required(),
+			mcp.Description("Repository owner (username or organization)"),
+		),
+		mcp.WithString("repo",
+			mcp.Required(),
+			mcp.Description("Repository name"),
+		),
+		mcp.WithString("run_id",
+			mcp.Required(),
+			mcp.Description("The ID of the workflow run"),
+		),
+	)
+	
+	s.RegisterTool(getWorkflowRunTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+		// Extract parameters
+		owner, ok := request.Params.Arguments["owner"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("owner must be a string"))), nil
+		}
+
+		repo, ok := request.Params.Arguments["repo"].(string)
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("repo must be a string"))), nil
+		}
+
+		runID, ok := request.Params.Arguments["run_id"]
+		if !ok {
+			return mcp.NewToolResultError(errors.FormatGitHubError(errors.NewInvalidArgumentError("run_id is required"))), nil
+		}
+
+		// Call the operation
+		run, err := actionsOps.GetWorkflowRun(ctx, owner, repo, runID)
+		if err != nil {
+			if ghErr, ok := err.(*errors.GitHubError); ok {
+				return mcp.NewToolResultError(errors.FormatGitHubError(ghErr)), nil
+			}
+			return mcp.NewToolResultError(fmt.Sprintf("Error getting workflow run: %v", err)), nil
+		}
+
+		// Format the result as markdown
+		markdown := formatWorkflowRunToMarkdown(run)
+		return mcp.NewToolResultText(markdown), nil
+	})
 
 	s.RegisterTool(listWorkflowRunsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract required parameters
@@ -281,6 +329,60 @@ func formatWorkflowsToMarkdown(workflows *gh.Workflows) string {
 		md += fmt.Sprintf("**URL:** %s  \n\n", workflow.GetHTMLURL())
 	}
 
+	return md
+}
+
+// formatWorkflowRunToMarkdown converts a single GitHub workflow run to markdown
+func formatWorkflowRunToMarkdown(run *gh.WorkflowRun) string {
+	md := fmt.Sprintf("# Workflow Run: %s\n\n", run.GetName())
+	
+	md += fmt.Sprintf("**ID:** %d  \n", run.GetID())
+	md += fmt.Sprintf("**Run Number:** %d  \n", run.GetRunNumber())
+	md += fmt.Sprintf("**Workflow ID:** %d  \n", run.GetWorkflowID())
+	md += fmt.Sprintf("**Branch:** %s  \n", run.GetHeadBranch())
+	md += fmt.Sprintf("**Commit SHA:** %s  \n", run.GetHeadSHA())
+	md += fmt.Sprintf("**Event:** %s  \n", run.GetEvent())
+	md += fmt.Sprintf("**Status:** %s  \n", run.GetStatus())
+	
+	// Add conclusion if available
+	conclusion := run.GetConclusion()
+	if conclusion != "" {
+		md += fmt.Sprintf("**Conclusion:** %s  \n", conclusion)
+	}
+	
+	// Format dates if available
+	createdAt := run.GetCreatedAt()
+	if !createdAt.IsZero() {
+		md += fmt.Sprintf("**Created:** %s  \n", createdAt.Format(time.RFC1123))
+	}
+
+	updatedAt := run.GetUpdatedAt()
+	if !updatedAt.IsZero() {
+		md += fmt.Sprintf("**Updated:** %s  \n", updatedAt.Format(time.RFC1123))
+	}
+	
+	startedAt := run.GetRunStartedAt()
+	if !startedAt.IsZero() {
+		md += fmt.Sprintf("**Started:** %s  \n", startedAt.Format(time.RFC1123))
+	}
+	
+	// Add actor information if available
+	actor := run.GetActor()
+	if actor != nil {
+		md += fmt.Sprintf("**Triggered by:** %s  \n", actor.GetLogin())
+	}
+	
+	// Add triggering actor if available and different from actor
+	triggeringActor := run.GetTriggeringActor()
+	if triggeringActor != nil && (actor == nil || triggeringActor.GetLogin() != actor.GetLogin()) {
+		md += fmt.Sprintf("**Triggering Actor:** %s  \n", triggeringActor.GetLogin())
+	}
+	
+	md += fmt.Sprintf("**Run Attempt:** %d  \n", run.GetRunAttempt())
+	
+	// Add URL
+	md += fmt.Sprintf("**URL:** %s  \n\n", run.GetHTMLURL())
+	
 	return md
 }
 

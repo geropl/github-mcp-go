@@ -223,16 +223,16 @@ Gets detailed information about a specific job.
 | list_workflows | Completed | 100% |
 | get_workflow | Completed | 100% |
 | list_workflow_runs | Completed | 100% |
-| get_workflow_run | Not Started | 0% |
+| get_workflow_run | Completed | 100% |
 | download_workflow_run_logs | Not Started | 0% |
 | list_workflow_jobs | Not Started | 0% |
 | get_workflow_job | Not Started | 0% |
-| **Overall Progress** | **In Progress** | **43%** |
+| **Overall Progress** | **In Progress** | **57%** |
 
 ### Completed Work
 
-- Created `pkg/github/actions.go` with the `ListWorkflows`, `GetWorkflow`, and `ListWorkflowRuns` operations
-- Created `pkg/tools/actions.go` with the `list_workflows`, `get_workflow`, and `list_workflow_runs` tools
+- Created `pkg/github/actions.go` with the `ListWorkflows`, `GetWorkflow`, `ListWorkflowRuns`, and `GetWorkflowRun` operations
+- Created `pkg/tools/actions.go` with the `list_workflows`, `get_workflow`, `list_workflow_runs`, and `get_workflow_run` tools
 - Updated `pkg/tools/server.go` to register the actions tools
 - Created `pkg/tools/actions_test.go` with test cases for all implemented tools
 - Added all implemented tools to the read-only tools list
@@ -257,11 +257,18 @@ Gets detailed information about a specific job.
   - ListWorkflowRunsInvalidRepo (error case)
   - ListWorkflowRunsNonExistentRepo (error case)
   - ListWorkflowRunsInvalidWorkflowID (error case)
+- Successfully implemented and tested the `get_workflow_run` tool with both happy path and error cases:
+  - GetWorkflowRun (happy path)
+  - GetWorkflowRunInvalidOwner (error case)
+  - GetWorkflowRunInvalidRepo (error case)
+  - GetWorkflowRunInvalidID (error case)
+  - GetWorkflowRunNonExistentID (error case)
+  - GetWorkflowRunInvalidIDType (error case)
 
 ### Next Steps
 
-1. Implement the `get_workflow_run` tool
-2. Create tests for the `get_workflow_run` tool
+1. Implement the `download_workflow_run_logs` tool
+2. Create tests for the `download_workflow_run_logs` tool
 3. Continue with the remaining tools in order
 
 ## Implementation Details

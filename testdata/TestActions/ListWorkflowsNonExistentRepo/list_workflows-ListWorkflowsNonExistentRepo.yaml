@@ -42,9 +42,7 @@ interactions:
             Content-Type:
                 - application/json; charset=utf-8
             Date:
-                - Thu, 13 Mar 2025 16:43:55 GMT
-            Github-Authentication-Token-Expiration:
-                - 2025-04-12 17:32:16 +0200
+                - Fri, 14 Mar 2025 11:46:07 GMT
             Referrer-Policy:
                 - origin-when-cross-origin, strict-origin-when-cross-origin
             Server:
@@ -53,8 +51,6 @@ interactions:
                 - max-age=31536000; includeSubdomains; preload
             Vary:
                 - Accept-Encoding, Accept, X-Requested-With
-            X-Accepted-Github-Permissions:
-                - actions=read
             X-Content-Type-Options:
                 - nosniff
             X-Frame-Options:
@@ -64,19 +60,19 @@ interactions:
             X-Github-Media-Type:
                 - github.v3; format=json
             X-Github-Request-Id:
-                - 579B:33CFBA:44923EF:46B9057:67D30B4A
+                - 7202:1298:65A023C:68E73CA:67D416FF
             X-Ratelimit-Limit:
-                - "5000"
+                - "60"
             X-Ratelimit-Remaining:
-                - "4869"
+                - "50"
             X-Ratelimit-Reset:
-                - "1741885609"
+                - "1741954994"
             X-Ratelimit-Resource:
                 - core
             X-Ratelimit-Used:
-                - "131"
+                - "10"
             X-Xss-Protection:
                 - "0"
         status: 404 Not Found
         code: 404
-        duration: 121.593226ms
+        duration: 119.2141ms

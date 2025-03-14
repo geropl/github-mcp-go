@@ -212,3 +212,47 @@ func (a *ActionsOperations) ListWorkflowRuns(
 
 	return runs, nil
 }
+
+// GetWorkflowRun gets detailed information about a specific workflow run
+func (a *ActionsOperations) GetWorkflowRun(ctx context.Context, owner, repo string, runID interface{}) (*github.WorkflowRun, error) {
+	// Validate owner and repo
+	if owner == "" {
+		return nil, errors.NewValidationError("owner cannot be empty")
+	}
+	if repo == "" {
+		return nil, errors.NewValidationError("repository name cannot be empty")
+	}
+	
+	// Handle different types of runID (can be int64 or string)
+	var id int64
+	
+	switch v := runID.(type) {
+	case int64:
+		id = v
+	case float64:
+		id = int64(v)
+	case int:
+		id = int64(v)
+	case string:
+		if v == "" {
+			return nil, errors.NewValidationError("run_id cannot be empty")
+		}
+		
+		// Try to convert string to int64
+		var err error
+		id, err = strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, errors.NewValidationError(fmt.Sprintf("run_id must be a valid number, got %s", v))
+		}
+	default:
+		return nil, errors.NewValidationError(fmt.Sprintf("run_id must be a string or number, got %T", runID))
+	}
+	
+	// Call the GitHub API
+	run, _, err := a.client.GetClient().Actions.GetWorkflowRunByID(ctx, owner, repo, id)
+	if err != nil {
+		return nil, a.client.HandleError(err)
+	}
+	
+	return run, nil
+}

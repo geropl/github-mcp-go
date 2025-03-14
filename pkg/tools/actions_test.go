@@ -172,6 +172,64 @@ func TestActions(t *testing.T) {
 				"workflow_id": true, // Invalid type
 			},
 		},
+		
+		// get_workflow_run - Happy Path
+		{
+			Name: "GetWorkflowRun",
+			Tool: "get_workflow_run",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "13839912722", // Actual run ID
+			},
+		},
+		
+		// get_workflow_run - Error Cases
+		{
+			Name: "GetWorkflowRunInvalidOwner",
+			Tool: "get_workflow_run",
+			Input: map[string]interface{}{
+				"owner":  "",
+				"repo":   "github-mcp-go-test",
+				"run_id": "13839912722",
+			},
+		},
+		{
+			Name: "GetWorkflowRunInvalidRepo",
+			Tool: "get_workflow_run",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "",
+				"run_id": "13839912722",
+			},
+		},
+		{
+			Name: "GetWorkflowRunInvalidID",
+			Tool: "get_workflow_run",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "",
+			},
+		},
+		{
+			Name: "GetWorkflowRunNonExistentID",
+			Tool: "get_workflow_run",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": "99999999999", // Non-existent run ID
+			},
+		},
+		{
+			Name: "GetWorkflowRunInvalidIDType",
+			Tool: "get_workflow_run",
+			Input: map[string]interface{}{
+				"owner":  "geropl",
+				"repo":   "github-mcp-go-test",
+				"run_id": true, // Invalid type
+			},
+		},
 	}
 
 	// Run all test cases
