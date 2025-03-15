@@ -96,29 +96,3 @@ When the trigger "compress memory bank" is used:
 3. Aggressively prune redundant or outdated information
 4. Consolidate similar information across files
 5. Report on the compression achieved (e.g., token reduction)
-
-## Implementation in Custom Instructions
-
-Add the following to the "Core Workflows" section of the custom instructions:
-
-```markdown
-### Memory Management
-- Be mindful of space in memory bank files
-- Deleting irrelevant memories is a good thing
-- Follow short-term vs. long-term memory strategy:
-  - Short-term memory (activeContext.md, progress.md): Detailed, recent, specific
-  - Long-term memory (systemPatterns.md, techContext.md, projectbrief.md): Compressed, patterns, principles
-- Apply this strategy on every interaction with the memory bank
-- Use "compress memory bank" trigger to perform a compression run
-```
-
-Add the following to the "Documentation Updates" section:
-
-```markdown
-When compressing memory bank files:
-1. Focus on patterns over instances
-2. Use tables and summaries instead of exhaustive lists
-3. Keep only the most relevant and recent information in short-term memory
-4. Distill important insights into long-term memory
-5. Delete outdated or redundant information
-```

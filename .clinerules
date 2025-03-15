@@ -22,159 +22,45 @@
 
 ## Testing Patterns
 
-### Iterative Approach
-- Focus on one test case at a time
-- Make each test case work completely before moving to the next
-- Start with "happy path" test cases before error cases
-- Comment out test cases that aren't ready to be implemented yet
+### Key Testing Principles
 
-### Test Completion Rule
-- Never mark a feature as complete until ALL its tests pass
-- Verify each test case in normal mode before moving to the next
-- Document any test limitations or TODOs in code comments
+- **Iterative Approach**: Focus on one test case at a time, making each work completely before moving to the next
+- **Test-Driven Development**: Start with "happy path" test cases before error cases
+- **Definition of Done**: A feature is only complete when ALL its tests pass and test results are verified to be sensible
 
-### Test Completion Checklist
-Before marking any feature as complete:
-1. ✓ All test cases are implemented in the test file
-2. ✓ All test cases have been run with `-record` flag
-3. ✓ All test cases have been run with `-golden` flag
-4. ✓ All test cases pass in normal mode
-5. ✓ Test directories exist in testdata/ for all test cases
-6. ✓ Test status is updated in progress.md
-7. ✓ Final verification is documented in activeContext.md
+### Detailed Testing Documentation
 
-IMPORTANT: Never mark a feature as complete until ALL items in this checklist are verified.
+For comprehensive testing instructions, refer to [TESTING.md](TESTING.md), which includes:
 
-### Test Verification Commands
-
-For each test case, run the following commands in sequence:
-
-1. Record HTTP interactions:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName -record
-   ```
-
-2. Create/update golden files:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName -golden
-   ```
-
-3. Verify test passes in normal mode:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName
-   ```
-
-4. Verify test directories exist:
-   ```bash
-   ls -la testdata/TestCategory/TestCaseName/
-   ```
-
-Example for list_workflow_jobs tool:
-```bash
-# Happy Path - ListWorkflowJobs
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobs -record
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobs -golden
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobs
-ls -la testdata/TestActions/ListWorkflowJobs/
-
-# Happy Path - ListWorkflowJobsWithFilter
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobsWithFilter -record
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobsWithFilter -golden
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobsWithFilter
-ls -la testdata/TestActions/ListWorkflowJobsWithFilter/
-
-# Error Cases
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidOwner -record
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidOwner -golden
-go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidOwner
-ls -la testdata/TestActions/ListWorkflowJobsInvalidOwner/
-
-# (Repeat for all error cases)
-```
-
-### Test Verification Template
-
-Copy this template to activeContext.md for each new tool implementation:
-
-```markdown
-### [tool_name] Tool Verification
-
-[ ] All test cases are implemented in the test file
-[ ] All test cases have been run with `-record` flag:
-  - [ ] TestActions/[TestCase1] (run: `go test -v ./pkg/tools -run TestActions/[TestCase1] -record`)
-  - [ ] TestActions/[TestCase2] (run: `go test -v ./pkg/tools -run TestActions/[TestCase2] -record`)
-  - [ ] (Add all test cases)
-[ ] All test cases have been run with `-golden` flag:
-  - [ ] TestActions/[TestCase1] (run: `go test -v ./pkg/tools -run TestActions/[TestCase1] -golden`)
-  - [ ] TestActions/[TestCase2] (run: `go test -v ./pkg/tools -run TestActions/[TestCase2] -golden`)
-  - [ ] (Add all test cases)
-[ ] All test cases pass in normal mode:
-  - [ ] TestActions/[TestCase1] (run: `go test -v ./pkg/tools -run TestActions/[TestCase1]`)
-  - [ ] TestActions/[TestCase2] (run: `go test -v ./pkg/tools -run TestActions/[TestCase2]`)
-  - [ ] (Add all test cases)
-[ ] Test directories exist in testdata/ for all test cases:
-  - [ ] testdata/TestActions/[TestCase1] (verify: `ls -la testdata/TestActions/[TestCase1]/`)
-  - [ ] testdata/TestActions/[TestCase2] (verify: `ls -la testdata/TestActions/[TestCase2]/`)
-  - [ ] (Add all test cases)
-[ ] Test status is updated in progress.md
-[ ] Final verification is documented in activeContext.md
-
-The tool has been fully implemented and tested according to the Test Completion Checklist.
-```
+- Step-by-step testing workflow with exact commands
+- Test verification template for activeContext.md
+- Troubleshooting common test issues
 
 ### Test Structure
+
 - Table-driven tests with TestCase structs
 - Each test case has a Name, Tool, and Input
 - Test cases are run in a loop with t.Run()
 - RunTest function handles test execution and comparison
 
-### VCR Usage
-- Use -record flag to record new HTTP interactions
-- Default to replay mode for deterministic testing
-- Sanitize sensitive information in cassettes
-- Cassettes are stored in testdata/cassette/
+### VCR and Golden Files
 
-### Golden Files
-- Use -golden flag to update golden files
-- Golden files store expected test results in JSON format
-- Golden files are stored in testdata/golden/
-- Compare actual results against golden files during testing
+- VCR records/replays HTTP interactions for deterministic testing into/from "cassettes"
+- Use `-record` flag to create new/update cassettes (might require authentication)
+- Golden files store expected results for comparison
+- Use `-golden` flag to update expected results
 
 ## Development Workflow
 
 ### Implementation Order
+
 1. Define tool schema and register with MCP server
 2. Implement GitHub operations in pkg/github/
 3. Implement tool handler in pkg/tools/
 4. Add test cases in pkg/tools/*_test.go
-5. For EACH test case:
-   a. Run test with -record flag to create cassette
-   b. Run test with -golden flag to create golden file
-   c. Run test without flags to verify it passes
-   d. Verify test directory exists in testdata/
+5. Follow the testing workflow in TESTING.md for each test case
 6. Update progress.md with test status
-7. Document verification in activeContext.md using the Test Verification Template
-
-### Testing Workflow
-1. Uncomment one test case at a time
-2. Run test with -record flag to create cassette:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName -record
-   ```
-3. Run test with -golden flag to create golden file:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName -golden
-   ```
-4. Run test without flags to verify it passes:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName
-   ```
-5. Verify test directory exists:
-   ```bash
-   ls -la testdata/TestCategory/TestCaseName/
-   ```
-6. Check off the test case in the Test Verification Template in activeContext.md
-7. Move to the next test case
+7. Document verification in activeContext.md
 
 ## User Preferences
 

@@ -75,96 +75,19 @@ Current priorities:
 
 ## Test Verification
 
-### download_workflow_run_logs Tool
+For detailed testing instructions, refer to [TESTING.md](TESTING.md).
 
-✓ All test cases are implemented in the test file
-✓ All test cases have been run with `-record` flag
-✓ All test cases have been run with `-golden` flag
-✓ All test cases pass in normal mode
-✓ Test directories exist in testdata/ for all test cases:
-  - testdata/TestActions/DownloadWorkflowRunLogs
-  - testdata/TestActions/DownloadWorkflowRunLogsInvalidOwner
-  - testdata/TestActions/DownloadWorkflowRunLogsInvalidRepo
-  - testdata/TestActions/DownloadWorkflowRunLogsInvalidID
-  - testdata/TestActions/DownloadWorkflowRunLogsNonExistentID
-  - testdata/TestActions/DownloadWorkflowRunLogsInvalidIDType
-✓ Test status is updated in progress.md
-✓ Final verification is documented in activeContext.md
+### Completed Tool Verifications
 
-The tool has been fully implemented and tested according to the Test Completion Checklist.
+The following tools have been fully implemented and tested according to the Definition of Done criteria in TESTING.md:
 
-### list_workflow_jobs Tool Verification
+#### GitHub Actions Tools
+- ✓ download_workflow_run_logs
+- ✓ list_workflow_jobs
+- ✓ get_workflow_job
+- ✓ list_workflow_runs
+- ✓ get_workflow_run
+- ✓ list_workflows
+- ✓ get_workflow
 
-✓ All test cases are implemented in the test file
-✓ All test cases have been run with `-record` flag:
-  - ✓ TestActions/ListWorkflowJobs (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobs -record`)
-  - ✓ TestActions/ListWorkflowJobsWithFilter (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsWithFilter -record`)
-  - ✓ TestActions/ListWorkflowJobsInvalidOwner (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidOwner -record`)
-  - ✓ TestActions/ListWorkflowJobsInvalidRepo (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidRepo -record`)
-  - ✓ TestActions/ListWorkflowJobsInvalidID (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidID -record`)
-  - ✓ TestActions/ListWorkflowJobsNonExistentID (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsNonExistentID -record`)
-  - ✓ TestActions/ListWorkflowJobsInvalidIDType (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidIDType -record`)
-✓ All test cases have been run with `-golden` flag:
-  - ✓ TestActions/ListWorkflowJobs (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobs -golden`)
-  - ✓ TestActions/ListWorkflowJobsWithFilter (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsWithFilter -golden`)
-  - ✓ TestActions/ListWorkflowJobsInvalidOwner (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidOwner -golden`)
-  - ✓ TestActions/ListWorkflowJobsInvalidRepo (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidRepo -golden`)
-  - ✓ TestActions/ListWorkflowJobsInvalidID (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidID -golden`)
-  - ✓ TestActions/ListWorkflowJobsNonExistentID (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsNonExistentID -golden`)
-  - ✓ TestActions/ListWorkflowJobsInvalidIDType (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidIDType -golden`)
-✓ All test cases pass in normal mode:
-  - ✓ TestActions/ListWorkflowJobs (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobs`)
-  - ✓ TestActions/ListWorkflowJobsWithFilter (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsWithFilter`)
-  - ✓ TestActions/ListWorkflowJobsInvalidOwner (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidOwner`)
-  - ✓ TestActions/ListWorkflowJobsInvalidRepo (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidRepo`)
-  - ✓ TestActions/ListWorkflowJobsInvalidID (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidID`)
-  - ✓ TestActions/ListWorkflowJobsNonExistentID (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsNonExistentID`)
-  - ✓ TestActions/ListWorkflowJobsInvalidIDType (run: `go test -v ./pkg/tools -run TestActions/ListWorkflowJobsInvalidIDType`)
-✓ Test directories exist in testdata/ for all test cases:
-  - ✓ testdata/TestActions/ListWorkflowJobs (verify: `ls -la testdata/TestActions/ListWorkflowJobs/`)
-  - ✓ testdata/TestActions/ListWorkflowJobsWithFilter (verify: `ls -la testdata/TestActions/ListWorkflowJobsWithFilter/`)
-  - ✓ testdata/TestActions/ListWorkflowJobsInvalidOwner (verify: `ls -la testdata/TestActions/ListWorkflowJobsInvalidOwner/`)
-  - ✓ testdata/TestActions/ListWorkflowJobsInvalidRepo (verify: `ls -la testdata/TestActions/ListWorkflowJobsInvalidRepo/`)
-  - ✓ testdata/TestActions/ListWorkflowJobsInvalidID (verify: `ls -la testdata/TestActions/ListWorkflowJobsInvalidID/`)
-  - ✓ testdata/TestActions/ListWorkflowJobsNonExistentID (verify: `ls -la testdata/TestActions/ListWorkflowJobsNonExistentID/`)
-  - ✓ testdata/TestActions/ListWorkflowJobsInvalidIDType (verify: `ls -la testdata/TestActions/ListWorkflowJobsInvalidIDType/`)
-✓ Test status is updated in progress.md
-✓ Final verification is documented in activeContext.md
-
-The tool has been fully implemented and tested according to the Test Completion Checklist.
-
-### get_workflow_job Tool Verification
-
-✓ All test cases are implemented in the test file
-✓ All test cases have been run with `-record` flag:
-  - ✓ TestActions/GetWorkflowJob (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJob -record`)
-  - ✓ TestActions/GetWorkflowJobInvalidOwner (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidOwner -record`)
-  - ✓ TestActions/GetWorkflowJobInvalidRepo (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidRepo -record`)
-  - ✓ TestActions/GetWorkflowJobInvalidID (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidID -record`)
-  - ✓ TestActions/GetWorkflowJobNonExistentID (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobNonExistentID -record`)
-  - ✓ TestActions/GetWorkflowJobInvalidIDType (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidIDType -record`)
-✓ All test cases have been run with `-golden` flag:
-  - ✓ TestActions/GetWorkflowJob (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJob -golden`)
-  - ✓ TestActions/GetWorkflowJobInvalidOwner (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidOwner -golden`)
-  - ✓ TestActions/GetWorkflowJobInvalidRepo (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidRepo -golden`)
-  - ✓ TestActions/GetWorkflowJobInvalidID (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidID -golden`)
-  - ✓ TestActions/GetWorkflowJobNonExistentID (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobNonExistentID -golden`)
-  - ✓ TestActions/GetWorkflowJobInvalidIDType (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidIDType -golden`)
-✓ All test cases pass in normal mode:
-  - ✓ TestActions/GetWorkflowJob (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJob`)
-  - ✓ TestActions/GetWorkflowJobInvalidOwner (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidOwner`)
-  - ✓ TestActions/GetWorkflowJobInvalidRepo (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidRepo`)
-  - ✓ TestActions/GetWorkflowJobInvalidID (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidID`)
-  - ✓ TestActions/GetWorkflowJobNonExistentID (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobNonExistentID`)
-  - ✓ TestActions/GetWorkflowJobInvalidIDType (run: `go test -v ./pkg/tools -run TestActions/GetWorkflowJobInvalidIDType`)
-✓ Test directories exist in testdata/ for all test cases:
-  - ✓ testdata/TestActions/GetWorkflowJob (verify: `ls -la testdata/TestActions/GetWorkflowJob/`)
-  - ✓ testdata/TestActions/GetWorkflowJobInvalidOwner (verify: `ls -la testdata/TestActions/GetWorkflowJobInvalidOwner/`)
-  - ✓ testdata/TestActions/GetWorkflowJobInvalidRepo (verify: `ls -la testdata/TestActions/GetWorkflowJobInvalidRepo/`)
-  - ✓ testdata/TestActions/GetWorkflowJobInvalidID (verify: `ls -la testdata/TestActions/GetWorkflowJobInvalidID/`)
-  - ✓ testdata/TestActions/GetWorkflowJobNonExistentID (verify: `ls -la testdata/TestActions/GetWorkflowJobNonExistentID/`)
-  - ✓ testdata/TestActions/GetWorkflowJobInvalidIDType (verify: `ls -la testdata/TestActions/GetWorkflowJobInvalidIDType/`)
-✓ Test status is updated in progress.md
-✓ Final verification is documented in activeContext.md
-
-The tool has been fully implemented and tested according to the Test Completion Checklist.
+All test cases for these tools have been verified with the `-record` and `-golden` flags, and all pass in normal mode. Test directories exist in testdata/ for all test cases, and test status has been updated in progress.md.
