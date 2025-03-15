@@ -1,10 +1,29 @@
 package tools
 
 import (
+	"bufio"
+	"strings"
 	"testing"
 )
 
 func TestActions(t *testing.T) {
+	ignoreRandomTempDirElementInDownloadLogs := func(output string) string {
+		s := bufio.NewScanner(strings.NewReader(output))
+		var result string
+		for s.Scan() {
+
+			line := s.Text()
+			if strings.HasPrefix(line, "**Logs Directory:**") {
+				// Replace the last, random element of the directory path with a static
+				parts := strings.Split(line, "-")
+				parts[len(parts)-1] = "StaticForTesting"
+				line = strings.Join(parts, "-")
+			}
+			result += line + "\n"
+		}
+		return result
+	}
+
 	testCases := []*TestCase{
 		// get_workflow - Happy Path
 		{
@@ -72,7 +91,7 @@ func TestActions(t *testing.T) {
 				"workflow_id": "non-existent.yml",
 			},
 		},
-		
+
 		// list_workflows - Happy Path
 		{
 			Name: "ListWorkflows",
@@ -82,7 +101,7 @@ func TestActions(t *testing.T) {
 				"repo":  "github-mcp-go-test",
 			},
 		},
-		
+
 		// list_workflows - Error Cases
 		{
 			Name: "ListWorkflowsInvalidOwner",
@@ -108,7 +127,7 @@ func TestActions(t *testing.T) {
 				"repo":  "non-existent-repo",
 			},
 		},
-		
+
 		// list_workflow_runs - Happy Path
 		{
 			Name: "ListWorkflowRuns",
@@ -137,7 +156,7 @@ func TestActions(t *testing.T) {
 				"status": "completed",
 			},
 		},
-		
+
 		// list_workflow_runs - Error Cases
 		{
 			Name: "ListWorkflowRunsInvalidOwner",
@@ -172,7 +191,7 @@ func TestActions(t *testing.T) {
 				"workflow_id": true, // Invalid type
 			},
 		},
-		
+
 		// get_workflow_run - Happy Path
 		{
 			Name: "GetWorkflowRun",
@@ -183,7 +202,7 @@ func TestActions(t *testing.T) {
 				"run_id": "13839912722", // Actual run ID
 			},
 		},
-		
+
 		// get_workflow_run - Error Cases
 		{
 			Name: "GetWorkflowRunInvalidOwner",
@@ -230,7 +249,7 @@ func TestActions(t *testing.T) {
 				"run_id": true, // Invalid type
 			},
 		},
-		
+
 		// download_workflow_run_logs - Happy Path
 		{
 			Name: "DownloadWorkflowRunLogs",
@@ -240,8 +259,9 @@ func TestActions(t *testing.T) {
 				"repo":   "github-mcp-go-test",
 				"run_id": "13839912722", // Actual run ID
 			},
+			OutputFilter: ignoreRandomTempDirElementInDownloadLogs,
 		},
-		
+
 		// download_workflow_run_logs - Error Cases
 		{
 			Name: "DownloadWorkflowRunLogsInvalidOwner",
@@ -288,7 +308,7 @@ func TestActions(t *testing.T) {
 				"run_id": true, // Invalid type
 			},
 		},
-		
+
 		// list_workflow_jobs - Happy Path
 		{
 			Name: "ListWorkflowJobs",
@@ -309,7 +329,7 @@ func TestActions(t *testing.T) {
 				"filter": "completed",
 			},
 		},
-		
+
 		// list_workflow_jobs - Error Cases
 		{
 			Name: "ListWorkflowJobsInvalidOwner",
@@ -356,7 +376,7 @@ func TestActions(t *testing.T) {
 				"run_id": true, // Invalid type
 			},
 		},
-		
+
 		// get_workflow_job - Happy Path
 		{
 			Name: "GetWorkflowJob",
@@ -367,7 +387,7 @@ func TestActions(t *testing.T) {
 				"job_id": "38724486736", // Actual job ID
 			},
 		},
-		
+
 		// get_workflow_job - Error Cases
 		{
 			Name: "GetWorkflowJobInvalidOwner",

@@ -38,6 +38,9 @@ type TestCase struct {
 	Input  map[string]interface{}
 	Before func(ctx context.Context, client *github.Client) error
 	After  func(ctx context.Context, client *github.Client) error
+
+	// OutputFilter allows to filter the output before comparison, to avoid comparing dynamic/random values
+	OutputFilter func(output string) string
 }
 
 func (tc *TestCase) FullName() string {
@@ -80,6 +83,9 @@ func RunTest(t *testing.T, tc *TestCase) {
 	actual, testErr := executeTestTool(testCtx, createCallToolHandler(s.server), tc.Tool, tc.Input)
 	if testErr != nil {
 		t.Fatalf("Failed to execute test tool: %v", testErr)
+	}
+	if tc.OutputFilter != nil {
+		actual.Output = tc.OutputFilter(actual.Output)
 	}
 
 	// Create directory structure for golden file

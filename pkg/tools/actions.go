@@ -624,10 +624,6 @@ func formatLogsResultToMarkdown(result *github.LogsResult) string {
 	
 	md += fmt.Sprintf("**Run ID:** %d  \n", result.RunID)
 	
-	// Use a fixed timestamp in test environment
-	downloadTime := result.DownloadTime
-	md += fmt.Sprintf("**Downloaded:** %s  \n", downloadTime.Format(time.RFC1123))
-	
 	md += fmt.Sprintf("**Size:** %d bytes  \n", result.Size)
 	md += fmt.Sprintf("**Files:** %d  \n\n", result.FileCount)
 	
