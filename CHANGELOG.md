@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - No unreleased changes yet
 
+## [0.3.0] - 2025-03-17
+
+### Added
+- GitHub Actions tools for interacting with workflows:
+  - `list_workflows`: List all workflows in a repository
+  - `get_workflow`: Get detailed information about a specific workflow
+  - `list_workflow_runs`: List workflow runs for a repository or specific workflow
+  - `get_workflow_run`: Get detailed information about a specific workflow run
+  - `download_workflow_run_logs`: Download and process logs for a workflow run
+  - `list_workflow_jobs`: List jobs for a workflow run
+  - `get_workflow_job`: Get detailed information about a specific job
+- Added all GitHub Actions tools to the read-only tools list
+
 ## [0.2.1] - 2025-03-13
 
 ### Added

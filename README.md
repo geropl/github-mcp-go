@@ -19,9 +19,6 @@ A Model Context Protocol (MCP) server for GitHub, implemented in Go. This server
 - [ ] "get_diff"
   - diff between two commits
   - ? Should this be in the output of `compare_commits`?
-- [ ] support "actions", most importantly [workflow runs](https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28):
-  - navigate those (list, read)
-  - retrieve logs
 
 
 ## Installation
@@ -161,6 +158,16 @@ The `--write-access` flag enables write access for remote operations. This allow
 - `search_code`: Search for code across repositories
 - `search_issues`: Search for issues and pull requests
 - `search_commits`: Search for commits across repositories
+
+### GitHub Actions Tools
+
+- `list_workflows`: List all workflows in a repository
+- `get_workflow`: Get detailed information about a specific workflow
+- `list_workflow_runs`: List workflow runs for a repository or specific workflow
+- `get_workflow_run`: Get detailed information about a specific workflow run
+- `download_workflow_run_logs`: Download and process logs for a workflow run
+- `list_workflow_jobs`: List jobs for a workflow run
+- `get_workflow_job`: Get detailed information about a specific job
 
 ## Releases
 
