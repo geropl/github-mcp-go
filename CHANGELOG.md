@@ -5,6 +5,18 @@ All notable changes to the GitHub MCP Go project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-03-17
+
+### Fixed
+- Added missing GitHub Actions tools to the read-only tools list:
+  - `get_workflow`
+  - `list_workflow_runs`
+  - `get_workflow_run`
+  - `download_workflow_run_logs`
+  - `list_workflow_jobs`
+  - `get_workflow_job`
+- This ensures all GitHub Actions tools are properly auto-approved when using `--auto-approve allow-read-only`
+
 ## [Unreleased]
 
 ### Added
