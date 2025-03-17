@@ -32,7 +32,7 @@ func RegisterBranchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(listBranchesTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(listBranchesTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -80,7 +80,7 @@ func RegisterBranchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(getBranchTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(getBranchTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -132,7 +132,7 @@ func RegisterBranchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createBranchTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createBranchTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -192,7 +192,7 @@ func RegisterBranchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(mergeBranchesTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(mergeBranchesTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -250,7 +250,7 @@ func RegisterBranchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(deleteBranchTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(deleteBranchTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {

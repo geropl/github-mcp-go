@@ -34,7 +34,7 @@ func RegisterRepositoryTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createRepoTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createRepoTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		name, ok := request.Params.Arguments["name"].(string)
 		if !ok {
@@ -92,7 +92,7 @@ func RegisterRepositoryTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(forkRepoTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(forkRepoTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {

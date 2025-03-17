@@ -41,7 +41,7 @@ func RegisterSearchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(searchCodeTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(searchCodeTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		query, ok := request.Params.Arguments["query"].(string)
 		if !ok {
@@ -113,7 +113,7 @@ func RegisterSearchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(searchReposTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(searchReposTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		query, ok := request.Params.Arguments["query"].(string)
 		if !ok {
@@ -177,7 +177,7 @@ func RegisterSearchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(searchIssuesTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(searchIssuesTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		query, ok := request.Params.Arguments["query"].(string)
 		if !ok {
@@ -295,7 +295,7 @@ func RegisterSearchTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(searchCommitsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(searchCommitsTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		query, ok := request.Params.Arguments["query"].(string)
 		if !ok {

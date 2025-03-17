@@ -47,7 +47,7 @@ func RegisterPullRequestTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createPRTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createPRTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -119,7 +119,7 @@ func RegisterPullRequestTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(getPRTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(getPRTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -168,7 +168,7 @@ func RegisterPullRequestTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(getPRDiffTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(getPRDiffTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {

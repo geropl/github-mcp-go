@@ -38,7 +38,7 @@ func RegisterFileTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(getFileContentsTool, true, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(getFileContentsTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -161,7 +161,7 @@ func RegisterFileTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(createOrUpdateFileTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(createOrUpdateFileTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -241,7 +241,7 @@ func RegisterFileTools(s *Server) {
 		),
 	)
 
-	s.RegisterTool(pushFilesTool, false, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	s.RegisterTool(pushFilesTool, func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		// Extract parameters
 		owner, ok := request.Params.Arguments["owner"].(string)
 		if !ok {
@@ -313,7 +313,7 @@ func RegisterFileTools(s *Server) {
 			markdown := formatCommitToMarkdown(result.Commit)
 			return mcp.NewToolResultText(markdown), nil
 		}
-		
+
 		// Fallback to simple text if no commit is available
 		return mcp.NewToolResultText(fmt.Sprintf("Files pushed successfully to %s/%s:%s", owner, repo, branch)), nil
 	})

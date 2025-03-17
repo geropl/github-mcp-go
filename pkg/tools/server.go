@@ -44,7 +44,8 @@ func (s *Server) GetLogger() *logrus.Logger {
 }
 
 // RegisterTool registers a tool with the server
-func (s *Server) RegisterTool(tool mcp.Tool, readonly bool, handler func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error)) {
+func (s *Server) RegisterTool(tool mcp.Tool, handler func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error)) {
+	readonly := GetReadOnlyToolNames()[tool.Name]
 	if !readonly && !s.writeAccess {
 		s.logger.Infof("Skipping registration of write tool %s as write access is disabled", tool.Name)
 		return
@@ -78,30 +79,30 @@ func (s *Server) WriteAccess() bool {
 // These tools do not modify any state and are safe to auto-approve
 func GetReadOnlyToolNames() map[string]bool {
 	return map[string]bool{
-		"search_repositories":     true,
-		"search_code":             true,
-		"search_issues":           true,
-		"search_commits":          true,
-		"get_file_contents":       true,
-		"get_issue":               true,
-		"list_issues":             true,
-		"list_issue_comments":     true,
-		"get_pull_request":        true,
-		"get_pull_request_diff":   true,
-		"get_commit":              true,
-		"list_commits":            true,
-		"compare_commits":         true,
-		"get_commit_status":       true,
-		"list_commit_comments":    true,
-		"list_branches":           true,
-		"get_branch":              true,
+		"search_repositories":   true,
+		"search_code":           true,
+		"search_issues":         true,
+		"search_commits":        true,
+		"get_file_contents":     true,
+		"get_issue":             true,
+		"list_issues":           true,
+		"list_issue_comments":   true,
+		"get_pull_request":      true,
+		"get_pull_request_diff": true,
+		"get_commit":            true,
+		"list_commits":          true,
+		"compare_commits":       true,
+		"get_commit_status":     true,
+		"list_commit_comments":  true,
+		"list_branches":         true,
+		"get_branch":            true,
 		// GitHub Actions tools
-		"list_workflows":          true,
-		"get_workflow":            true,
-		"list_workflow_runs":      true,
-		"get_workflow_run":        true,
+		"list_workflows":             true,
+		"get_workflow":               true,
+		"list_workflow_runs":         true,
+		"get_workflow_run":           true,
 		"download_workflow_run_logs": true,
-		"list_workflow_jobs":      true,
-		"get_workflow_job":        true,
+		"list_workflow_jobs":         true,
+		"get_workflow_job":           true,
 	}
 }
