@@ -66,10 +66,16 @@
 - README.md with installation and usage information
 
 ### Releases
+- v0.3.1: Bugfix for GitHub Actions tools
+  - Fixed issue where most GitHub Actions tools were missing from the read-only tools list
+  - Ensures all GitHub Actions tools are properly auto-approved when using `--auto-approve allow-read-only`
+  - Released on 2025-03-17
+
 - v0.3.0: Added GitHub Actions tools
   - Includes all read-only tools for GitHub Actions workflows
   - Automated release process using GitHub Actions
   - Pre-built binaries for multiple platforms
+  - Released on 2025-03-17
 
 ## What's Left to Build
 

@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-We have released v0.3.0 with all GitHub Actions tools following PRD 001-action-tools (100% complete). All read-only tools for GitHub Actions workflows are now fully implemented, tested, and included in the official release.
+We have released v0.3.1 with a bugfix for the GitHub Actions tools. This release fixes an issue where most of the GitHub Actions tools were missing from the read-only tools list, which prevented them from being auto-approved when using the `--auto-approve allow-read-only` flag. All read-only tools for GitHub Actions workflows are now properly registered and included in the official release.
 
 Current priorities:
 1. **Testing completion**
@@ -15,11 +15,19 @@ Current priorities:
 
 ## Recent Changes
 
+- Released v0.3.1 with bugfix for GitHub Actions tools:
+  - Fixed issue where most GitHub Actions tools were missing from the read-only tools list
+  - Updated GetReadOnlyToolNames method to include all GitHub Actions tools
+  - Updated CHANGELOG.md to document the bugfix
+  - Created and pushed git tag v0.3.1 to trigger the GitHub Actions workflow for building and publishing the release
+  - Updated memory bank files to reflect the bugfix release
+
 - Released v0.3.0 with GitHub Actions tools:
   - Updated CHANGELOG.md to document the new GitHub Actions tools
   - Updated README.md to include the GitHub Actions tools in the Available Tools section
   - Created and pushed git tag v0.3.0 to trigger the GitHub Actions workflow for building and publishing the release
   - Updated memory bank files to reflect the new state of the project
+
 - Completed test verification for all GitHub Actions tools:
   - Verified all test cases have been run with the `-record` flag to create cassettes
   - Verified all test cases have been run with the `-golden` flag to create golden files
