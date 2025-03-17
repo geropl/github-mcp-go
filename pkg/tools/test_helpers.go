@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -37,6 +38,9 @@ type TestCase struct {
 	Input  map[string]interface{}
 	Before func(ctx context.Context, client *github.Client) error
 	After  func(ctx context.Context, client *github.Client) error
+
+	// OutputFilter allows to filter the output before comparison, to avoid comparing dynamic/random values
+	OutputFilter func(output string) string
 }
 
 func (tc *TestCase) FullName() string {
@@ -80,9 +84,12 @@ func RunTest(t *testing.T, tc *TestCase) {
 	if testErr != nil {
 		t.Fatalf("Failed to execute test tool: %v", testErr)
 	}
+	if tc.OutputFilter != nil {
+		actual.Output = tc.OutputFilter(actual.Output)
+	}
 
 	// Create directory structure for golden file
-	goldenPath := filepath.Join(getProjectRoot(), "testdata", t.Name(), tc.FullName())
+	goldenPath := filepath.Join(getProjectRoot(), "testdata", testName(t), tc.FullName())
 	if err := os.MkdirAll(filepath.Dir(goldenPath), 0755); err != nil {
 		t.Fatalf("Failed to create golden directory: %v", err)
 	}
@@ -130,7 +137,7 @@ func createTestServer(t *testing.T, tc *TestCase, doRecord bool) (*Server, *reco
 	}
 
 	// Create directory structure for cassette
-	cassettePath := path.Join(getProjectRoot(), "testdata", t.Name(), tc.FullName())
+	cassettePath := path.Join(getProjectRoot(), "testdata", testName(t), tc.FullName())
 	if err := os.MkdirAll(filepath.Dir(cassettePath), 0755); err != nil {
 		t.Fatalf("Failed to create cassette directory: %v", err)
 	}
@@ -246,6 +253,10 @@ func readGoldenFile(goldenFile string) (*TestResult, error) {
 func getProjectRoot() string {
 	_, filename, _, _ := runtime.Caller(0)
 	return path.Join(path.Dir(filename), "..", "..")
+}
+
+func testName(t *testing.T) string {
+	return strings.Split(t.Name(), "/")[0]
 }
 
 // createNonRecordingClient creates a GitHub client that is authenticated but doesn't record interactions

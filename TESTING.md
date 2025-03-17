@@ -3,7 +3,32 @@
 ## Overview
 
 This document provides a comprehensive guide to the testing approach used in the GitHub MCP Go project. The tests are designed as integration tests over the tools offered, where we use go-vcr for recording HTTP interactions, to re-run the tests like unit tests.
-All tests are specified as table-driven tests, and use golden files for persisting expectations.
+
+**IMPORTANT**: Adding test cases, as well as running them and verifying they work as indentend is a crucial part of our "Definition of Done"!
+
+## Testing Workflow
+
+The project follows an iterative testing approach:
+
+1. **Focus on one test case** in the appropriate test file
+2. **Record HTTP interactions**:
+   ```bash
+   go test -v ./pkg/tools -run TestCategory/toolName-TestCaseName -record
+   ```
+3. **Create golden files**:
+   ```bash
+   go test -v ./pkg/tools -run TestCategory/toolName-TestCaseName -golden
+   ```
+4. **Verify the test passes**:
+   ```bash
+   go test -v ./pkg/tools -run TestCategory/toolName-TestCaseName
+   ```
+5. **Verify the golden file exists and contains sensible expectations**:
+   ```bash
+   cat testdata/TestCategory/toolName-TestCaseName.golden
+   ```
+6. **Update test verification** in activeContext.md
+7. **Move to the next test case**
 
 ## Testing Architecture
 
@@ -43,25 +68,6 @@ func TestPullRequest(t *testing.T) {
     }
 }
 ```
-
-## Testing Approach
-
-### go-vcr Recording
-
-The project uses go-vcr to record and replay HTTP interactions with the GitHub API. This approach has several benefits:
-
-1. **Deterministic testing**: Tests can run without making actual API calls
-2. **Faster execution**: Recorded tests run much faster than live API calls
-3. **No API rate limiting**: Avoids GitHub API rate limits during testing
-4. **Consistent results**: Tests produce the same results regardless of external factors
-
-When running tests with the `-record` flag, go-vcr records all HTTP interactions and stores them in cassette files. These cassettes are then used for subsequent test runs.
-
-### Golden Files
-
-Golden files store the expected results of test runs in JSON format. They serve as the "ground truth" for test assertions. When running tests with the `-golden` flag, the current test results are written to the golden files, updating the expected results.
-
-This approach allows for easy updating of expected results when the implementation changes intentionally, while still catching unintended changes.
 
 ## Running Tests
 
@@ -122,52 +128,34 @@ All tests reside in `pkg/tools`. The test files are organized by GitHub resource
 ```
 testdata/
 ├── TestBranches/
-│   ├── CreateBranchFromAnotherBranch/
-│   │   ├── create_branch-CreateBranchFromAnotherBranch.golden
-│   │   └── create_branch-CreateBranchFromAnotherBranch.yaml
+│   ├── create_branch-CreateBranchFromAnotherBranch.golden
+│   ├── create_branch-CreateBranchFromAnotherBranch.yaml
 │   └── ...
 ├── TestCommits/
-│   └── ...
 ├── TestFiles/
-│   └── ...
 ├── TestIssues/
-│   └── ...
 ├── TestPullRequest/
-│   ├── SuccessfulCreation/
-│   │   ├── create_pull_request-SuccessfulCreation.golden
-│   │   └── create_pull_request-SuccessfulCreation.yaml
-│   └── ...
 ├── TestRepository/
-│   └── ...
 └── TestSearch/
-    └── ...
 ```
 
-Each test case has its own directory containing:
+Each test case has two files under it's name:
 - `.yaml` files: VCR cassettes with recorded HTTP interactions
 - `.golden` files: Expected test results in JSON format
 
-## Workflow Guide
+## Troubleshooting Common Test Issues
 
-The project follows an iterative testing approach:
+### Test Passes in Recording Mode But Fails in Normal Mode
+- Check for time-dependent values in responses
+- Verify API responses haven't changed
+- Ensure golden files match current implementation
 
-1. Implement one test case at a time
-2. Make each test case work completely before moving to the next
-3. Start with "happy path" test cases before error cases
+### Inconsistent Test Results
+- Check for race conditions or external dependencies
+- Verify test isolation (tests shouldn't depend on each other)
+- Ensure cleanup functions run properly
 
-### Step-by-Step Implementation
-
-1. **Uncomment or add a test case** in the appropriate test file
-2. **Record HTTP interactions**:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName -record
-   ```
-3. **Create golden files**:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName -golden
-   ```
-4. **Verify the test passes**:
-   ```bash
-   go test -v ./pkg/tools -run TestCategory/TestCaseName
-   ```
-5. **Move to the next test case**
+### VCR Recording Issues
+- Check GitHub token permissions
+- Verify network connectivity
+- Ensure the test repository exists and is accessible

@@ -178,17 +178,16 @@ flowchart TD
 
 ## Testing Strategy
 
-### Approach
+For comprehensive testing documentation, refer to [TESTING.md](TESTING.md).
+
+### Key Testing Principles
 
 - **Iterative Testing**: Implement one test case at a time, ensuring it works completely before moving to the next
 - **Table-Driven Tests**: Define test cases in a structured way for each tool
 - **HTTP Interaction Recording**: Use go-vcr to record and replay HTTP interactions
 - **Golden Files**: Store expected results in golden files for comparison
-- **Test Fixtures**: Create reusable test fixtures for common scenarios
-- **Mocking**: Mock GitHub client for unit tests when appropriate
-- **Integration Tests**: Use recorded API responses for integration testing
 
-### Test Structure
+### Test Structure Example
 
 ```go
 func TestPullRequest(t *testing.T) {
@@ -216,92 +215,3 @@ func TestPullRequest(t *testing.T) {
     }
 }
 ```
-
-### Test Organization
-
-Tests are organized by functionality and grouped together in test files:
-
-```go
-// All search-related tests are in pkg/tools/search_test.go
-func TestSearch(t *testing.T) {
-    testCases := []*TestCase{
-        // search_repositories test cases
-        {
-            Name: "BasicSearch",
-            Tool: "search_repositories",
-            Input: map[string]interface{}{
-                "query": "language:go",
-            },
-        },
-        
-        // search_code test cases
-        {
-            Name: "BasicCodeSearch",
-            Tool: "search_code",
-            Input: map[string]interface{}{
-                "query": "function",
-            },
-        },
-        
-        // search_issues test cases
-        {
-            Name: "BasicIssueSearch",
-            Tool: "search_issues",
-            Input: map[string]interface{}{
-                "query": "bug",
-                "type":  "issue",
-            },
-        },
-        
-        // search_commits test cases
-        {
-            Name: "BasicCommitSearch",
-            Tool: "search_commits",
-            Input: map[string]interface{}{
-                "query": "fix bug",
-            },
-        },
-    }
-    
-    // Run all test cases
-    for _, tc := range testCases {
-        t.Run(tc.Name, func(t *testing.T) {
-            RunTest(t, tc)
-        })
-    }
-}
-```
-
-### Test Execution
-
-```go
-func RunTest(t *testing.T, tc TestCase) {
-    // Create test server with VCR recorder
-    s := createTestServer(t, *record)
-
-    // Execute the test tool
-    actual, testErr := executeTestTool(testCtx, handler, tc.Tool, tc.Input)
-    
-    // Compare with golden file
-    if *golden {
-        // Update golden file
-        writeGoldenFile(goldenFile, actual)
-    } else {
-        // Read golden file and compare
-        expected, _ := readGoldenFile(goldenFile)
-        // Compare actual and expected results
-    }
-}
-```
-
-### VCR Recording
-
-- Record mode: Captures real HTTP interactions with GitHub API
-- Replay mode: Uses recorded interactions for deterministic testing
-- Sanitization: Removes sensitive information like auth tokens from cassettes
-
-### Golden Files
-
-- Store expected test results in JSON format
-- Update with `-golden` flag when test behavior changes
-- Compare actual results against golden files during testing

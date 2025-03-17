@@ -22,47 +22,45 @@
 
 ## Testing Patterns
 
-### Iterative Approach
-- Focus on one test case at a time
-- Make each test case work completely before moving to the next
-- Start with "happy path" test cases before error cases
-- Comment out test cases that aren't ready to be implemented yet
+### Key Testing Principles
+
+- **Iterative Approach**: Focus on one test case at a time, making each work completely before moving to the next
+- **Test-Driven Development**: Start with "happy path" test cases before error cases
+- **Definition of Done**: A feature is only complete when ALL its tests pass and test results are verified to be sensible
+
+### Detailed Testing Documentation
+
+For comprehensive testing instructions, refer to [TESTING.md](TESTING.md), which includes:
+
+- Step-by-step testing workflow with exact commands
+- Test verification template for activeContext.md
+- Troubleshooting common test issues
 
 ### Test Structure
+
 - Table-driven tests with TestCase structs
 - Each test case has a Name, Tool, and Input
 - Test cases are run in a loop with t.Run()
 - RunTest function handles test execution and comparison
 
-### VCR Usage
-- Use -record flag to record new HTTP interactions
-- Default to replay mode for deterministic testing
-- Sanitize sensitive information in cassettes
-- Cassettes are stored in testdata/cassette/
+### VCR and Golden Files
 
-### Golden Files
-- Use -golden flag to update golden files
-- Golden files store expected test results in JSON format
-- Golden files are stored in testdata/golden/
-- Compare actual results against golden files during testing
+- VCR records/replays HTTP interactions for deterministic testing into/from "cassettes"
+- Use `-record` flag to create new/update cassettes (might require authentication)
+- Golden files store expected results for comparison
+- Use `-golden` flag to update expected results
 
 ## Development Workflow
 
 ### Implementation Order
+
 1. Define tool schema and register with MCP server
 2. Implement GitHub operations in pkg/github/
 3. Implement tool handler in pkg/tools/
 4. Add test cases in pkg/tools/*_test.go
-5. Run tests with -record flag to create cassettes
-6. Run tests with -golden flag to create golden files
-7. Run tests without flags to verify functionality
-
-### Testing Workflow
-1. Uncomment one test case at a time
-2. Run test with -record flag to create cassette
-3. Run test with -golden flag to create golden file
-4. Run test without flags to verify it passes
-5. Move to the next test case
+5. Follow the testing workflow in TESTING.md for each test case
+6. Update progress.md with test status
+7. Document verification in activeContext.md
 
 ## User Preferences
 
@@ -77,3 +75,18 @@
 - Document testing approach and progress
 - Update progress.md with current status
 - Update activeContext.md with current focus
+
+### Memory Bank Management
+- Be mindful of space in memory bank files
+- Deleting irrelevant memories is a good thing
+- Follow short-term vs. long-term memory strategy:
+  - Short-term memory (activeContext.md, progress.md): Detailed, recent, specific
+  - Long-term memory (systemPatterns.md, techContext.md, projectbrief.md): Compressed, patterns, principles
+- Apply this strategy on every interaction with the memory bank
+- Use "compress memory bank" trigger to perform a compression run
+- When compressing memory bank files:
+  1. Focus on patterns over instances
+  2. Use tables and summaries instead of exhaustive lists
+  3. Keep only the most relevant and recent information in short-term memory
+  4. Distill important insights into long-term memory
+  5. Delete outdated or redundant information

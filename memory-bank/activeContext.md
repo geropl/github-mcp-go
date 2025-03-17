@@ -2,278 +2,39 @@
 
 ## Current Focus
 
-We have adopted a new PRD-based workflow for feature development. Each significant feature now begins with a Project Requirement Document (PRD) that outlines requirements and tracks implementation progress. Our first PRD (001-action-tools) has been created for implementing GitHub Actions workflow tools.
+We have completed the implementation and test verification of all GitHub Actions tools following PRD 001-action-tools (100% complete). All read-only tools for GitHub Actions workflows are now fully implemented and tested.
 
-We have completed the initial phase of porting the GitHub MCP server from TypeScript to Go. We have:
+Current priorities:
+1. **Testing completion**
+   - Repository operations tests need completion (50% done)
+   - All other test categories are complete
 
-1. Set up the project structure
-2. Implemented the core server functionality
-3. Created the GitHub client integration
-4. Implemented repository operations tools
-5. Implemented pull request operations tools (including the new tools requested)
-6. Implemented file operations tools
-7. Implemented issue operations tools
-8. Implemented commit operations tools
-9. Implemented branch operations tools
-10. Implemented search operations tools
-11. Set up the testing framework with go-vcr and golden files
+2. **End-to-end testing preparation**
 
-The current focus is on:
-
-1. **Implementing GitHub Actions tools**:
-   - Following the requirements in PRD 001-action-tools
-   - Implementing read-only tools for GitHub Actions workflows
-   - Tracking implementation progress in the PRD
-
-2. **Improving search operations**:
-   - Fixed GitHub API issue with search_issues tool by adding required "type" parameter
-   - Consolidated all search-related API operations in pkg/github/search.go
-   - Consolidated all search-related tools in pkg/tools/search.go
-   - Implemented comprehensive test cases for all search operations
-
-3. **Preparing for end-to-end testing**:
-   - Ensuring all components work together seamlessly
-   - Identifying potential edge cases
-   - Planning for integration testing
+3. **Prepare for first official release**
 
 ## Recent Changes
 
-- Established new PRD-based workflow for feature development
-- Created first PRD (001-action-tools) for GitHub Actions workflow tools
-- Added GitHub release workflow for automated binary builds and releases
-- Created CHANGELOG.md to track changes between releases
-- Updated README.md with information about releases and installation from pre-built binaries
-- Merged PULL_REQUEST_TESTING.md and README-PR-TESTING.md into a single comprehensive TESTING.md file
-- Organized testing documentation into clear sections covering the approach, execution modes, and workflow
-- Improved documentation of go-vcr and golden files methodology
-- Created project structure
-- Initialized Go module
-- Added dependencies (mcp-go, go-github, logrus, go-vcr)
-- Implemented core server functionality
-- Created GitHub client wrapper
-- Implemented error handling utilities
-- Implemented repository operations tools
-- Implemented pull request operations tools (including the new tools requested)
-- Implemented file operations tools
-- Implemented issue operations tools:
-  - get_issue: Get details of a specific issue
-  - list_issues: List issues in a repository with filtering options
-  - create_issue: Create a new issue
-  - update_issue: Update an existing issue
-  - add_issue_comment: Add a comment to an issue
-  - list_issue_comments: List comments on an issue
-- Implemented commit operations tools:
-  - get_commit: Get details of a specific commit
-  - list_commits: List commits in a repository with filtering options
-  - compare_commits: Compare two commits or branches
-  - get_commit_status: Get the combined status for a specific commit
-  - create_commit_comment: Add a comment to a specific commit
-  - list_commit_comments: List comments for a specific commit
-  - create_commit: Create a new commit directly (without push)
-- Implemented branch operations tools:
-  - list_branches: List branches in a repository with optional filtering
-  - get_branch: Get details about a specific branch
-  - create_branch: Create a new branch from a specified SHA or another branch
-  - merge_branches: Merge one branch into another
-  - delete_branch: Delete a branch
-  - update_branch_protection: Update protection settings for a branch
-  - remove_branch_protection: Remove protection settings from a branch
-- Implemented search operations tools:
-  - search_code: Search for code across GitHub repositories
-  - search_issues: Search for issues and pull requests
-  - search_commits: Search for commits across repositories
-  - search_repositories: Search for GitHub repositories
-- Fixed GitHub API issue with search_issues tool by adding required "type" parameter
-- Consolidated all search-related API operations in pkg/github/search.go
-- Consolidated all search-related tools in pkg/tools/search.go
-- Added comprehensive test cases for all search operations
-- Set up testing framework with go-vcr and golden files
-- Implemented the "SuccessfulCreation" test case for create_pull_request
-- Defined a comprehensive set of test cases for all pull request tools
-- Created detailed documentation for the pull request testing process
-- Implemented formatters for all GitHub API responses to return markdown instead of raw JSON
-- Updated all tools to use the formatters
-- Updated tests to work with the new markdown output format
-- Implemented file operations tests for all file operations tools:
-  - get_file_contents (8 test cases)
-    - GetFileContents
-    - GetFileContentsWithBranch
-    - GetDirectoryContents
-    - GetDirectoryContentsWithBranch
-    - GetNonExistentFile
-    - GetFileInvalidOwner
-    - GetFileInvalidRepo
-    - GetFileEmptyPath
-  - create_or_update_file (7 test cases)
-    - CreateFile
-    - CreateFileForUpdate
-    - CreateFileInvalidOwner
-    - CreateFileInvalidRepo
-    - CreateFileEmptyPath
-    - CreateFileEmptyContent
-    - CreateFileEmptyMessage
-  - push_files (7 test cases)
-    - PushFiles
-    - PushFilesInvalidOwner
-    - PushFilesInvalidRepo
-    - PushFilesInvalidBranch
-    - PushFilesEmptyFiles
-    - PushFilesInvalidJSON
-    - PushFilesEmptyMessage
-- Implemented repository operations tests for search_repositories:
-  - search_repositories (6 test cases)
-    - BasicSearch
-    - SearchWithPagination
-    - SearchWithSpecificFilters
-    - EmptyQuery
-    - InvalidPagination
-    - ComplexQuerySyntaxError
-- Implemented all 25 pull request test cases:
-  - create_pull_request (10 test cases)
-    - SuccessfulCreation
-    - CreateDraftPR
-    - CreatePRWithLabels
-    - CreatePRWithAssignees
-    - CreatePRWithReviewers
-    - InvalidOwner
-    - InvalidRepo
-    - InvalidBranch
-    - SameBranches
-    - MissingRequiredFields
-  - get_pull_request (7 test cases)
-    - GetExistingPR
-    - GetMergedPR
-    - GetClosedPR
-    - GetNonExistentPR
-    - InvalidOwnerGetPR
-    - InvalidRepoGetPR
-    - InvalidPRNumber
-  - get_pull_request_diff (8 test cases)
-    - GetDiffForOpenPR
-    - GetDiffForMergedPR
-    - GetDiffForClosedPR
-    - GetDiffWithLargeChanges
-    - GetDiffForNonExistentPR
-    - InvalidOwnerGetDiff
-    - InvalidRepoGetDiff
-    - InvalidPRNumberGetDiff
-- Implemented and tested 34 issue operations test cases:
-  - get_issue (5 test cases)
-    - GetExistingIssue
-    - GetClosedIssue
-    - GetNonExistentIssue
-    - InvalidOwnerGetIssue
-    - InvalidRepoGetIssue
-  - list_issues (7 test cases)
-    - ListAllIssues
-    - ListOpenIssues
-    - ListClosedIssues
-    - ListIssuesWithLabels
-    - ListIssuesInvalidOwner
-    - ListIssuesInvalidRepo
-    - ListIssuesInvalidState
-  - create_issue (6 test cases)
-    - BasicIssueCreation
-    - IssueCreationWithLabels
-    - CreateIssueInvalidOwner
-    - CreateIssueInvalidRepo
-    - CreateIssueEmptyTitle
-  - update_issue (6 test cases)
-    - UpdateIssueTitle
-    - UpdateIssueBody
-    - CloseIssue
-    - UpdateIssueInvalidOwner
-    - UpdateIssueInvalidRepo
-    - UpdateNonExistentIssue
-  - add_issue_comment (5 test cases)
-    - AddCommentToIssue
-    - AddCommentInvalidOwner
-    - AddCommentInvalidRepo
-    - AddCommentNonExistentIssue
-    - AddEmptyComment
-  - list_issue_comments (5 test cases)
-    - ListCommentsOnIssue
-    - ListCommentsSortedByUpdated
-    - ListCommentsInvalidOwner
-    - ListCommentsInvalidRepo
-    - ListCommentsNonExistentIssue
-- Implemented and tested 32 commit operations test cases:
-  - get_commit (4 test cases)
-    - GetExistingCommit
-    - GetNonExistentCommit
-    - InvalidOwnerGetCommit
-    - InvalidRepoGetCommit
-  - list_commits (5 test cases)
-    - ListAllCommits
-    - ListCommitsWithPath
-    - ListCommitsWithAuthor
-    - ListCommitsInvalidOwner
-    - ListCommitsInvalidRepo
-  - compare_commits (5 test cases)
-    - CompareCommits
-    - CompareInvalidBase
-    - CompareInvalidHead
-    - CompareInvalidOwner
-    - CompareInvalidRepo
-  - get_commit_status (4 test cases)
-    - GetCommitStatus
-    - GetNonExistentCommitStatus
-    - InvalidOwnerGetStatus
-    - InvalidRepoGetStatus
-  - list_commit_comments (4 test cases)
-    - ListCommentsOnCommit
-    - ListCommentsNonExistentCommit
-    - InvalidOwnerListComments
-    - InvalidRepoListComments
-  - create_commit_comment (6 test cases)
-    - AddCommentToCommit
-    - AddCommentWithPath
-    - InvalidOwnerAddComment
-    - InvalidRepoAddComment
-    - InvalidSHAAddComment
-    - EmptyBodyAddComment
-  - create_commit (4 test cases)
-    - InvalidOwnerCreateCommit
-    - InvalidRepoCreateCommit
-    - InvalidTreeCreateCommit
-    - InvalidParentCreateCommit
-- Implemented and tested branch operations test cases:
-  - list_branches (4 test cases)
-    - ListAllBranches
-    - ListProtectedBranches
-    - ListBranchesInvalidOwner
-    - ListBranchesInvalidRepo
-  - get_branch (4 test cases)
-    - GetExistingBranch
-    - GetNonExistentBranch
-    - InvalidOwnerGetBranch
-    - InvalidRepoGetBranch
-  - create_branch (5 test cases)
-    - CreateBranchFromAnotherBranch
-    - CreateBranchInvalidOwner
-    - CreateBranchInvalidRepo
-    - CreateBranchInvalidBase
-    - CreateBranchEmptyName
-  - merge_branches (5 test cases)
-    - MergeBranches
-    - MergeBranchesInvalidOwner
-    - MergeBranchesInvalidRepo
-    - MergeBranchesInvalidBase
-    - MergeBranchesInvalidHead
-  - delete_branch (4 test cases)
-    - DeleteBranch
-    - DeleteNonExistentBranch
-    - DeleteBranchInvalidOwner
-    - DeleteBranchInvalidRepo
-- Improved branch tests with proper Before/After hooks for test setup and cleanup
-- Added helper functions for branch test fixtures
+- Completed test verification for list_workflow_jobs and get_workflow_job tools:
+  - Ran all test cases with `-record` flag to create cassettes
+  - Ran all test cases with `-golden` flag to create golden files
+  - Verified all test cases pass in normal mode
+  - Verified test directories exist in testdata/ for all test cases
+  - Updated test verification checklists in activeContext.md
+- Updated progress.md to reflect completion of all GitHub Actions tools tests
+- Enhanced the test verification process in .clinerules:
+  - Added explicit Test Verification Commands section with example commands
+  - Added Test Verification Template for documenting test verification
+  - Updated Implementation Order to require verification of each test case
+  - Enhanced Testing Workflow with explicit commands and verification steps
 
 ## Next Steps
 
-1. Implement GitHub Actions tools as specified in PRD 001-action-tools
-2. Polish documentation
-3. Complete repository operations tests for create_repository and fork_repository
-4. Plan for end-to-end testing
+1. Complete repository operations tests for create_repository and fork_repository
+
+2. Plan for end-to-end testing
+
+3. Prepare for first official release
 
 ## Active Decisions
 
@@ -281,50 +42,52 @@ The current focus is on:
    - Using PRDs to document requirements and track implementation progress
    - PRDs are numbered sequentially and stored in the `prds/` directory
    - Implementation status is tracked within each PRD
-   - PRDs serve as the source of truth for what needs to be implemented
 
 2. **Error Handling Strategy**
    - Using logrus for structured logging
-   - Created custom error types for different error categories
-   - Providing detailed error messages for troubleshooting
+   - Custom error types for different error categories
+   - Detailed error messages for troubleshooting
 
-2. **Authentication**
-   - Using GitHub personal access token for authentication
-   - Token is provided via environment variable
-   - Added validation for token presence
+3. **Authentication**
+   - GitHub personal access token via environment variable
+   - Validation for token presence
 
-3. **Testing Approach**
+4. **Testing Approach**
+   - Iterative: one test case at a time, starting with "happy path"
    - Using go-vcr for recording HTTP interactions
-   - Implemented table-driven tests with golden files
-   - Created test fixtures for repository, pull request, file, and issue operations
-   - Using dummy tokens for playback mode
-   - Sanitizing sensitive information in cassettes
-   - Taking an iterative approach: make one test case work, then move to the next
-   - Starting with the "happy path" test cases before error cases
-   - Documenting the testing process in detail in TESTING.md
-   - Providing clear instructions for running tests in different modes (normal, recording, golden)
-
-4. **Tool Implementation Priority**
-   - Repository operations (completed)
-   - Pull request operations (completed)
-   - File operations (completed)
-   - Issue operations (completed)
-   - Commit operations (completed)
-   - Branch operations (completed)
-   - Search operations (completed)
+   - Golden files for expected results
+   - Comprehensive test cases for all tools
 
 5. **Response Formatting**
-   - Using markdown formatting for all tool responses instead of raw JSON
-   - Created formatters for each GitHub resource type (pull requests, repositories, files, issues, etc.)
-   - Selecting only the most relevant fields for each resource type
-   - Organizing information in a clear, readable format with headers and sections
+   - Markdown formatting for all tool responses
+   - Formatters for each GitHub resource type
+   - Clear, readable format with headers and sections
 
 ## Current Challenges
 
-1. Ensuring proper error handling and conversion between GitHub API errors and MCP errors
-2. Implementing proper validation for tool inputs
-3. Ensuring comprehensive test coverage
-4. Managing test fixtures and cassettes for deterministic testing
-5. Balancing the iterative testing approach with comprehensive coverage
-6. Maintaining consistent test case organization across different tools
-7. Handling limitations with GitHub API permissions for tests that require write access
+1. Completing repository operations tests
+2. Planning and implementing end-to-end testing
+3. Ensuring proper error handling between GitHub API and MCP errors
+4. Implementing proper validation for tool inputs
+5. Managing test fixtures and cassettes for deterministic testing
+6. Handling GitHub API permissions for tests requiring write access
+7. Preparing for first official release
+
+## Test Verification
+
+For detailed testing instructions, refer to [TESTING.md](TESTING.md).
+
+### Completed Tool Verifications
+
+The following tools have been fully implemented and tested according to the Definition of Done criteria in TESTING.md:
+
+#### GitHub Actions Tools
+- ✓ download_workflow_run_logs
+- ✓ list_workflow_jobs
+- ✓ get_workflow_job
+- ✓ list_workflow_runs
+- ✓ get_workflow_run
+- ✓ list_workflows
+- ✓ get_workflow
+
+All test cases for these tools have been verified with the `-record` and `-golden` flags, and all pass in normal mode. Test directories exist in testdata/ for all test cases, and test status has been updated in progress.md.
