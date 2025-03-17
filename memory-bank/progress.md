@@ -65,14 +65,21 @@
 - CHANGELOG.md for tracking changes
 - README.md with installation and usage information
 
+### Releases
+- v0.3.0: Added GitHub Actions tools
+  - Includes all read-only tools for GitHub Actions workflows
+  - Automated release process using GitHub Actions
+  - Pre-built binaries for multiple platforms
+
 ## What's Left to Build
 
 1. **Testing**
    - Repository operations tests: create_repository, fork_repository
    - End-to-end testing
 
-2. **Release Process**
-   - First official release using GitHub release workflow
+2. **Next Feature Set**
+   - Implement "get_diff" tool (potentially as part of compare_commits)
+   - Plan and implement additional features based on user feedback
 
 ## Next Milestone
 
@@ -82,4 +89,9 @@
 
 **Milestone 4: End-to-End Testing**
 - Implement end-to-end tests for the entire MCP server
+- Target Completion: TBD
+
+**Milestone 5: Next Feature Set**
+- Create PRD for the next feature set (potentially "get_diff" tool)
+- Implement and test new features
 - Target Completion: TBD
