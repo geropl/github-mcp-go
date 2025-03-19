@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // SetupOptions contains the options for setting up the GitHub MCP server
@@ -15,8 +16,49 @@ type SetupOptions struct {
 	WriteAccess bool
 }
 
+// SetupMultiple sets up the GitHub MCP server for multiple AI assistants
+func SetupMultiple(options SetupOptions, readOnlyTools map[string]bool) []error {
+	// Split the comma-separated list of tools
+	tools := strings.Split(options.Tool, ",")
+	errors := []error{}
+
+	// Process each tool
+	for _, tool := range tools {
+		tool = strings.TrimSpace(tool)
+		if tool == "" {
+			continue
+		}
+
+		// Create a copy of options with the current tool
+		toolOptions := options
+		toolOptions.Tool = tool
+
+		// Set up the tool
+		err := setupSingleTool(toolOptions, readOnlyTools)
+		if err != nil {
+			errors = append(errors, fmt.Errorf("error setting up %s: %w", tool, err))
+			fmt.Printf("Error setting up %s: %v\n", tool, err)
+		} else {
+			fmt.Printf("github-mcp-go successfully set up for %s\n", tool)
+		}
+	}
+
+	return errors
+}
+
 // Setup sets up the GitHub MCP server for use with an AI assistant
+// This function is kept for backward compatibility
 func Setup(options SetupOptions, readOnlyTools map[string]bool) error {
+	errors := SetupMultiple(options, readOnlyTools)
+	if len(errors) > 0 {
+		// Return the first error
+		return errors[0]
+	}
+	return nil
+}
+
+// setupSingleTool sets up the GitHub MCP server for a single AI assistant
+func setupSingleTool(options SetupOptions, readOnlyTools map[string]bool) error {
 	// Find the config directory for the specified tool
 	configDir, err := FindConfigDir(options.Tool)
 	if err != nil {
@@ -53,6 +95,8 @@ func Setup(options SetupOptions, readOnlyTools map[string]bool) error {
 	switch options.Tool {
 	case "cline":
 		settingsPath = filepath.Join(configDir, "cline_mcp_settings.json")
+	case "roo-code":
+		settingsPath = filepath.Join(configDir, "cline_mcp_settings.json")
 	case "claude-desktop":
 		settingsPath = filepath.Join(configDir, "claude_desktop_config.json")
 	default:
@@ -65,7 +109,6 @@ func Setup(options SetupOptions, readOnlyTools map[string]bool) error {
 	}
 	fmt.Printf("%s MCP settings updated at %s\n", options.Tool, settingsPath)
 
-	fmt.Printf("github-mcp-go successfully set up for %s\n", options.Tool)
 	return nil
 }
 

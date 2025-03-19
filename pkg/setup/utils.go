@@ -33,6 +33,17 @@ func FindConfigDir(tool string) (string, error) {
 		default:
 			return "", fmt.Errorf("unsupported OS: %s", runtime.GOOS)
 		}
+	case "roo-code":
+		switch runtime.GOOS {
+		case "darwin":
+			configDir = filepath.Join(homeDir, "Library", "Application Support", "Code", "User", "globalStorage", "rooveterinaryinc.roo-cline", "settings")
+		case "linux":
+			configDir = filepath.Join(homeDir, ".vscode-server", "data", "User", "globalStorage", "rooveterinaryinc.roo-cline", "settings")
+		case "windows":
+			configDir = filepath.Join(homeDir, "AppData", "Roaming", "Code", "User", "globalStorage", "rooveterinaryinc.roo-cline", "settings")
+		default:
+			return "", fmt.Errorf("unsupported OS: %s", runtime.GOOS)
+		}
 	case "claude-desktop":
 		switch runtime.GOOS {
 		case "darwin":

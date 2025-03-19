@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-We have released v0.3.1 with a bugfix for the GitHub Actions tools. This release fixes an issue where most of the GitHub Actions tools were missing from the read-only tools list, which prevented them from being auto-approved when using the `--auto-approve allow-read-only` flag. All read-only tools for GitHub Actions workflows are now properly registered and included in the official release.
+We have implemented multi-tool support for the GitHub MCP Server, allowing it to be easily configured for use with multiple AI assistants through a unified setup command. This feature is similar to how it's implemented in the linear-mcp-go project and adds support for Roo Code alongside the existing Cline and Claude Desktop support.
 
 Current priorities:
 1. **Testing completion**
@@ -14,6 +14,14 @@ Current priorities:
 3. **Planning for next feature set**
 
 ## Recent Changes
+
+- Implemented multi-tool support for the GitHub MCP Server:
+  - Added support for Roo Code alongside existing Cline and Claude Desktop support
+  - Modified the setup command to accept a comma-separated list of tools
+  - Implemented error handling to continue processing other tools if one fails
+  - Implemented comprehensive testing with proper test environment isolation
+  - Created PRD 002-multi-tool-support to document the feature
+  - Updated memory bank files to reflect the new feature
 
 - Released v0.3.1 with bugfix for GitHub Actions tools:
   - Fixed issue where most GitHub Actions tools were missing from the read-only tools list
