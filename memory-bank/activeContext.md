@@ -55,6 +55,7 @@ Current priorities:
    - Implementation will follow the standard development workflow with comprehensive testing
 
 4. Monitor the release process and address any issues that arise
+   - For future releases, follow the standardized process documented in [RELEASE.md](../RELEASE.md)
 
 ## Active Decisions
 

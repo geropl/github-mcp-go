@@ -173,15 +173,7 @@ The `--write-access` flag enables write access for remote operations. This allow
 
 The project follows [Semantic Versioning](https://semver.org/). New releases are automatically built and published to GitHub Releases when a new tag is pushed to the repository.
 
-### Release Process
-
-1. Update the CHANGELOG.md file with the changes in the new version
-2. Create and push a new tag:
-   ```bash
-   git tag -a v0.1.1 -m "Release v0.1.1"
-   git push origin v0.1.1
-   ```
-3. The GitHub Actions workflow will automatically build binaries for multiple platforms and create a release
+For detailed instructions on creating a new release, see [RELEASE.md](RELEASE.md).
 
 ### Available Platforms
 
