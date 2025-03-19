@@ -70,6 +70,13 @@
 - README.md with installation and usage information
 
 ### Releases
+- v0.4.0: Added multi-tool support
+  - Added support for Roo Code alongside existing Cline and Claude Desktop support
+  - Modified the setup command to accept a comma-separated list of tools
+  - Implemented error handling to continue processing other tools if one fails
+  - Added comprehensive testing with proper test environment isolation
+  - Released on 2025-03-19
+
 - v0.3.1: Bugfix for GitHub Actions tools
   - Fixed issue where most GitHub Actions tools were missing from the read-only tools list
   - Ensures all GitHub Actions tools are properly auto-approved when using `--auto-approve allow-read-only`
@@ -101,7 +108,8 @@
 - Implement end-to-end tests for the entire MCP server
 - Target Completion: TBD
 
-**Milestone 5: Next Feature Set**
-- Create PRD for the next feature set (potentially "get_diff" tool)
-- Implement and test new features
+**Milestone 5: Get Diff Tool Implementation**
+- Implement the "get_diff" tool as outlined in PRD 003-get-diff-tool
+- Create comprehensive test cases for the tool
+- Update documentation to include the new tool
 - Target Completion: TBD

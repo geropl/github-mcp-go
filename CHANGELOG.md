@@ -5,6 +5,15 @@ All notable changes to the GitHub MCP Go project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-03-19
+
+### Added
+- Multi-tool support for the GitHub MCP Server setup command:
+  - Added support for Roo Code alongside existing Cline and Claude Desktop support
+  - Modified the setup command to accept a comma-separated list of tools
+  - Implemented error handling to continue processing other tools if one fails
+  - Added comprehensive testing with proper test environment isolation
+
 ## [0.3.1] - 2025-03-17
 
 ### Fixed
@@ -16,11 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `list_workflow_jobs`
   - `get_workflow_job`
 - This ensures all GitHub Actions tools are properly auto-approved when using `--auto-approve allow-read-only`
-
-## [Unreleased]
-
-### Added
-- No unreleased changes yet
 
 ## [0.3.0] - 2025-03-17
 

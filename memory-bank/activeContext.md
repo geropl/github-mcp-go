@@ -15,13 +15,14 @@ Current priorities:
 
 ## Recent Changes
 
-- Implemented multi-tool support for the GitHub MCP Server:
+- Released v0.4.0 with multi-tool support:
   - Added support for Roo Code alongside existing Cline and Claude Desktop support
   - Modified the setup command to accept a comma-separated list of tools
   - Implemented error handling to continue processing other tools if one fails
-  - Implemented comprehensive testing with proper test environment isolation
-  - Created PRD 002-multi-tool-support to document the feature
-  - Updated memory bank files to reflect the new feature
+  - Added comprehensive testing with proper test environment isolation
+  - Updated CHANGELOG.md to document the new feature
+  - Updated serverVersion in code to match the release version
+  - Created and pushed git tag v0.4.0 to trigger the GitHub Actions workflow for building and publishing the release
 
 - Released v0.3.1 with bugfix for GitHub Actions tools:
   - Fixed issue where most GitHub Actions tools were missing from the read-only tools list
@@ -48,7 +49,10 @@ Current priorities:
 
 2. Plan for end-to-end testing
 
-3. Plan and implement next feature set (potentially "get_diff" tool)
+3. Implement "get_diff" tool as outlined in PRD 003-get-diff-tool
+   - Tool will provide focused diff content between two commits, branches, or tags
+   - Will complement the existing compare_commits tool with more specific diff functionality
+   - Implementation will follow the standard development workflow with comprehensive testing
 
 4. Monitor the release process and address any issues that arise
 
