@@ -28,6 +28,16 @@ type expectations struct {
 	exitCode  int
 }
 
+// testCase represents a single test case for the setup command
+type testCase struct {
+	name              string
+	toolParam         string
+	writeAccess       bool
+	autoApprove       string
+	preExistingConfig string // JSON content to write to config file before running setup
+	expect            expectations
+}
+
 // TestSetupCommand tests the setup command with various combinations of parameters
 func TestSetupCommand(t *testing.T) {
 	// Build the binary
@@ -38,13 +48,7 @@ func TestSetupCommand(t *testing.T) {
 	defer os.RemoveAll(filepath.Dir(binaryPath))
 
 	// Define test cases
-	testCases := []struct {
-		name        string
-		toolParam   string
-		writeAccess bool
-		autoApprove string
-		expect      expectations
-	}{
+	testCases := []testCase{
 		{
 			name:        "Cline Only",
 			toolParam:   "cline",
@@ -242,6 +246,124 @@ func TestSetupCommand(t *testing.T) {
 			},
 		},
 		{
+			name:        "Preserve Other Servers and Top-Level Config",
+			toolParam:   "cline",
+			writeAccess: true,
+			autoApprove: "allow-read-only",
+			preExistingConfig: `{
+				"mcpServers": {
+					"github": {
+						"command": "/old/path/to/binary",
+						"args": ["serve", "--write-access=false"],
+						"customArray": ["item1", "item2", "item3"],
+						"customObject": {
+							"nested": ["array", "values"],
+							"setting": true
+						},
+						"autoApprove": ["old_tool1", "old_tool2"]
+					},
+					"weather-server": {
+						"command": "/path/to/weather",
+						"args": ["--api-key", "secret"],
+						"customArrays": ["forecast", "alerts", "historical"],
+						"nestedConfig": {
+							"regions": ["us", "eu", "asia"],
+							"features": {
+								"realtime": true,
+								"alerts": ["storm", "heat", "cold"]
+							}
+						}
+					},
+					"database-server": {
+						"command": "/usr/local/bin/db-mcp",
+						"env": {
+							"DB_HOST": "localhost",
+							"DB_POOLS": ["read", "write", "analytics"]
+						},
+						"complexShape": {
+							"connections": [
+								{"name": "primary", "pools": ["read", "write"]},
+								{"name": "secondary", "pools": ["read"]}
+							]
+						}
+					}
+				},
+				"globalSettings": {
+					"theme": "dark",
+					"features": ["feature1", "feature2"],
+					"customArrays": {
+						"plugins": ["plugin1", "plugin2"],
+						"themes": ["dark", "light", "auto"]
+					}
+				},
+				"userPreferences": {
+					"notifications": ["error", "warning"],
+					"layout": {
+						"panels": ["left", "right", "bottom"],
+						"sizes": [200, 300, 150]
+					}
+				}
+			}`,
+			expect: expectations{
+				files: map[string]fileExpectation{
+					"cline": {
+						path:      "home/.vscode-server/data/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json",
+						mustExist: true,
+						content: `{
+							"mcpServers": {
+								"github": {
+									"args": ["serve", "--write-access=true"],
+									"autoApprove": ["search_repositories", "search_code", "search_issues", "search_commits", "get_file_contents", "get_issue", "list_issues", "list_issue_comments", "get_pull_request", "get_pull_request_diff", "get_commit", "list_commits", "compare_commits", "get_commit_status", "list_commit_comments", "list_branches", "get_branch", "list_workflows", "get_workflow", "list_workflow_runs", "get_workflow_run", "download_workflow_run_logs", "list_workflow_jobs", "get_workflow_job"],
+									"disabled": false
+								},
+								"weather-server": {
+									"command": "/path/to/weather",
+									"args": ["--api-key", "secret"],
+									"customArrays": ["forecast", "alerts", "historical"],
+									"nestedConfig": {
+										"regions": ["us", "eu", "asia"],
+										"features": {
+											"realtime": true,
+											"alerts": ["storm", "heat", "cold"]
+										}
+									}
+								},
+								"database-server": {
+									"command": "/usr/local/bin/db-mcp",
+									"env": {
+										"DB_HOST": "localhost",
+										"DB_POOLS": ["read", "write", "analytics"]
+									},
+									"complexShape": {
+										"connections": [
+											{"name": "primary", "pools": ["read", "write"]},
+											{"name": "secondary", "pools": ["read"]}
+										]
+									}
+								}
+							},
+							"globalSettings": {
+								"theme": "dark",
+								"features": ["feature1", "feature2"],
+								"customArrays": {
+									"plugins": ["plugin1", "plugin2"],
+									"themes": ["dark", "light", "auto"]
+								}
+							},
+							"userPreferences": {
+								"notifications": ["error", "warning"],
+								"layout": {
+									"panels": ["left", "right", "bottom"],
+									"sizes": [200, 300, 150]
+								}
+							}
+						}`,
+					},
+				},
+				exitCode: 0,
+			},
+		},
+		{
 			name:        "Invalid Tool",
 			toolParam:   "invalid-tool",
 			writeAccess: true,
@@ -309,6 +431,14 @@ func TestSetupCommand(t *testing.T) {
 			oldToken := os.Getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
 			os.Setenv("GITHUB_PERSONAL_ACCESS_TOKEN", "test-token")
 			defer os.Setenv("GITHUB_PERSONAL_ACCESS_TOKEN", oldToken)
+
+			// Create pre-existing config file if specified
+			if tc.preExistingConfig != "" {
+				err := createPreExistingConfig(t, rootDir, tc.toolParam, tc.preExistingConfig)
+				if err != nil {
+					t.Fatalf("Failed to create pre-existing config: %v", err)
+				}
+			}
 
 			// Build the command
 			args := []string{"setup", "--tool=" + tc.toolParam}
@@ -511,6 +641,45 @@ func copyFile(src, dst string) error {
 
 	if _, err := io.Copy(destFile, sourceFile); err != nil {
 		return fmt.Errorf("failed to copy file: %w", err)
+	}
+
+	return nil
+}
+
+// Helper function to create pre-existing config files for testing
+func createPreExistingConfig(t *testing.T, rootDir, toolParam, configContent string) error {
+	// Parse the tool parameter to handle multiple tools
+	tools := strings.Split(toolParam, ",")
+	
+	for _, tool := range tools {
+		tool = strings.TrimSpace(tool)
+		if tool == "" {
+			continue
+		}
+
+		// Determine the config file path for each tool
+		var configPath string
+		switch tool {
+		case "cline":
+			configPath = filepath.Join(rootDir, "home", ".vscode-server", "data", "User", "globalStorage", "saoudrizwan.claude-dev", "settings", "cline_mcp_settings.json")
+		case "roo-code":
+			configPath = filepath.Join(rootDir, "home", ".vscode-server", "data", "User", "globalStorage", "rooveterinaryinc.roo-cline", "settings", "cline_mcp_settings.json")
+		case "claude-desktop":
+			configPath = filepath.Join(rootDir, "home", ".config", "Claude", "claude_desktop_config.json")
+		default:
+			// For unsupported tools, we don't create config files
+			continue
+		}
+
+		// Create the directory structure
+		if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
+			return fmt.Errorf("failed to create config directory for %s: %w", tool, err)
+		}
+
+		// Write the pre-existing config content
+		if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+			return fmt.Errorf("failed to write pre-existing config for %s: %w", tool, err)
+		}
 	}
 
 	return nil
